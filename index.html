@@ -170,7 +170,7 @@
         }
 
         .mode-bar.major {
-            background: #2196F3;
+            background: transparent;
         }
 
         .mode-bar.minor {
@@ -186,13 +186,27 @@
             overflow: hidden;
         }
 
-        .quartet-number {
+        /* Text colors for major keys (on transparent background) */
+        .mode-bar.major .quartet-number {
+            font-size: 0.85em;
+            color: #999;
+            font-weight: bold;
+        }
+
+        .mode-bar.major .gerard-number {
+            font-size: 0.85em;
+            font-weight: normal;
+            color: #333;
+        }
+
+        /* Text colors for minor keys (on colored background) */
+        .mode-bar.minor .quartet-number {
             font-size: 0.85em;
             color: rgba(255, 255, 255, 0.9);
             font-weight: bold;
         }
 
-        .gerard-number {
+        .mode-bar.minor .gerard-number {
             font-size: 0.85em;
             font-weight: normal;
             color: white;
