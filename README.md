@@ -4,33 +4,55 @@ An interactive visualization of Luigi Boccherini's complete string quartet outpu
 
 ## Updating the Gist
 
-After making local changes, update the gist using the GitHub CLI:
+### Quick Start (First Time Setup)
 
 ```bash
-# Get your gist ID (do this once)
-gh gist list
-
-# Update specific file(s) - replace GIST_ID with your actual gist ID
-gh gist edit GIST_ID --add index.html
-gh gist edit GIST_ID --add opera.json
-
-# Or update multiple files at once
-gh gist edit GIST_ID --add index.html --add opera.json
-```
-
-### Streamlined workflow
-
-Save your gist ID to avoid typing it each time:
-
-```bash
-# Save the gist ID once
+# 1. Save your gist ID (do this once)
 gh gist list | head -1 | awk '{print $1}' > .gist_id
 
-# Update files
+# 2. Create a sync script (do this once)
+cat > sync-gist.sh << 'EOF'
+#!/bin/bash
+FILES="${@:-index.html}"
+gh gist edit $(cat .gist_id) --add $FILES && git pull
+EOF
+chmod +x sync-gist.sh
+```
+
+### Daily Workflow
+
+```bash
+# 1. Make your changes to index.html, opera.json, or README.md
+
+# 2. Check what changed
+git diff                    # See all changes
+git diff index.html         # See specific file changes
+
+# 3. Update the gist (syncs automatically)
+./sync-gist.sh index.html opera.json README.md
+
+# Or just update one file
+./sync-gist.sh index.html
+```
+
+### Why the sync script?
+
+`gh gist edit --add` updates the remote gist but doesn't update your local git repo. The script:
+1. Uploads your changes with `gh gist edit --add`
+2. Pulls them back with `git pull` to keep git in sync
+3. This way `git diff` and `git status` stay accurate
+
+### Manual method (if you prefer)
+
+```bash
+# Update the gist
 gh gist edit $(cat .gist_id) --add index.html
 
-# Create an alias for convenience
-alias update-gist='gh gist edit $(cat .gist_id) --add index.html'
+# Pull changes back to keep git in sync
+git pull
+
+# Check for unsynced changes
+git status
 ```
 
 ## Viewing Online
