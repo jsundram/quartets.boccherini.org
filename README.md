@@ -7,14 +7,33 @@ An interactive visualization of Luigi Boccherini's complete string quartet outpu
 ### Quick Start (First Time Setup)
 
 ```bash
-# 1. Save your gist ID (do this once)
+# 1. Configure git to use GitHub CLI credentials (do this once)
+gh auth setup-git
+
+# 2. Save your gist ID (do this once)
 gh gist list | head -1 | awk '{print $1}' > .gist_id
 
-# 2. Create a sync script (do this once)
+# 3. Create a sync script (do this once)
 cat > sync-gist.sh << 'EOF'
 #!/bin/bash
-FILES="${@:-index.html}"
-gh gist edit $(cat .gist_id) --add $FILES && git pull
+
+# Usage: ./sync-gist.sh "commit message" file1 file2 ...
+# Or: ./sync-gist.sh file1 file2 ... (uses default message)
+
+# If first arg looks like a commit message (has spaces or quotes), use it
+if [[ "$1" == *" "* ]] || [[ "$1" == \"*\" ]]; then
+    MESSAGE="$1"
+    shift
+    FILES="$@"
+else
+    MESSAGE="Update gist"
+    FILES="${@:-index.html}"
+fi
+
+# Add, commit, and push with message
+git add $FILES
+git commit -m "$MESSAGE"
+git push
 EOF
 chmod +x sync-gist.sh
 ```
