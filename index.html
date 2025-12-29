@@ -8,6 +8,18 @@
 
 
     <style>
+        :root {
+            /* === ALIGNMENT SYSTEM === */
+            --card-height: 140px;
+            --top-section-height: 20px;
+            --bottom-section-height: auto;
+
+            /* Font sizes for aligned elements */
+            --top-font-size: 0.8em;
+            --middle-font-size: 2.8em;
+            --bottom-font-size: 0.7em;
+        }
+
         body {
             font-family: 'Helvetica Neue', Arial, sans-serif;
             background-color: #f5f5f5;
@@ -41,15 +53,15 @@
 
         .opus-label {
             /* Container sizing - MATCHES CARD HEIGHT */
-            width: 95px;                    /* Total width of label column */
-            height: 140px;                  /* SAME HEIGHT AS CARDS */
-            padding: 0 12px 0 10px;         /* Horizontal padding only */
+            width: 95px;
+            height: var(--card-height);
+            padding: 0 12px 0 10px;
 
             /* Layout - vertical alignment structure */
             display: flex;
             flex-direction: column;
-            justify-content: space-between; /* Top, middle, bottom alignment */
-            text-align: right;              /* Right-align all text */
+            justify-content: space-between;
+            text-align: right;
             position: relative;
         }
 
@@ -66,39 +78,39 @@
                 rgba(206, 147, 216, 0.12) 100%);  /* Light purple fade */
         }
 
-        /* TOP SECTION: Year and Age on same line - aligns with mode bar */
+        /* TOP SECTION: Year and Age - ALIGNS WITH MODE BAR */
         .opus-label .year-age {
             display: flex;
-            justify-content: flex-end;      /* Right align */
-            align-items: center;            /* Vertically center */
-            gap: 6px;                       /* Space between year and age */
-            height: 20px;                   /* MATCHES MODE BAR HEIGHT */
+            justify-content: flex-end;
+            align-items: center;
+            gap: 6px;
+            height: var(--top-section-height);
             flex-shrink: 0;
         }
 
         .opus-label .year {
-            font-size: 0.8em;               /* Size: small */
-            font-weight: 600;               /* Weight: semi-bold */
-            color: #555;                    /* Color: darker gray */
+            font-size: var(--top-font-size);
+            font-weight: 600;
+            color: #555;
         }
 
         .opus-label .age {
-            font-size: 0.65em;              /* Size: smaller */
-            font-weight: normal;            /* Weight: normal */
-            color: #888;                    /* Color: light gray */
+            font-size: calc(var(--top-font-size) * 0.8);
+            font-weight: normal;
+            color: #888;
         }
 
-        /* MIDDLE SECTION: Opus number - DRAMATICALLY LARGE */
+        /* MIDDLE SECTION: Opus number - ALIGNS WITH KEY/MODE */
         .opus-label .opus-number {
-            font-size: 2.8em;               /* Size: VERY large */
-            font-weight: 900;               /* Weight: ultra bold */
-            color: #222;                    /* Color: darker */
-            line-height: 1;                 /* Tight line height */
-            letter-spacing: -0.03em;        /* Tighter spacing */
-            flex-grow: 1;                   /* Take available space */
+            font-size: var(--middle-font-size);
+            font-weight: 900;
+            color: #222;
+            line-height: 1;
+            letter-spacing: -0.03em;
+            flex-grow: 1;
             display: flex;
-            align-items: center;            /* Vertically center */
-            justify-content: flex-end;      /* Right align */
+            align-items: center;
+            justify-content: flex-end;
         }
 
         /* BOTTOM SECTION: Dedication and category badge */
@@ -119,7 +131,7 @@
 
         /* Category badge - aligns with movement count */
         .opus-label .category-badge {
-            font-size: 0.65em;              /* Size: small */
+            font-size: var(--bottom-font-size);  /* Aligns with movement count */
             padding: 4px 7px;               /* Internal padding */
             border-radius: 3px;             /* Rounded corners */
             display: inline-block;          /* Display mode */
@@ -138,7 +150,7 @@
 
         .quartet-card {
             width: 140px;
-            height: 140px;
+            height: var(--card-height);     /* Matches opus-label height */
             background: white;
             border: 2px solid #ddd;
             border-radius: 4px;
@@ -159,7 +171,7 @@
         }
 
         .mode-bar {
-            height: 20px;
+            height: var(--top-section-height);  /* Aligns with year-age section */
             width: 100%;
             flex-shrink: 0;
             display: flex;
@@ -188,26 +200,26 @@
 
         /* Text colors for major keys (on transparent background) */
         .mode-bar.major .quartet-number {
-            font-size: 0.85em;
+            font-size: var(--top-font-size);   /* Aligns with year */
             color: #999;
             font-weight: bold;
         }
 
         .mode-bar.major .gerard-number {
-            font-size: 0.85em;
+            font-size: var(--top-font-size);   /* Aligns with year */
             font-weight: normal;
             color: #333;
         }
 
         /* Text colors for minor keys (on colored background) */
         .mode-bar.minor .quartet-number {
-            font-size: 0.85em;
+            font-size: var(--top-font-size);   /* Aligns with year */
             color: rgba(255, 255, 255, 0.9);
             font-weight: bold;
         }
 
         .mode-bar.minor .gerard-number {
-            font-size: 0.85em;
+            font-size: var(--top-font-size);   /* Aligns with year */
             font-weight: normal;
             color: white;
         }
@@ -223,7 +235,7 @@
 
         .key-signature {
             text-align: center;
-            font-size: 1.8em;
+            font-size: calc(var(--middle-font-size) * 0.64);  /* Proportional to opus number */
             font-weight: bold;
             color: #222;
             line-height: 1;
@@ -249,7 +261,7 @@
 
         .movements-count {
             text-align: center;
-            font-size: 0.7em;
+            font-size: var(--bottom-font-size);  /* Aligns with category badge */
             margin-top: auto;
             margin-left: -8px;             /* Extend to left edge */
             margin-right: -8px;            /* Extend to right edge */
