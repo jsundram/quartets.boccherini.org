@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Periodic Table of Boccherini String Quartets</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 20px;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2em;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .opus-row {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        /* === OPUS LABEL SECTION (easy to tweak) === */
+
+        .opus-label {
+            /* Container sizing - MATCHES CARD HEIGHT */
+            width: 95px;                    /* Total width of label column */
+            height: 140px;                  /* SAME HEIGHT AS CARDS */
+            padding: 0 12px 0 10px;         /* Horizontal padding only */
+
+            /* Layout - vertical alignment structure */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between; /* Top, middle, bottom alignment */
+            text-align: right;              /* Right-align all text */
+            position: relative;
+        }
+
+        /* Background gradient based on category - applied via JS */
+        .opus-label.grande-bg {
+            background: linear-gradient(to right,
+                transparent 0%,
+                rgba(129, 199, 132, 0.12) 100%);  /* Light green fade */
+        }
+
+        .opus-label.piccola-bg {
+            background: linear-gradient(to right,
+                transparent 0%,
+                rgba(206, 147, 216, 0.12) 100%);  /* Light purple fade */
+        }
+
+        /* TOP SECTION: Year and Age on same line - aligns with mode bar */
+        .opus-label .year-age {
+            display: flex;
+            justify-content: flex-end;      /* Right align */
+            align-items: center;            /* Vertically center */
+            gap: 6px;                       /* Space between year and age */
+            height: 20px;                   /* MATCHES MODE BAR HEIGHT */
+            flex-shrink: 0;
+        }
+
+        .opus-label .year {
+            font-size: 0.8em;               /* Size: small */
+            font-weight: 600;               /* Weight: semi-bold */
+            color: #555;                    /* Color: darker gray */
+        }
+
+        .opus-label .age {
+            font-size: 0.65em;              /* Size: smaller */
+            font-weight: normal;            /* Weight: normal */
+            color: #888;                    /* Color: light gray */
+        }
+
+        /* MIDDLE SECTION: Opus number - DRAMATICALLY LARGE */
+        .opus-label .opus-number {
+            font-size: 2.8em;               /* Size: VERY large */
+            font-weight: 900;               /* Weight: ultra bold */
+            color: #222;                    /* Color: darker */
+            line-height: 1;                 /* Tight line height */
+            letter-spacing: -0.03em;        /* Tighter spacing */
+            flex-grow: 1;                   /* Take available space */
+            display: flex;
+            align-items: center;            /* Vertically center */
+            justify-content: flex-end;      /* Right align */
+        }
+
+        /* BOTTOM SECTION: Dedication and category badge */
+        .opus-label .bottom-section {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;          /* Right align */
+            flex-shrink: 0;
+        }
+
+        /* Dedication - above badge */
+        .opus-label .dedication {
+            font-size: 0.6em;               /* Size: smallest */
+            font-style: italic;             /* Style: italic */
+            color: #999;                    /* Color: lighter gray */
+            margin-bottom: 3px;             /* Space below */
+        }
+
+        /* Category badge - aligns with movement count */
+        .opus-label .category-badge {
+            font-size: 0.65em;              /* Size: small */
+            padding: 4px 7px;               /* Internal padding */
+            border-radius: 3px;             /* Rounded corners */
+            display: inline-block;          /* Display mode */
+            box-shadow: 0 1px 3px rgba(0,0,0,0.15);  /* Subtle depth */
+            margin-bottom: 4px;             /* Match movement count position */
+        }
+
+        /* === END OPUS LABEL SECTION === */
+
+        .quartets-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            flex: 1;
+        }
+
+        .quartet-card {
+            width: 140px;
+            height: 140px;
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            padding: 0;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .quartet-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 3px 3px 10px rgba(0,0,0,0.2);
+            border-color: #888;
+        }
+
+        .mode-bar {
+            height: 20px;
+            width: 100%;
+            flex-shrink: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 8px;
+            box-sizing: border-box;
+        }
+
+        .mode-bar.major {
+            background: #2196F3;
+        }
+
+        .mode-bar.minor {
+            background: #E91E63;
+        }
+
+        .card-content {
+            padding: 6px 8px 4px 8px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        .quartet-number {
+            font-size: 0.85em;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: bold;
+        }
+
+        .gerard-number {
+            font-size: 0.85em;
+            font-weight: normal;
+            color: white;
+        }
+
+        /* Key section - aligns with opus number */
+        .key-section {
+            flex-grow: 1;                   /* Take available middle space */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;        /* Vertically center */
+            align-items: center;            /* Horizontally center */
+        }
+
+        .key-signature {
+            text-align: center;
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #222;
+            line-height: 1;
+            margin-bottom: 2px;
+        }
+
+        .key-mode {
+            text-align: center;
+            font-size: 0.75em;
+            color: #666;
+            margin-bottom: 0;
+        }
+
+        .category-badge.grande {
+            background-color: #81C784;
+            color: #333;
+        }
+
+        .category-badge.piccola {
+            background-color: #CE93D8;
+            color: #333;
+        }
+
+        .movements-count {
+            text-align: center;
+            font-size: 0.7em;
+            margin-top: auto;
+            padding: 4px 3px;
+            border-radius: 2px;
+            font-weight: 500;
+            flex-shrink: 0;
+        }
+
+        /* Diverging color scheme: Purple (short) -> Gray (standard) -> Green (long) */
+        .movements-count.mvmt-1 {
+            background-color: #9C27B0;
+            color: white;
+        }
+
+        .movements-count.mvmt-2 {
+            background-color: #CE93D8;
+            color: #333;
+        }
+
+        .movements-count.mvmt-3 {
+            background-color: #B0BEC5;
+            color: #333;
+        }
+
+        .movements-count.mvmt-4 {
+            background-color: #81C784;
+            color: #333;
+        }
+
+        .movements-count.mvmt-5 {
+            background-color: #2E7D32;
+            color: white;
+        }
+
+        .nickname {
+            text-align: center;
+            font-size: 0.65em;
+            font-style: italic;
+            color: #d32f2f;
+            margin-bottom: 3px;
+            min-height: 12px;
+            flex-shrink: 0;
+        }
+
+        .tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 0.85em;
+            pointer-events: none;
+            z-index: 1000;
+            max-width: 300px;
+            line-height: 1.4;
+        }
+
+        .dedication {
+            font-size: 0.7em;
+            color: #666;
+            font-style: italic;
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Luigi Boccherini – String Quartets (1743–1805)</h1>
+        <div id="visualization"></div>
+    </div>
+
+    <script>
+        // Load the opera.json data
+        d3.json('opera.json').then(data => {
+            const container = d3.select('#visualization');
+
+            // Create tooltip
+            const tooltip = d3.select('body')
+                .append('div')
+                .attr('class', 'tooltip')
+                .style('opacity', 0);
+
+            // Create rows for each opus group
+            data.forEach(opus => {
+                const row = container.append('div')
+                    .attr('class', 'opus-row');
+
+                // ========================================
+                // OPUS LABEL - Aligned with card structure
+                // ========================================
+
+                // Determine category for background gradient
+                const categoryClass = opus.quartets.length > 0 &&
+                    opus.quartets[0].category.includes('grande') ? 'grande-bg' : 'piccola-bg';
+
+                const opusLabel = row.append('div')
+                    .attr('class', `opus-label ${categoryClass}`);
+
+                // === TOP: Year + Age (aligns with mode bar) ===
+                const BOCCHERINI_BIRTH_YEAR = 1743;
+                const age = opus.year - BOCCHERINI_BIRTH_YEAR;
+
+                const yearAge = opusLabel.append('div')
+                    .attr('class', 'year-age');
+
+                yearAge.append('span')
+                    .attr('class', 'year')
+                    .text(opus.year);
+
+                yearAge.append('span')
+                    .attr('class', 'age')
+                    .text(`(${age})`);
+
+                // === MIDDLE: Opus number (NO "Op." prefix) ===
+                opusLabel.append('div')
+                    .attr('class', 'opus-number')
+                    .text(opus.opus);
+
+                // === BOTTOM: Bottom section (dedication + category badge) ===
+                const bottomSection = opusLabel.append('div')
+                    .attr('class', 'bottom-section');
+
+                // Dedication first (if present)
+                if (opus.dedication) {
+                    bottomSection.append('div')
+                        .attr('class', 'dedication')
+                        .text(opus.dedication);
+                }
+
+                // Category badge below dedication
+                if (opus.quartets.length > 0) {
+                    const category = opus.quartets[0].category;
+                    const catClass = category.includes('grande') ? 'grande' : 'piccola';
+                    const categoryText = category.includes('grande') ? 'Grande' : 'Piccola';
+
+                    bottomSection.append('div')
+                        .attr('class', `category-badge ${catClass}`)
+                        .text(categoryText);
+                }
+                // ========================================
+
+                // Quartets container
+                const quartetContainer = row.append('div')
+                    .attr('class', 'quartets-container');
+
+                // Create cards for each quartet
+                opus.quartets.forEach(quartet => {
+                    const card = quartetContainer.append('div')
+                        .attr('class', 'quartet-card')
+                        .on('mouseover', function(event) {
+                            d3.select(this).style('border-color', '#333');
+
+                            const movements = quartet.mvmts.map((m, i) => `${i + 1}. ${m}`).join('<br>');
+                            const keyFull = `${quartet.key} ${quartet.major ? 'major' : 'minor'}`;
+
+                            let tooltipText = `<strong>Op. ${opus.opus} No. ${quartet.number || '—'}</strong><br>`;
+                            tooltipText += `G. ${quartet.gerard}<br>`;
+                            tooltipText += `<strong>${keyFull}</strong><br>`;
+                            tooltipText += `${quartet.category}<br><br>`;
+                            tooltipText += `<strong>Movements:</strong><br>${movements}`;
+
+                            if (quartet.nickname) {
+                                tooltipText += `<br><br><em>"${quartet.nickname}"</em>`;
+                            }
+
+                            tooltip.html(tooltipText)
+                                .style('left', (event.pageX + 10) + 'px')
+                                .style('top', (event.pageY - 10) + 'px')
+                                .style('opacity', 1);
+                        })
+                        .on('mouseout', function() {
+                            d3.select(this).style('border-color', '#ddd');
+                            tooltip.style('opacity', 0);
+                        })
+                        .on('click', function() {
+                            if (quartet.imslp) {
+                                window.open(quartet.imslp, '_blank');
+                            } else if (opus.imslp) {
+                                window.open(opus.imslp, '_blank');
+                            }
+                        });
+
+                    // Add colored top bar for major/minor with numbers
+                    const modeBar = card.append('div')
+                        .attr('class', `mode-bar ${quartet.major ? 'major' : 'minor'}`);
+
+                    // Gerard catalog number in the mode bar (left)
+                    modeBar.append('div')
+                        .attr('class', 'gerard-number')
+                        .text(quartet.gerard);
+
+                    // Quartet number (within opus) in the mode bar (right)
+                    modeBar.append('div')
+                        .attr('class', 'quartet-number')
+                        .text(quartet.number ? `#${quartet.number}` : '');
+
+                    // Create content container
+                    const content = card.append('div')
+                        .attr('class', 'card-content');
+
+                    // Key section (aligns with opus number in row header)
+                    const keySection = content.append('div')
+                        .attr('class', 'key-section');
+
+                    // Key signature (replace -flat with ♭ symbol)
+                    const keyDisplay = quartet.key.replace('-flat', '♭');
+                    keySection.append('div')
+                        .attr('class', 'key-signature')
+                        .text(keyDisplay);
+
+                    // Major/minor mode
+                    keySection.append('div')
+                        .attr('class', 'key-mode')
+                        .text(quartet.major ? 'major' : 'minor');
+
+                    // Nickname if exists
+                    content.append('div')
+                        .attr('class', 'nickname')
+                        .text(quartet.nickname ? `"${quartet.nickname}"` : '');
+
+                    // Movement count
+                    const mvmtCount = quartet.mvmts.length;
+                    content.append('div')
+                        .attr('class', `movements-count mvmt-${mvmtCount}`)
+                        .text(`${mvmtCount} movement${mvmtCount === 1 ? '' : 's'}`);
+                });
+            });
+        }).catch(error => {
+            console.error('Error loading opera.json:', error);
+            d3.select('#visualization')
+                .append('p')
+                .style('color', 'red')
+                .text('Error loading data. Please ensure opera.json is in the same directory as this HTML file.');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1225 @@
+[
+    {
+        "opus": 2,
+        "year": 1761,
+        "imslp": "https://imslp.org/wiki/6_String_Quartets,_Op.2_(Boccherini,_Luigi)",
+        "quartets": [
+            {
+                "number": 1,
+                "gerard": 159,
+                "key": "C",
+                "major": false,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_C_minor%2C_G.159_(Boccherini%2C_Luigi)",
+                "mvmts": [
+                    "Allegro comodo",
+                    "Largo",
+                    "Allegro"
+                ],
+                "category": "opera grande"
+            },
+            {
+                "number": 2,
+                "gerard": 160,
+                "key": "B-flat",
+                "major": true,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_B-flat_major%2C_G.160_(Boccherini%2C_Luigi)",
+                "mvmts": [
+                    "Allegro non tanto",
+                    "Largo",
+                    "Fuga con spirito"
+                ],
+                "category": "opera grande"
+            },
+            {
+                "number": 3,
+                "gerard": 161,
+                "key": "D",
+                "major": true,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_D_major%2C_G.161_(Boccherini%2C_Luigi)",
+                "mvmts": [
+                    "Allegro moderato",
+                    "Largo",
+                    "Minuetto"
+                ],
+                "category": "opera grande"
+            },
+            {
+                "number": 4,
+                "gerard": 162,
+                "key": "E-flat",
+                "major": true,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_E-flat_major%2C_G.162_(Boccherini%2C_Luigi)",
+                "mvmts": [
+                    "Allegro spiritoso",
+                    "Adagio",
+                    "Minuetto"
+                ],
+                "category": "opera grande"
+            },
+            {
+                "number": 5,
+                "gerard": 163,
+                "key": "E",
+                "major": true,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_E_major%2C_G.163_(Boccherini%2C_Luigi)",
+                "mvmts": [
+                    "Allegro moderato",
+                    "Adagio",
+                    "Allegro assai"
+                ],
+                "category": "opera grande"
+            },
+            {
+                "number": 6,
+                "gerard": 164,
+                "key": "C",
+                "major": true,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_C_major%2C_G.164_(Boccherini%2C_Luigi)",
+                "mvmts": [
+                    "Allegro con spirito",
+                    "Largo",
+                    "Minuetto"
+                ],
+                "category": "opera grande"
+            }
+        ]
+    },
+    {
+        "opus": 8,
+        "year": 1768,
+        "dedication": "Infante Luis of Spain",
+        "quartets": [
+            {
+                "number": 1,
+                "gerard": 165,
+                "key": "D",
+                "major": true,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_D_major%2C_G.165_(Boccherini%2C_Luigi)",
+                "mvmts": [
+                    "Allegro assai",
+                    "Adagio",
+                    "Allegro Rondeau"
+                ],
+                "category": "opera grande"
+            },
+            {
+                "number": 2,
+                "gerard": 166,
+                "key": "C",
+                "major": false,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_C_minor%2C_G.166_(Boccherini%2C_Luigi)",
+                "mvmts": [
+                    "Moderato",
+                    "Largo",
+                    "Allegro"
+                ],
+                "category": "opera grande"
+            },
+            {
+                "number": 3,
+                "gerard": 167,
+                "key": "E-flat",
+                "major": true,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_E-flat_major%2C_G.167_(Boccherini%2C_Luigi)",
+                "mvmts": [
+                    "Largo",
+                    "Allegro",
+                    "Tempo di Minuetto"
+                ],
+                "category": "opera grande"
+            },
+            {
+                "number": 4,
+                "gerard": 168,
+                "key": "G",
+                "major": false,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_G_minor%2C_G.168_(Boccherini%2C_Luigi)",
+                "mvmts": [
+                    "Allegro",
+                    "Grave",
+                    "Allegro"
+                ],
+                "category": "opera grande"
+            },
+            {
+                "number": 5,
+                "gerard": 169,
+                "key": "F",
+                "major": true,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_F_major%2C_G.169_(Boccherini%2C_Luigi)",
+                "mvmts": [
+                    "Andantino",
+                    "Allegro",
+                    "Tempo di Minuetto"
+                ],
+                "category": "opera grande"
+            },
+            {
+                "number": 6,
+                "gerard": 170,
+                "key": "A",
+                "major": true,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_A_major%2C_G.170_(Boccherini%2C_Luigi)",
+                "mvmts": [
+                    "Allegro brillante",
+                    "Amoroso",
+                    "Allegro"
+                ],
+                "category": "opera grande"
+            }
+        ]
+    },
+    {
+        "opus": 9,
+        "year": 1770,
+        "dedication": "Alli Signori Diletanti di Madrid",
+        "quartets": [
+            {
+                "number": 1,
+                "gerard": 171,
+                "key": "C",
+                "major": false,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_C_minor%2C_G.171_(Boccherini%2C_Luigi)",
+                "mvmts": [
+                    "Allegro",
+                    "Larghetto",
+                    "Minuetto",
+                    "Presto"
+                ],
+                "category": "opera grande"
+            },
+            {
+                "number": 2,
+                "gerard": 172,
+                "key": "D",
+                "major": false,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_D_minor%2C_G.172_(Boccherini%2C_Luigi)",
+                "mvmts": [
+                    "Grave - Allegro",
+                    "Larghetto",
+                    "Allegretto con moto"
+                ],
+                "category": "opera grande"
+            },
+            {
+                "number": 3,
+                "gerard": 173,
+                "key": "F",
+                "major": true,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_F_major%2C_G.173_(Boccherini%2C_Luigi)",
+                "mvmts": [
+                    "Largo - Allegro",
+                    "Largo cantabile",
+                    "Minuetto"
+                ],
+                "category": "opera grande"
+            },
+            {
+                "number": 4,
+                "gerard": 174,
+                "key": "E-flat",
+                "major": true,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_E-flat_major%2C_G.174_(Boccherini%2C_Luigi)",
+                "mvmts": [
+                    "Adagio",
+                    "Allegro",
+                    "Minuetto"
+                ],
+                "category": "opera grande"
+            },
+            {
+                "number": 5,
+                "gerard": 175,
+                "key": "D",
+                "major": true,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_D_major%2C_G.175_(Boccherini%2C_Luigi)",
+                "mvmts": [
+                    "Andante con moto",
+                    "Allegro assai",
+                    "Rondo Allegro"
+                ],
+                "category": "opera grande"
+            },
+            {
+                "number": 6,
+                "gerard": 176,
+                "key": "E",
+                "major": true,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_E_major%2C_G.176_(Boccherini%2C_Luigi)",
+                "mvmts": [
+                    "Andante grazioso",
+                    "Allegretto",
+                    "Minuetto",
+                    "Allegro assai"
+                ],
+                "category": "opera grande"
+            }
+        ]
+    },
+    {
+        "opus": 15,
+        "year": 1772,
+        "quartets": [
+            {
+                "number": 1,
+                "gerard": 177,
+                "key": "D",
+                "major": true,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_D_major%2C_G.177_(Boccherini%2C_Luigi)",
+                "mvmts": [
+                    "Presto",
+                    "Allegro rondeau"
+                ],
+                "category": "opera piccola"
+            },
+            {
+                "number": 2,
+                "gerard": 178,
+                "key": "F",
+                "major": true,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_F_major%2C_G.178_(Boccherini%2C_Luigi)",
+                "mvmts": [
+                    "Allegretto",
+                    "Allegro Minuetto"
+                ],
+                "category": "opera piccola"
+            },
+            {
+                "number": 3,
+                "gerard": 179,
+                "key": "E",
+                "major": true,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_E_major%2C_G.179_(Boccherini%2C_Luigi)",
+                "mvmts": [
+                    "Andantino",
+                    "Prestissimo"
+                ],
+                "category": "opera piccola"
+            },
+            {
+                "number": 4,
+                "gerard": 180,
+                "key": "F",
+                "major": true,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_F_major%2C_G.180_(Boccherini%2C_Luigi)",
+                "mvmts": [
+                    "Prestissimo",
+                    "Minuetto"
+                ],
+                "category": "opera piccola"
+            },
+            {
+                "number": 5,
+                "gerard": 181,
+                "key": "E-flat",
+                "major": true,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_E-flat_major%2C_G.181_(Boccherini%2C_Luigi)",
+                "mvmts": [
+                    "Adagio con sordina",
+                    "Minuetto"
+                ],
+                "category": "opera piccola"
+            },
+            {
+                "number": 6,
+                "gerard": 182,
+                "key": "C",
+                "major": false,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_C_minor%2C_G.182_(Boccherini%2C_Luigi)",
+                "mvmts": [
+                    "Larghetto",
+                    "Minuetto. Allegro moderato"
+                ],
+                "category": "opera piccola"
+            }
+        ]
+    },
+    {
+        "opus": 22,
+        "year": 1775,
+        "imslp": "https://imslp.org/wiki/6_String_Quartets,_G.183-188_(Op.22)_(Boccherini,_Luigi)",
+        "quartets": [
+            {
+                "number": 1,
+                "gerard": 183,
+                "key": "C",
+                "major": true,
+                "mvmts": [
+                    "Allegro molto",
+                    "Tempo di Minuetto"
+                ],
+                "category": "quartettino ... opera piccola"
+            },
+            {
+                "number": 2,
+                "gerard": 184,
+                "key": "D",
+                "major": true,
+                "mvmts": [
+                    "Moderato",
+                    "Minuetto"
+                ],
+                "category": "quartettino ... opera piccola"
+            },
+            {
+                "number": 3,
+                "gerard": 185,
+                "key": "E-flat",
+                "major": true,
+                "mvmts": [
+                    "Adagio",
+                    "Rondeau Allegro"
+                ],
+                "category": "quartettino ... opera piccola"
+            },
+            {
+                "number": 4,
+                "gerard": 186,
+                "key": "B-flat",
+                "major": true,
+                "mvmts": [
+                    "Allegretto moderato",
+                    "Allegro vivace"
+                ],
+                "category": "quartettino ... opera piccola"
+            },
+            {
+                "number": 5,
+                "gerard": 187,
+                "key": "A",
+                "major": false,
+                "mvmts": [
+                    "Allegro con molto",
+                    "Minuetto Amoroso"
+                ],
+                "category": "quartettino ... opera piccola"
+            },
+            {
+                "number": 6,
+                "gerard": 188,
+                "key": "C",
+                "major": true,
+                "mvmts": [
+                    "Andantino",
+                    "Non troppo presto"
+                ],
+                "category": "quartettino ... opera piccola"
+            }
+        ]
+    },
+    {
+        "opus": 24,
+        "year": 1777,
+        "imslp": "https://imslp.org/wiki/6_String_Quartets,_G.189-194_(Op.24)_(Boccherini,_Luigi)",
+        "quartets": [
+            {
+                "number": 1,
+                "gerard": 189,
+                "key": "D",
+                "major": true,
+                "mvmts": [
+                    "Moderato",
+                    "Grave",
+                    "Allegro assai"
+                ],
+                "category": "opera grande"
+            },
+            {
+                "number": 2,
+                "gerard": 190,
+                "key": "A",
+                "major": true,
+                "mvmts": [
+                    "Larghetto",
+                    "Allegro spiritoso",
+                    "Minuetto Amoroso"
+                ],
+                "category": "opera grande"
+            },
+            {
+                "number": 3,
+                "gerard": 191,
+                "key": "E-flat",
+                "major": true,
+                "mvmts": [
+                    "Allegro moderato",
+                    "Adagio non tanto",
+                    "Minuetto"
+                ],
+                "category": "opera grande"
+            },
+            {
+                "number": 4,
+                "gerard": 192,
+                "key": "C",
+                "major": true,
+                "mvmts": [
+                    "Moderato",
+                    "Larghetto",
+                    "Minuetto"
+                ],
+                "category": "opera grande"
+            },
+            {
+                "number": 5,
+                "gerard": 193,
+                "key": "C",
+                "major": false,
+                "mvmts": [
+                    "Allegro moderato",
+                    "Larghetto",
+                    "Allegro molto"
+                ],
+                "category": "opera grande"
+            },
+            {
+                "number": 6,
+                "gerard": 194,
+                "key": "G",
+                "major": false,
+                "mvmts": [
+                    "Allegro vivo assai",
+                    "Adagio",
+                    "Minuetto"
+                ],
+                "category": "opera grande"
+            }
+        ]
+    },
+    {
+        "opus": 26,
+        "year": 1778,
+        "imslp": "https://imslp.org/wiki/6_String_Quartets,_G.195-200_(Op.26)_(Boccherini,_Luigi)",
+        "dedication": "Monsieur le Baron du Beine de Malchamps",
+        "quartets": [
+            {
+                "number": 1,
+                "gerard": 195,
+                "key": "B-flat",
+                "major": true,
+                "mvmts": [
+                    "Allegro moderato",
+                    "Minuetto con moto"
+                ],
+                "category": "quartettino ... opera piccola"
+            },
+            {
+                "number": 2,
+                "gerard": 196,
+                "key": "G",
+                "major": false,
+                "mvmts": [
+                    "Larghetto",
+                    "Minuetto"
+                ],
+                "category": "quartettino ... opera piccola"
+            },
+            {
+                "number": 3,
+                "gerard": 197,
+                "key": "E-flat",
+                "major": true,
+                "mvmts": [
+                    "Allegro vivace",
+                    "Minuetto"
+                ],
+                "category": "quartettino ... opera piccola"
+            },
+            {
+                "number": 4,
+                "gerard": 198,
+                "key": "A",
+                "major": true,
+                "mvmts": [
+                    "Larghetto",
+                    "Minuetto con moto"
+                ],
+                "category": "quartettino ... opera piccola"
+            },
+            {
+                "number": 5,
+                "gerard": 199,
+                "key": "F",
+                "major": true,
+                "mvmts": [
+                    "Allegretto",
+                    "Minuetto Allegro"
+                ],
+                "category": "quartettino ... opera piccola"
+            },
+            {
+                "number": 6,
+                "gerard": 200,
+                "key": "F",
+                "major": false,
+                "mvmts": [
+                    "Andante appassionato ma con lento",
+                    "Minuetto"
+                ],
+                "category": "quartettino ... opera piccola"
+            }
+        ]
+    },
+    {
+        "opus": 32,
+        "year": 1780,
+        "imslp": "https://imslp.org/wiki/6_String_Quartets,_G.201-206_(Op.32)_(Boccherini,_Luigi)",
+        "quartets": [
+            {
+                "number": 1,
+                "gerard": 201,
+                "key": "E-flat",
+                "major": true,
+                "mvmts": [
+                    "Allegretto lentarello e affettuoso",
+                    "Minuetto",
+                    "Grave",
+                    "Allegro vivace assai"
+                ],
+                "category": "opera grande"
+            },
+            {
+                "number": 2,
+                "gerard": 202,
+                "key": "E",
+                "major": false,
+                "mvmts": [
+                    "Largo sostenuto",
+                    "Minuetto",
+                    "Larghetto",
+                    "Minuetto (same!)",
+                    "Rondeau comodo assai"
+                ],
+                "category": "opera grande"
+            },
+            {
+                "number": 3,
+                "gerard": 203,
+                "key": "D",
+                "major": true,
+                "mvmts": [
+                    "Allegro vivo",
+                    "Adagio",
+                    "Allegro vivo ma non presto"
+                ],
+                "category": "opera grande"
+            },
+            {
+                "number": 4,
+                "gerard": 204,
+                "key": "C",
+                "major": true,
+                "mvmts": [
+                    "Allegro bizarro",
+                    "Larghetto",
+                    "Allegro con brio"
+                ],
+                "category": "opera grande"
+            },
+            {
+                "number": 5,
+                "gerard": 205,
+                "key": "G",
+                "major": false,
+                "mvmts": [
+                    "Allegro comodo",
+                    "Andantino",
+                    "Minuetto con moto",
+                    "Allegro giusto"
+                ],
+                "category": "opera grande"
+            },
+            {
+                "number": 6,
+                "gerard": 206,
+                "key": "A",
+                "major": true,
+                "mvmts": [
+                    "Allegro",
+                    "Andante lentarello",
+                    "Minuetto con moto",
+                    "Presto assai"
+                ],
+                "category": "opera grande"
+            }
+        ]
+    },
+    {
+        "opus": 33,
+        "year": 1781,
+        "quartets": [
+            {
+                "number": 1,
+                "gerard": 207,
+                "key": "E",
+                "major": true,
+                "mvmts": [
+                    "Allegro spiritoso",
+                    "Rondeau. Allegretto ma con moto"
+                ],
+                "category": "quartettino ... opera piccola"
+            },
+            {
+                "number": 2,
+                "gerard": 208,
+                "key": "C",
+                "major": true,
+                "mvmts": [
+                    "Allegretto",
+                    "Minuetto"
+                ],
+                "category": "quartettino ... opera piccola"
+            },
+            {
+                "number": 3,
+                "gerard": 209,
+                "key": "G",
+                "major": true,
+                "mvmts": [
+                    "Andante con moto",
+                    "Presto assai"
+                ],
+                "category": "quartettino ... opera piccola"
+            },
+            {
+                "number": 4,
+                "gerard": 210,
+                "key": "B-flat",
+                "major": true,
+                "mvmts": [
+                    "Andante lentarello",
+                    "Minuetto"
+                ],
+                "category": "quartettino ... opera piccola"
+            },
+            {
+                "number": 5,
+                "gerard": 211,
+                "key": "E",
+                "major": false,
+                "mvmts": [
+                    "Allegro brillante",
+                    "Allegro vivo assai"
+                ],
+                "category": "quartettino ... opera piccola"
+            },
+            {
+                "number": 6,
+                "gerard": 212,
+                "key": "E-flat",
+                "major": true,
+                "mvmts": [
+                    "Adagio",
+                    "Minuetto. Affetuoso"
+                ],
+                "category": "quartettino ... opera piccola"
+            }
+        ]
+    },
+    {
+        "opus": 39,
+        "year": 1787,
+        "quartets": [
+            {
+                "number": null,
+                "gerard": 213,
+                "key": "A",
+                "major": true,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_A_major%2C_G.213_(Boccherini%2C_Luigi)",
+                "mvmts": [
+                    "Allegro moderato",
+                    "Minuetto",
+                    "Grave",
+                    "Allegro giusto"
+                ],
+                "category": "opera grande"
+            }
+        ]
+    },
+    {
+        "opus": 41,
+        "year": 1788,
+        "imslp": "https://imslp.org/wiki/2_String_Quartets,_G.214-215_(Op.41)_(Boccherini,_Luigi)",
+        "quartets": [
+            {
+                "number": 1,
+                "gerard": 214,
+                "key": "C",
+                "major": false,
+                "mvmts": [
+                    "Prestissimo",
+                    "Tempo di Minuetto",
+                    "Andante Flebile",
+                    "Prestissimo (repeat of second half of 1)"
+                ],
+                "category": "opera grande"
+            },
+            {
+                "number": 2,
+                "gerard": 215,
+                "key": "C",
+                "major": true,
+                "mvmts": [
+                    "Allegretto moderato assai",
+                    "Minuetto. Allegro",
+                    "Larghetto affettuoso",
+                    "Rondeau. Allegro moderato"
+                ],
+                "category": "opera grande"
+            }
+        ]
+    },
+    {
+        "opus": 42,
+        "year": 1789,
+        "quartets": [
+            {
+                "number": 1,
+                "gerard": 216,
+                "key": "A",
+                "major": true,
+                "mvmts": [
+                    "Allegretto moderato",
+                    "Minuetto. Allegro"
+                ],
+                "category": "quartettino ... opera piccola"
+            },
+            {
+                "number": 2,
+                "gerard": 217,
+                "key": "C",
+                "major": true,
+                "mvmts": [
+                    "Andante",
+                    "Minuetto"
+                ],
+                "category": "quartettino ... opera piccola"
+            }
+        ]
+    },
+    {
+        "opus": 43,
+        "year": 1790,
+        "quartets": [
+            {
+                "number": 1,
+                "gerard": 218,
+                "key": "A",
+                "major": true,
+                "mvmts": [
+                    "Allegretto moderato",
+                    "Tempo di Minuetto"
+                ],
+                "category": "quartettino ... opera piccola"
+            },
+            {
+                "number": 2,
+                "gerard": 219,
+                "key": "A",
+                "major": true,
+                "mvmts": [
+                    "Allegretto con moto",
+                    "Minuetto"
+                ],
+                "category": "quartettino ... opera piccola"
+            }
+        ]
+    },
+    {
+        "opus": 44,
+        "year": 1792,
+        "quartets": [
+            {
+                "number": 1,
+                "gerard": 220,
+                "key": "B-flat",
+                "major": true,
+                "mvmts": [
+                    "Maestoso assai",
+                    "Tempo di Minuetto"
+                ],
+                "category": "quartettino ... opera piccola"
+            },
+            {
+                "number": 2,
+                "gerard": 221,
+                "key": "E",
+                "major": false,
+                "mvmts": [
+                    "Andante larghetto",
+                    "Minuetto amoroso",
+                    "Andante allegretto"
+                ],
+                "category": "quartettino ... opera piccola"
+            },
+            {
+                "number": 3,
+                "gerard": 222,
+                "key": "F",
+                "major": true,
+                "mvmts": [
+                    "Lento assai",
+                    "Allegretto con moto",
+                    "Tempo di Minuetto"
+                ],
+                "category": "quartettino ... opera piccola"
+            },
+            {
+                "number": 4,
+                "gerard": 223,
+                "key": "G",
+                "major": true,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_G_major%2C_G.223_'La_Tiranna'_(Boccherini%2C_Luigi)",
+                "nickname": "la tiranna",
+                "mvmts": [
+                    "Presto",
+                    "Tempo di Minuetto"
+                ],
+                "category": "quartettino ... opera piccola"
+            },
+            {
+                "number": 5,
+                "gerard": 224,
+                "key": "D",
+                "major": true,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_D_major%2C_G.224_(Boccherini%2C_Luigi)",
+                "mvmts": [
+                    "Andantino lento",
+                    "Allegro non tanto"
+                ],
+                "category": "quartettino ... opera piccola"
+            },
+            {
+                "number": 6,
+                "gerard": 225,
+                "key": "E-flat",
+                "major": true,
+                "mvmts": [
+                    "Andantino",
+                    "Minuetto on moto"
+                ],
+                "category": "quartettino ... opera piccola"
+            }
+        ]
+    },
+    {
+        "opus": 48,
+        "year": 1794,
+        "quartets": [
+            {
+                "number": 1,
+                "gerard": 226,
+                "key": "F",
+                "major": true,
+                "mvmts": [
+                    "Andante moderato",
+                    "Moderato con moto"
+                ],
+                "category": "quartettino ... opera piccola"
+            },
+            {
+                "number": 2,
+                "gerard": 227,
+                "key": "A",
+                "major": true,
+                "mvmts": [
+                    "Andante lento",
+                    "Tempo di Minuetto"
+                ],
+                "category": "quartettino ... opera piccola"
+            },
+            {
+                "number": 3,
+                "gerard": 228,
+                "key": "B",
+                "major": false,
+                "mvmts": [
+                    "Allegretto moderato",
+                    "Minuetto con moto"
+                ],
+                "category": "quartettino ... opera piccola"
+            },
+            {
+                "number": 4,
+                "gerard": 229,
+                "key": "E-flat",
+                "major": true,
+                "mvmts": [
+                    "Andantino lento",
+                    "Minuetto con un poco di moto"
+                ],
+                "category": "quartettino ... opera piccola"
+            },
+            {
+                "number": 5,
+                "gerard": 230,
+                "key": "G",
+                "major": true,
+                "mvmts": [
+                    "Larghetto",
+                    "Minuetto con un poco di moto"
+                ],
+                "category": "quartettino ... opera piccola"
+            },
+            {
+                "number": 6,
+                "gerard": 231,
+                "key": "C",
+                "major": true,
+                "mvmts": [
+                    "Allegro vivace",
+                    "Tempo di Minuetto affettuoso"
+                ],
+                "category": "quartettino ... opera piccola"
+            }
+        ]
+    },
+    {
+        "opus": 52,
+        "year": 1795,
+        "imslp": "https://imslp.org/wiki/4_String_Quartets,_G.232-235_(Op.52)_(Boccherini,_Luigi)",
+        "quartets": [
+            {
+                "number": 1,
+                "gerard": 232,
+                "key": "C",
+                "major": true,
+                "mvmts": [
+                    "Allegro con moto",
+                    "Minuetto",
+                    "Adagio",
+                    "Finale. Allegro giusto"
+                ],
+                "category": "opera grande"
+            },
+            {
+                "number": 2,
+                "gerard": 233,
+                "key": "D",
+                "major": true,
+                "mvmts": [
+                    "Allegro vivace assai",
+                    "Andantino Patetico",
+                    "Minuetto",
+                    "Rondeau. Allegretto"
+                ],
+                "category": "opera grande"
+            },
+            {
+                "number": 3,
+                "gerard": 234,
+                "key": "G",
+                "major": true,
+                "mvmts": [
+                    "Allegretto con moto",
+                    "Minuetto",
+                    "Adagio",
+                    "Rondeau. Allegro giusto"
+                ],
+                "category": "opera grande"
+            },
+            {
+                "number": 4,
+                "gerard": 235,
+                "key": "F",
+                "major": false,
+                "mvmts": [
+                    "Allegretto appassionato",
+                    "Minuetto con modo",
+                    "Adagio non tanto",
+                    "Finale. Allegro assai"
+                ],
+                "category": "opera grande"
+            }
+        ]
+    },
+    {
+        "opus": 53,
+        "year": 1796,
+        "quartets": [
+            {
+                "number": 1,
+                "gerard": 236,
+                "key": "E-flat",
+                "major": true,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_E-flat_major%2C_G.236_(Boccherini%2C_Luigi)",
+                "mvmts": [
+                    "Allegro (che appena si senta)",
+                    "Tempo di Minuetto"
+                ],
+                "category": "quartettino ... opera piccola"
+            },
+            {
+                "number": 2,
+                "gerard": 237,
+                "key": "D",
+                "major": true,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_D_major%2C_G.237_(Boccherini%2C_Luigi)",
+                "mvmts": [
+                    "Andantino Pausato",
+                    "Minuetto. Allegro"
+                ],
+                "category": "quartettino ... opera piccola"
+            },
+            {
+                "number": 3,
+                "gerard": 238,
+                "key": "C",
+                "major": true,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_C_major%2C_G.238_(Boccherini%2C_Luigi)",
+                "mvmts": [
+                    "Allegro vivace",
+                    "Minuetto. Allegro"
+                ],
+                "category": "quartettino ... opera piccola"
+            },
+            {
+                "number": 4,
+                "gerard": 239,
+                "key": "A",
+                "major": true,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_A_major%2C_G.239_(Boccherini%2C_Luigi)",
+                "mvmts": [
+                    "Allegro vivace",
+                    "Rondeau. Allegro"
+                ],
+                "category": "quartettino ... opera piccola"
+            },
+            {
+                "number": 5,
+                "gerard": 240,
+                "key": "C",
+                "major": true,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_C_major%2C_G.240_(Boccherini%2C_Luigi)",
+                "mvmts": [
+                    "Andantino lento",
+                    "Tempo di Minuetto"
+                ],
+                "category": "quartettino ... opera piccola"
+            },
+            {
+                "number": 6,
+                "gerard": 241,
+                "key": "E-flat",
+                "major": true,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_E-flat_major%2C_G.241_(Boccherini%2C_Luigi)",
+                "mvmts": [
+                    "Andantino amoroso",
+                    "Minuetto. Allegro"
+                ],
+                "category": "quartettino ... opera piccola"
+            }
+        ]
+    },
+    {
+        "opus": 58,
+        "year": 1799,
+        "imslp": "https://imslp.org/wiki/6_String_Quartets,_G.242-247_(Op.58)_(Boccherini,_Luigi)",
+        "quartets": [
+            {
+                "number": 1,
+                "gerard": 242,
+                "key": "C",
+                "major": true,
+                "mvmts": [
+                    "Allegro",
+                    "Larghetto",
+                    "Allegro vivo assai"
+                ],
+                "category": "opera grande"
+            },
+            {
+                "number": 2,
+                "gerard": 243,
+                "key": "E-flat",
+                "major": true,
+                "mvmts": [
+                    "Allegretto lento",
+                    "Minuetto. Allegro",
+                    "Larghetto Malincolico",
+                    "Finale. Allegro vivo assai"
+                ],
+                "category": "opera grande"
+            },
+            {
+                "number": 3,
+                "gerard": 244,
+                "key": "B-flat",
+                "major": true,
+                "mvmts": [
+                    "Larghetto",
+                    "Allegro vivo assai",
+                    "Rondeau. Allegro giusto"
+                ],
+                "category": "opera grande"
+            },
+            {
+                "number": 4,
+                "gerard": 245,
+                "key": "B",
+                "major": false,
+                "mvmts": [
+                    "Allegro molto",
+                    "Andantino lento",
+                    "Rondeau. Allegro"
+                ],
+                "category": "opera grande"
+            },
+            {
+                "number": 5,
+                "gerard": 246,
+                "key": "D",
+                "major": true,
+                "nickname": "Le Cornamuse",
+                "mvmts": [
+                    "Andante sostenuto",
+                    "Allegretto Gajo",
+                    "Andante sostenuto como primo",
+                    "Presto"
+                ],
+                "category": "opera grande"
+            },
+            {
+                "number": 6,
+                "gerard": 247,
+                "key": "E-flat",
+                "major": true,
+                "mvmts": [
+                    "Allegretto moderato",
+                    "Larghetto",
+                    "Allegro giusto e sostenuto"
+                ],
+                "category": "opera grande"
+            }
+        ]
+    },
+    {
+        "opus": 64,
+        "year": 1804,
+        "dedication": "Luciano Bonaparte",
+        "quartets": [
+            {
+                "number": 1,
+                "gerard": 248,
+                "key": "F",
+                "major": true,
+                "mvmts": [
+                    "Allegro molto",
+                    "Adagio non tanto",
+                    "Allegro vivo ma non presto"
+                ],
+                "category": "opera grande"
+            },
+            {
+                "number": 2,
+                "gerard": 249,
+                "key": "D",
+                "major": true,
+                "mvmts": [
+                    "Allegro con brio"
+                ],
+                "category": "opera grande"
+            }
+        ]
+    }
+]
