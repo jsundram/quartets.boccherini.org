@@ -28,31 +28,36 @@ chmod +x sync-gist.sh
 git diff                    # See all changes
 git diff index.html         # See specific file changes
 
-# 3. Update the gist (syncs automatically)
-./sync-gist.sh index.html opera.json README.md
+# 3. Update the gist with a commit message
+./sync-gist.sh "Fix title alignment" index.html
 
-# Or just update one file
+# Or update multiple files
+./sync-gist.sh "Update visualization and docs" index.html README.md
+
+# Or use default message "Update gist"
 ./sync-gist.sh index.html
 ```
 
-### Why the sync script?
+### How it works
 
-`gh gist edit --add` updates the remote gist but doesn't update your local git repo. The script:
-1. Uploads your changes with `gh gist edit --add`
-2. Pulls them back with `git pull` to keep git in sync
-3. This way `git diff` and `git status` stay accurate
+The script uses standard git commands to update the gist:
+1. `git add` - stages your files
+2. `git commit -m "message"` - commits with your message
+3. `git push` - pushes to the gist
+
+Your commit messages appear in the gist history instead of just "revised".
 
 ### Manual method (if you prefer)
 
 ```bash
-# Update the gist
-gh gist edit $(cat .gist_id) --add index.html
+# Standard git workflow
+git add index.html
+git commit -m "Your commit message"
+git push
 
-# Pull changes back to keep git in sync
-git pull
-
-# Check for unsynced changes
+# Check status
 git status
+git log --oneline
 ```
 
 ## Viewing Online
