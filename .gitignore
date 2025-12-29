@@ -1,0 +1,6 @@
+# macOS system files
+.DS_Store
+
+# Local workflow files
+.gist_id
+sync-gist.sh
