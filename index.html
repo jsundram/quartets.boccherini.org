@@ -73,12 +73,34 @@
             padding: 0;
         }
 
+        .header-group {
+            margin-left: 95px;          /* Shift right by opus-label width */
+        }
+
         h1 {
+            max-width: 700px;           /* Constrain width to match title */
+            margin: 0 auto 5px auto;    /* Center horizontally, small gap below */
             text-align: center;
             color: #333;
-            margin-bottom: 30px;
-            margin-left: 95px;          /* Shift right by opus-label width */
             font-size: 2em;
+        }
+
+        .subtitle {
+            max-width: 700px;           /* Same width as title for alignment */
+            margin: 0 auto 25px auto;   /* Center horizontally, larger gap below */
+            text-align: right;          /* Right-align text within container */
+            color: #666;
+            font-size: 0.9em;
+            font-style: italic;
+        }
+
+        .subtitle a {
+            color: #2196F3;
+            text-decoration: none;
+        }
+
+        .subtitle a:hover {
+            text-decoration: underline;
         }
 
         .container {
@@ -406,7 +428,10 @@
 </head>
 <body>
     <div class="container">
-        <h1>Luigi Boccherini – String Quartets (1743–1805)</h1>
+        <div class="header-group">
+            <h1>Luigi Boccherini – String Quartets (1743–1805)</h1>
+            <p class="subtitle">see also <a href="https://quartetroulette.com/Boccherini/" target="_blank">Quartet Roulette</a></p>
+        </div>
         <div id="visualization"></div>
     </div>
 
