@@ -101,7 +101,7 @@
             /* Container sizing - MATCHES CARD HEIGHT */
             width: 95px;
             height: var(--card-height);
-            padding: 2px 12px 0 10px;       /* 2px top padding to align with card border */
+            padding: 2px 6px 0 10px;        /* 2px top, 6px right, 0 bottom, 10px left */
 
             /* Layout - vertical alignment structure */
             display: flex;
@@ -127,9 +127,8 @@
         /* TOP SECTION: Year and Age - ALIGNS WITH MODE BAR */
         .opus-label .year-age {
             display: flex;
-            justify-content: flex-end;
+            justify-content: space-between;  /* Year left, age right - periodic table aesthetic */
             align-items: center;
-            gap: 6px;
             height: var(--top-section-height);
             flex-shrink: 0;
             line-height: 1;                 /* Match mode-bar line-height */
