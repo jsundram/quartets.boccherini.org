@@ -494,15 +494,14 @@
                             const movements = quartet.mvmts.map((m, i) => `${i + 1}. ${m}`).join('<br>');
                             const keyFull = `${quartet.key} ${quartet.major ? 'major' : 'minor'}`;
 
-                            let tooltipText = `<strong>Op. ${opus.opus} No. ${quartet.number || '—'}</strong><br>`;
-                            tooltipText += `G. ${quartet.gerard}<br>`;
-                            tooltipText += `<strong>${keyFull}</strong><br>`;
+                            let tooltipText = `<strong>Opus ${opus.opus} #${quartet.number || '—'} \
+                                in ${keyFull}, G. ${quartet.gerard}</strong><br>`;
+                            if (quartet.nickname) {
+                                tooltipText += `<em>"${quartet.nickname}"</em><br>`;
+                            }
                             tooltipText += `${quartet.category}<br><br>`;
                             tooltipText += `<strong>Movements:</strong><br>${movements}`;
 
-                            if (quartet.nickname) {
-                                tooltipText += `<br><br><em>"${quartet.nickname}"</em>`;
-                            }
 
                             tooltip.html(tooltipText)
                                 .style('left', (event.pageX + 10) + 'px')
