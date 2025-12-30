@@ -12,12 +12,58 @@
             /* === ALIGNMENT SYSTEM === */
             --card-height: 140px;
             --top-section-height: 20px;
-            --bottom-section-height: auto;
+            --nickname-height: 15px;        /* Fixed height for nickname section */
+            --bottom-section-height: 20px;  /* Fixed height for badge/movement count */
+
+            /* Calculated middle section height - same for both sides */
+            --middle-section-height: calc(
+                var(--card-height)
+                - var(--top-section-height)
+                - var(--nickname-height)
+                - var(--bottom-section-height)
+            );
+            /* = 140px - 20px - 15px - 20px = 85px */
 
             /* Font sizes for aligned elements */
             --top-font-size: 0.8em;
             --middle-font-size: 2.8em;
             --bottom-font-size: 0.7em;
+
+            /* === DEBUG MODE === */
+            --debug-mode: 0; /* Set to 1 to show bounding boxes, 0 to hide */
+        }
+
+        /* Debug bounding boxes - controlled by --debug-mode */
+        .opus-label .year-age {
+            outline: calc(var(--debug-mode) * 1px) solid rgba(255, 0, 0, 0.3);
+        }
+
+        .opus-label .opus-number {
+            outline: calc(var(--debug-mode) * 1px) solid rgba(0, 255, 0, 0.3);
+        }
+
+        .opus-label .bottom-section {
+            outline: calc(var(--debug-mode) * 1px) solid rgba(0, 0, 255, 0.3);
+        }
+
+        .mode-bar {
+            outline: calc(var(--debug-mode) * 1px) solid rgba(255, 0, 0, 0.3);
+        }
+
+        .key-section {
+            outline: calc(var(--debug-mode) * 1px) solid rgba(0, 255, 0, 0.3);
+        }
+
+        .movements-count {
+            outline: calc(var(--debug-mode) * 1px) solid rgba(0, 0, 255, 0.3);
+        }
+
+        .nickname {
+            outline: calc(var(--debug-mode) * 1px) solid rgba(255, 165, 0, 0.3);
+        }
+
+        .opus-label .dedication {
+            outline: calc(var(--debug-mode) * 1px) solid rgba(128, 0, 128, 0.3);
         }
 
         body {
@@ -55,12 +101,12 @@
             /* Container sizing - MATCHES CARD HEIGHT */
             width: 95px;
             height: var(--card-height);
-            padding: 0 12px 0 10px;
+            padding: 2px 12px 0 10px;       /* 2px top padding to align with card border */
 
             /* Layout - vertical alignment structure */
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            justify-content: flex-start;    /* Stack from top, no auto-spacing */
             text-align: right;
             position: relative;
         }
@@ -86,18 +132,21 @@
             gap: 6px;
             height: var(--top-section-height);
             flex-shrink: 0;
+            line-height: 1;                 /* Match mode-bar line-height */
         }
 
         .opus-label .year {
             font-size: var(--top-font-size);
-            font-weight: 600;
-            color: #555;
+            font-weight: 700;               /* Slightly bolder for clarity */
+            color: #444;                    /* Slightly darker */
+            line-height: 1;                 /* Exact alignment */
         }
 
         .opus-label .age {
-            font-size: calc(var(--top-font-size) * 0.8);
-            font-weight: normal;
-            color: #888;
+            font-size: calc(var(--top-font-size) * 0.85);  /* Slightly larger */
+            font-weight: 400;               /* Regular weight */
+            color: #777;                    /* Slightly darker */
+            line-height: 1;                 /* Exact alignment */
         }
 
         /* MIDDLE SECTION: Opus number - ALIGNS WITH KEY/MODE */
@@ -107,7 +156,9 @@
             color: #222;
             line-height: 1;
             letter-spacing: -0.03em;
-            flex-grow: 1;
+            height: var(--middle-section-height);  /* Fixed height to match key-section */
+            margin-bottom: var(--nickname-height); /* Spacer to match nickname section */
+            flex-shrink: 0;
             display: flex;
             align-items: center;
             justify-content: flex-end;
@@ -118,25 +169,37 @@
             display: flex;
             flex-direction: column;
             align-items: flex-end;          /* Right align */
+            justify-content: center;        /* Vertically center - matches movements-count */
             flex-shrink: 0;
+            height: var(--bottom-section-height);  /* Fixed height to match movements-count */
+            position: relative;             /* For dedication positioning */
         }
 
-        /* Dedication - above badge */
+        /* Dedication - positioned ABOVE bottom section, doesn't affect height */
         .opus-label .dedication {
             font-size: 0.6em;               /* Size: smallest */
             font-style: italic;             /* Style: italic */
             color: #999;                    /* Color: lighter gray */
+            position: absolute;             /* Remove from flow */
+            bottom: 100%;                   /* Position above bottom-section */
+            right: 0;                       /* Align right */
             margin-bottom: 3px;             /* Space below */
+            white-space: nowrap;            /* Try to keep on one line */
+            max-width: 95px;                /* Match opus-label width */
+            text-align: right;              /* Right align text */
+            white-space: normal;            /* Allow wrapping if needed */
         }
 
         /* Category badge - aligns with movement count */
         .opus-label .category-badge {
             font-size: var(--bottom-font-size);  /* Aligns with movement count */
-            padding: 4px 7px;               /* Internal padding */
-            border-radius: 3px;             /* Rounded corners */
-            display: inline-block;          /* Display mode */
-            box-shadow: 0 1px 3px rgba(0,0,0,0.15);  /* Subtle depth */
-            margin-bottom: 4px;             /* Match movement count position */
+            width: 100%;                    /* Full width like movement count */
+            height: 100%;                   /* Full height like movement count */
+            display: flex;                  /* Use flexbox for centering */
+            align-items: center;            /* Vertically center text */
+            justify-content: center;        /* Horizontally center text */
+            font-weight: 500;               /* Match movement count weight */
+            line-height: 1;                 /* Match movement count */
         }
 
         /* === END OPUS LABEL SECTION === */
@@ -190,7 +253,7 @@
         }
 
         .card-content {
-            padding: 6px 8px 4px 8px;
+            padding: 0;                     /* Remove padding - handle spacing in children */
             flex: 1;
             display: flex;
             flex-direction: column;
@@ -201,36 +264,42 @@
         /* Text colors for major keys (on transparent background) */
         .mode-bar.major .quartet-number {
             font-size: var(--top-font-size);   /* Aligns with year */
-            color: #999;
-            font-weight: bold;
+            color: #888;                       /* Lighter gray */
+            font-weight: 600;                  /* Semi-bold */
+            line-height: 1;                    /* Exact alignment */
         }
 
         .mode-bar.major .gerard-number {
             font-size: var(--top-font-size);   /* Aligns with year */
-            font-weight: normal;
-            color: #333;
+            font-weight: 700;                  /* Bold for emphasis */
+            color: #444;                       /* Darker for readability */
+            line-height: 1;                    /* Exact alignment */
         }
 
         /* Text colors for minor keys (on colored background) */
         .mode-bar.minor .quartet-number {
             font-size: var(--top-font-size);   /* Aligns with year */
-            color: rgba(255, 255, 255, 0.9);
-            font-weight: bold;
+            color: rgba(255, 255, 255, 0.85);  /* Slightly less opaque */
+            font-weight: 600;                  /* Semi-bold */
+            line-height: 1;                    /* Exact alignment */
         }
 
         .mode-bar.minor .gerard-number {
             font-size: var(--top-font-size);   /* Aligns with year */
-            font-weight: normal;
+            font-weight: 700;                  /* Bold for emphasis */
             color: white;
+            line-height: 1;                    /* Exact alignment */
         }
 
         /* Key section - aligns with opus number */
         .key-section {
-            flex-grow: 1;                   /* Take available middle space */
+            height: var(--middle-section-height);  /* Fixed height to match opus-number */
+            flex-shrink: 0;
             display: flex;
             flex-direction: column;
             justify-content: center;        /* Vertically center */
             align-items: center;            /* Horizontally center */
+            padding: 0 8px;                 /* Horizontal padding only */
         }
 
         .key-signature {
@@ -239,14 +308,16 @@
             font-weight: bold;
             color: #222;
             line-height: 1;
-            margin-bottom: 2px;
+            margin: 0;                     /* Remove margin for proper centering */
         }
 
         .key-mode {
             text-align: center;
             font-size: 0.75em;
             color: #666;
-            margin-bottom: 0;
+            margin: 0;                     /* Remove margin for proper centering */
+            line-height: 1;
+            margin-top: 2px;               /* Small space above, not below key-signature */
         }
 
         .category-badge.grande {
@@ -262,14 +333,16 @@
         .movements-count {
             text-align: center;
             font-size: var(--bottom-font-size);  /* Aligns with category badge */
-            margin-top: auto;
-            margin-left: -8px;             /* Extend to left edge */
-            margin-right: -8px;            /* Extend to right edge */
-            margin-bottom: -4px;           /* Extend to bottom edge */
-            padding: 4px 3px;
+            height: var(--bottom-section-height); /* Fixed height to match bottom-section */
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;           /* Vertically center text */
+            justify-content: center;       /* Horizontally center text */
+            margin: 0;                     /* No margins - fills allocated space */
+            padding: 0;                    /* No padding - height is explicit */
             border-radius: 0;              /* Square edges like top bar */
             font-weight: 500;
-            flex-shrink: 0;
+            line-height: 1;                /* Match category badge */
         }
 
         /* Diverging color scheme: Purple (short) -> Gray (standard) -> Green (long) */
@@ -303,9 +376,12 @@
             font-size: 0.65em;
             font-style: italic;
             color: #d32f2f;
-            margin-bottom: 3px;
-            min-height: 12px;
+            margin-bottom: 0;                /* No margin for alignment */
+            height: var(--nickname-height);  /* Fixed height for alignment */
             flex-shrink: 0;
+            display: flex;
+            align-items: center;             /* Vertically center text */
+            justify-content: center;         /* Horizontally center text */
         }
 
         .tooltip {
