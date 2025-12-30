@@ -2,7 +2,9 @@
 
 An interactive visualization of Luigi Boccherini's complete string quartet output (1761-1804), displayed as a periodic table-inspired grid.
 
-View it [here](https://gist.githack.com/jsundram/a187ff2619b90eaf68d449462b1f9795/raw/index.html) *(via gisthack, see below for details)*.
+View it *(via gisthack, see below for details)*:
+* [development](  https://gist.githack.com/jsundram/a187ff2619b90eaf68d449462b1f9795/raw/index.html)
+* [production](https://gistcdn.githack.com/jsundram/a187ff2619b90eaf68d449462b1f9795/raw/index.html?min=1)
 
 ## Updating the Gist
 
@@ -83,9 +85,7 @@ git log --oneline
 
 ## Viewing Online
 
-### Using raw.githack.com (Recommended)
-
-Get the raw file URL and use raw.githack.com to serve it:
+Get the raw file URL and use githack.com to serve it:
 
 1. Get the raw URL from your gist:
    ```
@@ -102,7 +102,7 @@ Get the raw file URL and use raw.githack.com to serve it:
 https://gist.githack.com/jsundram/a187ff2619b90eaf68d449462b1f9795/raw/index.html
 ```
 
-### Why raw.githack.com?
+### Why githack.com?
 
 - Properly serves files with correct MIME types
 - Loads external scripts (like D3.js) without CORS issues
