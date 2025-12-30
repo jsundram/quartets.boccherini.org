@@ -2,6 +2,8 @@
 
 An interactive visualization of Luigi Boccherini's complete string quartet output (1761-1804), displayed as a periodic table-inspired grid.
 
+View it [here](https://gist.githack.com/jsundram/a187ff2619b90eaf68d449462b1f9795/raw/index.html) *(via gisthack, see below for details)*.
+
 ## Updating the Gist
 
 ### Quick Start (First Time Setup)
