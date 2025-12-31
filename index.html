@@ -120,6 +120,11 @@
             margin-bottom: 15px;
         }
 
+        /* Combined rows - no special CSS needed, just flex layout */
+        .opus-row.combined-pair {
+            /* Flexbox will lay out multiple label+card groups horizontally */
+        }
+
         /* === OPUS LABEL SECTION (easy to tweak) === */
 
         .opus-label {
@@ -231,7 +236,15 @@
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
-            flex: 1;
+            margin-left: 10px; /* Gap between label and cards */
+        }
+
+        /* Spacer between opus groups in combined rows */
+        .opus-spacer {
+            width: 177px;         /* Calculated for pixel-perfect vertical alignment */
+            height: var(--card-height);
+            flex-shrink: 0;
+            margin: 0 10px; /* Gap on both sides */
         }
 
         .quartet-card {
@@ -463,6 +476,60 @@
             font-style: italic;
             margin-left: 5px;
         }
+
+        /* === MOBILE RESPONSIVE === */
+        @media (max-width: 768px) {
+            body {
+                margin: 10px;
+            }
+
+            .header-group {
+                margin-left: 0;
+                text-align: center;
+            }
+
+            h1 {
+                font-size: 1.5em;
+                margin-bottom: 10px;
+            }
+
+            .subtitle {
+                font-size: 0.8em;
+                text-align: center;
+                margin-bottom: 15px;
+            }
+
+            .container {
+                max-width: 100%;
+                align-items: flex-start;
+            }
+
+            .opus-row {
+                flex-wrap: wrap;
+                margin-bottom: 10px;
+                width: 100%;
+            }
+
+            /* On mobile, opus label takes full width, then cards wrap below */
+            .opus-label {
+                width: 100%;
+                text-align: left;
+                height: auto;
+                min-height: var(--card-height);
+                margin-bottom: 5px;
+            }
+
+            .quartets-container {
+                margin-left: 0;
+                width: 100%;
+                justify-content: center;
+            }
+
+            /* Hide spacers on mobile - not needed when rows wrap */
+            .opus-spacer {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body>
@@ -485,20 +552,15 @@
                 .attr('class', 'tooltip')
                 .style('opacity', 0);
 
-            // Create rows for each opus group
-            data.forEach(opus => {
-                const row = container.append('div')
-                    .attr('class', 'opus-row');
+            // === HELPER FUNCTIONS ===
 
-                // ========================================
-                // OPUS LABEL - Aligned with card structure
-                // ========================================
-
+            // Render opus label (left side of row)
+            function renderOpusLabel(parent, opus) {
                 // Determine category for background gradient
                 const categoryClass = opus.quartets.length > 0 &&
                     opus.quartets[0].category.includes('grande') ? 'grande-bg' : 'piccola-bg';
 
-                const opusLabel = row.append('div')
+                const opusLabel = parent.append('div')
                     .attr('class', `opus-label ${categoryClass}`);
 
                 // === TOP: Year + Age (aligns with mode bar) ===
@@ -565,142 +627,229 @@
                         .attr('class', `category-badge ${catClass}`)
                         .text(categoryText);
                 }
-                // ========================================
+
+                return opusLabel;
+            }
+
+            // Render quartet card
+            function renderQuartetCard(parent, opus, quartet, tooltip) {
+                let activeTooltip = false;
+
+                const showTooltip = function(event) {
+                    d3.select(this).style('border-color', '#333');
+
+                    const movements = quartet.mvmts.map((m, i) => `${i + 1}. ${m}`).join('<br>');
+                    const keyFull = `${quartet.key} ${quartet.major ? 'major' : 'minor'}`;
+
+                    let tooltipText = `<strong>Opus ${opus.opus} #${quartet.number || '—'} \
+                        in ${keyFull}, G. ${quartet.gerard}</strong><br>`;
+                    if (quartet.nickname) {
+                        tooltipText += `<em>"${quartet.nickname}"</em><br>`;
+                    }
+                    tooltipText += `${quartet.category}<br><br>`;
+                    tooltipText += `<strong>Movements:</strong><br>${movements}`;
+
+                    const x = event.pageX || (event.touches && event.touches[0].pageX) || 0;
+                    const y = event.pageY || (event.touches && event.touches[0].pageY) || 0;
+
+                    tooltip.html(tooltipText)
+                        .style('left', (x + 10) + 'px')
+                        .style('top', (y - 10) + 'px')
+                        .style('opacity', 1);
+
+                    activeTooltip = true;
+                };
+
+                const hideTooltip = function() {
+                    d3.select(this).style('border-color', '#ddd');
+                    tooltip.style('opacity', 0);
+                    activeTooltip = false;
+                };
+
+                const card = parent.append('div')
+                    .attr('class', 'quartet-card')
+                    .on('mouseover', showTooltip)
+                    .on('mouseout', hideTooltip)
+                    .on('click', function(event) {
+                        // Toggle tooltip on mobile tap
+                        if ('ontouchstart' in window) {
+                            event.preventDefault();
+                            if (activeTooltip) {
+                                hideTooltip.call(this);
+                            } else {
+                                showTooltip.call(this, event);
+                            }
+                        }
+                    });
+
+                // Add colored top bar for major/minor with numbers
+                const modeBar = card.append('div')
+                    .attr('class', `mode-bar ${quartet.major ? 'major' : 'minor'}`);
+
+                // Gerard catalog number in the mode bar (left)
+                modeBar.append('div')
+                    .attr('class', 'gerard-number')
+                    .text(quartet.gerard);
+
+                // Quartet number (within opus) in the mode bar (right)
+                modeBar.append('div')
+                    .attr('class', 'quartet-number')
+                    .text(quartet.number ? `#${quartet.number}` : '');
+
+                // Create content container
+                const content = card.append('div')
+                    .attr('class', 'card-content');
+
+                // Nickname if exists - appears above key section
+                if (quartet.nickname) {
+                    content.append('div')
+                        .attr('class', 'nickname')
+                        .text(`"${quartet.nickname}"`);
+                }
+
+                // Key section (aligns with opus number in row header)
+                const keySection = content.append('div')
+                    .attr('class', 'key-section');
+
+                // Key signature (replace -flat with ♭ symbol)
+                const keyDisplay = quartet.key.replace('-flat', '♭');
+                keySection.append('div')
+                    .attr('class', 'key-signature')
+                    .text(keyDisplay);
+
+                // Major/minor mode
+                keySection.append('div')
+                    .attr('class', 'key-mode')
+                    .text(quartet.major ? 'major' : 'minor');
+
+                // Links container (IMSLP and QR) - appended to card, positioned above movement bar
+                const linksContainer = card.append('div')
+                    .attr('class', 'card-links');
+
+                // IMSLP link (left-aligned)
+                const imslpLink = quartet.imslp || opus.imslp;
+                if (imslpLink) {
+                    linksContainer.append('a')
+                        .attr('class', 'imslp-link')
+                        .attr('href', imslpLink)
+                        .attr('target', '_blank')
+                        .attr('rel', 'noopener noreferrer')
+                        .text('imslp')
+                        .on('click', function(event) {
+                            event.stopPropagation(); // Prevent card click
+                        });
+                } else {
+                    // Empty span to maintain spacing when no IMSLP link
+                    linksContainer.append('span');
+                }
+
+                // QR link (right-aligned) - always present
+                linksContainer.append('a')
+                    .attr('class', 'qr-link')
+                    .attr('href', `https://quartetroulette.com/boccherini-g${quartet.gerard}/`)
+                    .attr('target', '_blank')
+                    .attr('rel', 'noopener noreferrer')
+                    .text('QR')
+                    .on('click', function(event) {
+                        event.stopPropagation(); // Prevent card click
+                    });
+
+                // Movement count (appended to card, not content, so it's at the bottom)
+                const mvmtCount = quartet.mvmts.length;
+                card.append('div')
+                    .attr('class', `movements-count mvmt-${mvmtCount}`)
+                    .text(`${mvmtCount} movement${mvmtCount === 1 ? '' : 's'}`);
+
+                return card;
+            }
+
+            // === AUTO-FLOW CONFIGURATION ===
+            const excludeFromCombining = new Set([64]); // Historical significance (Boccherini's final opus)
+            const maxQuartetsPerRow = 4; // Limit combined rows to max 4 quartets (e.g., 1+2 or 2+2)
+            const maxQuartetsToConsiderForCombining = 2; // Only combine opuses with ≤2 quartets
+
+            let currentRowOpuses = [];
+            let currentRowQuartetCount = 0;
+
+            // === RENDERING FUNCTIONS ===
+
+            // Render a single opus on its own row
+            function renderSingleRow(container, opus) {
+                const row = container.append('div')
+                    .attr('class', 'opus-row');
+
+                // Render opus label
+                renderOpusLabel(row, opus);
 
                 // Quartets container
                 const quartetContainer = row.append('div')
                     .attr('class', 'quartets-container');
 
-                // Create cards for each quartet
+                // Render quartet cards
                 opus.quartets.forEach(quartet => {
-                    let activeTooltip = false;
-
-                    const showTooltip = function(event) {
-                        d3.select(this).style('border-color', '#333');
-
-                        const movements = quartet.mvmts.map((m, i) => `${i + 1}. ${m}`).join('<br>');
-                        const keyFull = `${quartet.key} ${quartet.major ? 'major' : 'minor'}`;
-
-                        let tooltipText = `<strong>Opus ${opus.opus} #${quartet.number || '—'} \
-                            in ${keyFull}, G. ${quartet.gerard}</strong><br>`;
-                        if (quartet.nickname) {
-                            tooltipText += `<em>"${quartet.nickname}"</em><br>`;
-                        }
-                        tooltipText += `${quartet.category}<br><br>`;
-                        tooltipText += `<strong>Movements:</strong><br>${movements}`;
-
-                        const x = event.pageX || (event.touches && event.touches[0].pageX) || 0;
-                        const y = event.pageY || (event.touches && event.touches[0].pageY) || 0;
-
-                        tooltip.html(tooltipText)
-                            .style('left', (x + 10) + 'px')
-                            .style('top', (y - 10) + 'px')
-                            .style('opacity', 1);
-
-                        activeTooltip = true;
-                    };
-
-                    const hideTooltip = function() {
-                        d3.select(this).style('border-color', '#ddd');
-                        tooltip.style('opacity', 0);
-                        activeTooltip = false;
-                    };
-
-                    const card = quartetContainer.append('div')
-                        .attr('class', 'quartet-card')
-                        .on('mouseover', showTooltip)
-                        .on('mouseout', hideTooltip)
-                        .on('click', function(event) {
-                            // Toggle tooltip on mobile tap
-                            if ('ontouchstart' in window) {
-                                event.preventDefault();
-                                if (activeTooltip) {
-                                    hideTooltip.call(this);
-                                } else {
-                                    showTooltip.call(this, event);
-                                }
-                            }
-                        });
-
-                    // Add colored top bar for major/minor with numbers
-                    const modeBar = card.append('div')
-                        .attr('class', `mode-bar ${quartet.major ? 'major' : 'minor'}`);
-
-                    // Gerard catalog number in the mode bar (left)
-                    modeBar.append('div')
-                        .attr('class', 'gerard-number')
-                        .text(quartet.gerard);
-
-                    // Quartet number (within opus) in the mode bar (right)
-                    modeBar.append('div')
-                        .attr('class', 'quartet-number')
-                        .text(quartet.number ? `#${quartet.number}` : '');
-
-                    // Create content container
-                    const content = card.append('div')
-                        .attr('class', 'card-content');
-
-                    // Nickname if exists - appears above key section
-                    if (quartet.nickname) {
-                        content.append('div')
-                            .attr('class', 'nickname')
-                            .text(`"${quartet.nickname}"`);
-                    }
-
-                    // Key section (aligns with opus number in row header)
-                    const keySection = content.append('div')
-                        .attr('class', 'key-section');
-
-                    // Key signature (replace -flat with ♭ symbol)
-                    const keyDisplay = quartet.key.replace('-flat', '♭');
-                    keySection.append('div')
-                        .attr('class', 'key-signature')
-                        .text(keyDisplay);
-
-                    // Major/minor mode
-                    keySection.append('div')
-                        .attr('class', 'key-mode')
-                        .text(quartet.major ? 'major' : 'minor');
-
-                    // Links container (IMSLP and QR) - appended to card, positioned above movement bar
-                    const linksContainer = card.append('div')
-                        .attr('class', 'card-links');
-
-                    // IMSLP link (left-aligned)
-                    const imslpLink = quartet.imslp || opus.imslp;
-                    if (imslpLink) {
-                        linksContainer.append('a')
-                            .attr('class', 'imslp-link')
-                            .attr('href', imslpLink)
-                            .attr('target', '_blank')
-                            .attr('rel', 'noopener noreferrer')
-                            .text('imslp')
-                            .on('click', function(event) {
-                                event.stopPropagation(); // Prevent card click
-                            });
-                    } else {
-                        // Empty span to maintain spacing when no IMSLP link
-                        linksContainer.append('span');
-                    }
-
-                    // QR link (right-aligned) - always present
-                    linksContainer.append('a')
-                        .attr('class', 'qr-link')
-                        .attr('href', `https://quartetroulette.com/boccherini-g${quartet.gerard}/`)
-                        .attr('target', '_blank')
-                        .attr('rel', 'noopener noreferrer')
-                        .text('QR')
-                        .on('click', function(event) {
-                            event.stopPropagation(); // Prevent card click
-                        });
-
-                    // Movement count (appended to card, not content, so it's at the bottom)
-                    const mvmtCount = quartet.mvmts.length;
-                    card.append('div')
-                        .attr('class', `movements-count mvmt-${mvmtCount}`)
-                        .text(`${mvmtCount} movement${mvmtCount === 1 ? '' : 's'}`);
+                    renderQuartetCard(quartetContainer, opus, quartet, tooltip);
                 });
+            }
+
+            // Render multiple opuses on a combined row with spacers
+            function renderCombinedRow(container, ...opuses) {
+                const row = container.append('div')
+                    .attr('class', 'opus-row combined-pair');
+
+                opuses.forEach((opus, index) => {
+                    // Render opus label
+                    renderOpusLabel(row, opus);
+
+                    // Quartets container for this opus
+                    const quartetContainer = row.append('div')
+                        .attr('class', 'quartets-container');
+
+                    // Render quartet cards
+                    opus.quartets.forEach(quartet => {
+                        renderQuartetCard(quartetContainer, opus, quartet, tooltip);
+                    });
+
+                    // Add spacer between opus groups (but not after the last one)
+                    if (index < opuses.length - 1) {
+                        row.append('div')
+                            .attr('class', 'opus-spacer');
+                    }
+                });
+            }
+
+            // === MAIN RENDERING LOOP WITH AUTO-FLOW ===
+
+            data.forEach((opus, index) => {
+                const quartetCount = opus.quartets.length;
+
+                if (excludeFromCombining.has(opus.opus) || quartetCount > maxQuartetsToConsiderForCombining) {
+                    // Render accumulated row if any, then render this opus alone
+                    if (currentRowOpuses.length > 0) {
+                        renderCombinedRow(container, ...currentRowOpuses);
+                        currentRowOpuses = [];
+                        currentRowQuartetCount = 0;
+                    }
+                    renderSingleRow(container, opus);
+                } else {
+                    // Try to add to current row
+                    if (currentRowQuartetCount + quartetCount <= maxQuartetsPerRow) {
+                        currentRowOpuses.push(opus);
+                        currentRowQuartetCount += quartetCount;
+                    } else {
+                        // Current row full, render it and start new row
+                        if (currentRowOpuses.length > 0) {
+                            renderCombinedRow(container, ...currentRowOpuses);
+                        }
+                        currentRowOpuses = [opus];
+                        currentRowQuartetCount = quartetCount;
+                    }
+                }
             });
+
+            // Render any remaining accumulated row
+            if (currentRowOpuses.length > 0) {
+                renderCombinedRow(container, ...currentRowOpuses);
+            }
         }).catch(error => {
             console.error('Error loading opera.json:', error);
             d3.select('#visualization')
