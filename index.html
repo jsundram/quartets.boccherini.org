@@ -196,19 +196,18 @@
             position: relative;             /* For dedication positioning */
         }
 
-        /* Dedication - positioned ABOVE bottom section, doesn't affect height */
+        /* Dedication - absolutely positioned above opus number to preserve alignment */
         .opus-label .dedication {
+            position: absolute;             /* Remove from layout flow */
+            top: 22px;                      /* Position below year/age */
+            left: 0;
+            right: 0;
             font-size: 0.6em;               /* Size: smallest */
             font-style: italic;             /* Style: italic */
             color: #999;                    /* Color: lighter gray */
-            position: absolute;             /* Remove from flow */
-            bottom: 100%;                   /* Position above bottom-section */
-            right: 0;                       /* Align right */
-            margin-bottom: 3px;             /* Space below */
-            white-space: nowrap;            /* Try to keep on one line */
-            max-width: 95px;                /* Match opus-label width */
-            text-align: right;              /* Right align text */
-            white-space: normal;            /* Allow wrapping if needed */
+            text-align: center;             /* Center align */
+            line-height: 1.2;               /* Tighter line height for wrapping */
+            z-index: 1;                     /* Above background */
         }
 
         /* Category badge - aligns with movement count */
@@ -274,12 +273,12 @@
         }
 
         .card-content {
-            padding: 0;                     /* Remove padding - handle spacing in children */
+            padding: 0;
             flex: 1;
             display: flex;
             flex-direction: column;
             min-height: 0;
-            overflow: hidden;
+            /* No position: relative - nickname positions relative to .quartet-card instead */
         }
 
         /* Text colors for major keys (on transparent background) */
@@ -315,6 +314,7 @@
         /* Key section - aligns with opus number */
         .key-section {
             height: var(--middle-section-height);  /* Fixed height to match opus-number */
+            margin-bottom: var(--nickname-height); /* Space for nickname below (matches opus-number margin-bottom) */
             flex-shrink: 0;
             display: flex;
             flex-direction: column;
@@ -351,6 +351,29 @@
             color: #333;
         }
 
+        .imslp-link {
+            font-size: 0.65em;
+            color: #2196F3;
+            text-decoration: none;
+            padding: 2px 4px;
+            align-self: flex-start;        /* Left align */
+            font-weight: 400;              /* Lighter weight */
+        }
+
+        .imslp-link:hover {
+            text-decoration: underline;
+            color: #1976D2;
+        }
+
+        /* IMSLP link in opus label - positioned absolutely to not affect layout */
+        .opus-label .imslp-link {
+            position: absolute;
+            bottom: 100%;                  /* Position above bottom-section */
+            left: 0;                       /* Left align to match quartet cells */
+            margin-bottom: 1px;            /* Minimal space below link */
+            padding: 2px 4px;              /* Match quartet cell link padding */
+        }
+
         .movements-count {
             text-align: center;
             font-size: var(--bottom-font-size);  /* Aligns with category badge */
@@ -359,7 +382,7 @@
             display: flex;
             align-items: center;           /* Vertically center text */
             justify-content: center;       /* Horizontally center text */
-            margin: 0;                     /* No margins - fills allocated space */
+            margin: 0;
             padding: 0;                    /* No padding - height is explicit */
             border-radius: 0;              /* Square edges like top bar */
             font-weight: 500;
@@ -393,16 +416,19 @@
         }
 
         .nickname {
-            text-align: center;
-            font-size: 0.65em;
-            font-style: italic;
-            color: #d32f2f;
-            margin-bottom: 0;                /* No margin for alignment */
-            height: var(--nickname-height);  /* Fixed height for alignment */
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;             /* Vertically center text */
-            justify-content: center;         /* Horizontally center text */
+            position: absolute;              /* Remove from layout flow to preserve alignment */
+            top: 22px;                       /* Match dedication positioning */
+            left: 0;
+            right: 0;
+            max-height: 13px;                /* Constrain to allocated space (22px to 35px) */
+            overflow: hidden;                /* Clip overflow to prevent overlapping key section */
+            font-size: 0.55em;               /* Slightly smaller for tighter fit in limited space */
+            font-style: italic;              /* Same as dedication */
+            color: #999;                     /* Same as dedication */
+            text-align: center;              /* Center align */
+            line-height: 1;                  /* Tight line-height to maximize space */
+            z-index: 2;                      /* Above mode bar */
+            pointer-events: none;            /* Don't block clicks on mode bar */
         }
 
         .tooltip {
@@ -477,23 +503,46 @@
                     .attr('class', 'age')
                     .text(`(${age})`);
 
+                // === Dedication (if present) - appears above opus number ===
+                if (opus.dedication) {
+                    // Update dedications for display
+                    let dedicationDisplay = opus.dedication;
+                    if (opus.dedication === 'Monsieur le Baron du Beine de Malchamps') {
+                        dedicationDisplay = 'Baron de Malchamps';
+                    } else if (opus.dedication === 'Alli Signori Diletanti di Madrid') {
+                        dedicationDisplay = 'Diletanti di Madrid';
+                    } else if (opus.dedication === 'Infante Luis of Spain') {
+                        dedicationDisplay = 'Infante Luigi di Spagna';
+                    }
+
+                    opusLabel.append('div')
+                        .attr('class', 'dedication')
+                        .text(dedicationDisplay);
+                }
+
                 // === MIDDLE: Opus number (NO "Op." prefix) ===
                 opusLabel.append('div')
                     .attr('class', 'opus-number')
                     .text(opus.opus);
 
-                // === BOTTOM: Bottom section (dedication + category badge) ===
+                // === BOTTOM: Bottom section (IMSLP link + category badge) ===
                 const bottomSection = opusLabel.append('div')
                     .attr('class', 'bottom-section');
 
-                // Dedication first (if present)
-                if (opus.dedication) {
-                    bottomSection.append('div')
-                        .attr('class', 'dedication')
-                        .text(opus.dedication);
+                // IMSLP link (if present at opus level)
+                if (opus.imslp) {
+                    bottomSection.append('a')
+                        .attr('class', 'imslp-link')
+                        .attr('href', opus.imslp)
+                        .attr('target', '_blank')
+                        .attr('rel', 'noopener noreferrer')
+                        .text('imslp')
+                        .on('click', function(event) {
+                            event.stopPropagation();
+                        });
                 }
 
-                // Category badge below dedication
+                // Category badge below dedication/link
                 if (opus.quartets.length > 0) {
                     const category = opus.quartets[0].category;
                     const catClass = category.includes('grande') ? 'grande' : 'piccola';
@@ -511,37 +560,52 @@
 
                 // Create cards for each quartet
                 opus.quartets.forEach(quartet => {
+                    let activeTooltip = false;
+
+                    const showTooltip = function(event) {
+                        d3.select(this).style('border-color', '#333');
+
+                        const movements = quartet.mvmts.map((m, i) => `${i + 1}. ${m}`).join('<br>');
+                        const keyFull = `${quartet.key} ${quartet.major ? 'major' : 'minor'}`;
+
+                        let tooltipText = `<strong>Opus ${opus.opus} #${quartet.number || '—'} \
+                            in ${keyFull}, G. ${quartet.gerard}</strong><br>`;
+                        if (quartet.nickname) {
+                            tooltipText += `<em>"${quartet.nickname}"</em><br>`;
+                        }
+                        tooltipText += `${quartet.category}<br><br>`;
+                        tooltipText += `<strong>Movements:</strong><br>${movements}`;
+
+                        const x = event.pageX || (event.touches && event.touches[0].pageX) || 0;
+                        const y = event.pageY || (event.touches && event.touches[0].pageY) || 0;
+
+                        tooltip.html(tooltipText)
+                            .style('left', (x + 10) + 'px')
+                            .style('top', (y - 10) + 'px')
+                            .style('opacity', 1);
+
+                        activeTooltip = true;
+                    };
+
+                    const hideTooltip = function() {
+                        d3.select(this).style('border-color', '#ddd');
+                        tooltip.style('opacity', 0);
+                        activeTooltip = false;
+                    };
+
                     const card = quartetContainer.append('div')
                         .attr('class', 'quartet-card')
-                        .on('mouseover', function(event) {
-                            d3.select(this).style('border-color', '#333');
-
-                            const movements = quartet.mvmts.map((m, i) => `${i + 1}. ${m}`).join('<br>');
-                            const keyFull = `${quartet.key} ${quartet.major ? 'major' : 'minor'}`;
-
-                            let tooltipText = `<strong>Opus ${opus.opus} #${quartet.number || '—'} \
-                                in ${keyFull}, G. ${quartet.gerard}</strong><br>`;
-                            if (quartet.nickname) {
-                                tooltipText += `<em>"${quartet.nickname}"</em><br>`;
-                            }
-                            tooltipText += `${quartet.category}<br><br>`;
-                            tooltipText += `<strong>Movements:</strong><br>${movements}`;
-
-
-                            tooltip.html(tooltipText)
-                                .style('left', (event.pageX + 10) + 'px')
-                                .style('top', (event.pageY - 10) + 'px')
-                                .style('opacity', 1);
-                        })
-                        .on('mouseout', function() {
-                            d3.select(this).style('border-color', '#ddd');
-                            tooltip.style('opacity', 0);
-                        })
-                        .on('click', function() {
-                            if (quartet.imslp) {
-                                window.open(quartet.imslp, '_blank');
-                            } else if (opus.imslp) {
-                                window.open(opus.imslp, '_blank');
+                        .on('mouseover', showTooltip)
+                        .on('mouseout', hideTooltip)
+                        .on('click', function(event) {
+                            // Toggle tooltip on mobile tap
+                            if ('ontouchstart' in window) {
+                                event.preventDefault();
+                                if (activeTooltip) {
+                                    hideTooltip.call(this);
+                                } else {
+                                    showTooltip.call(this, event);
+                                }
                             }
                         });
 
@@ -563,6 +627,13 @@
                     const content = card.append('div')
                         .attr('class', 'card-content');
 
+                    // Nickname if exists - appears above key section
+                    if (quartet.nickname) {
+                        content.append('div')
+                            .attr('class', 'nickname')
+                            .text(`"${quartet.nickname}"`);
+                    }
+
                     // Key section (aligns with opus number in row header)
                     const keySection = content.append('div')
                         .attr('class', 'key-section');
@@ -578,14 +649,23 @@
                         .attr('class', 'key-mode')
                         .text(quartet.major ? 'major' : 'minor');
 
-                    // Nickname if exists
-                    content.append('div')
-                        .attr('class', 'nickname')
-                        .text(quartet.nickname ? `"${quartet.nickname}"` : '');
+                    // IMSLP link (appended to card, positioned above movement bar)
+                    const imslpLink = quartet.imslp || opus.imslp;
+                    if (imslpLink) {
+                        card.append('a')
+                            .attr('class', 'imslp-link')
+                            .attr('href', imslpLink)
+                            .attr('target', '_blank')
+                            .attr('rel', 'noopener noreferrer')
+                            .text('imslp')
+                            .on('click', function(event) {
+                                event.stopPropagation(); // Prevent card click
+                            });
+                    }
 
-                    // Movement count
+                    // Movement count (appended to card, not content, so it's at the bottom)
                     const mvmtCount = quartet.mvmts.length;
-                    content.append('div')
+                    card.append('div')
                         .attr('class', `movements-count mvmt-${mvmtCount}`)
                         .text(`${mvmtCount} movement${mvmtCount === 1 ? '' : 's'}`);
                 });
