@@ -477,6 +477,265 @@
             margin-left: 5px;
         }
 
+        /* === PRINT STYLES === */
+        @media print {
+            @page {
+                margin: 0.25in;
+                size: letter;  /* Portrait orientation */
+            }
+
+            /* Scaled section heights for 110px cards (140px → 110px = 0.7857 ratio) */
+            :root {
+                --print-top-height: 16px;      /* 20px * 0.7857 ≈ 16px */
+                --print-middle-height: 67px;   /* 85px * 0.7857 ≈ 67px */
+                --print-nickname-height: 12px; /* 15px * 0.7857 ≈ 12px */
+                --print-bottom-height: 15px;   /* 20px * 0.7857 ≈ 15px */
+                /* Total: 16 + 67 + 12 + 15 = 110px */
+            }
+
+            body {
+                margin: 0;
+                padding: 0;
+                font-size: 7pt;
+            }
+
+            .header-group {
+                margin-left: 65px;
+                margin-bottom: 8px;
+            }
+
+            h1 {
+                page-break-after: avoid;
+                margin: 0 auto 8px auto !important;
+                font-size: 2.2em !important;
+                text-align: center !important;
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+
+            .subtitle {
+                page-break-after: avoid;
+                margin: 0 auto 12px auto !important;
+                font-size: 1em !important;
+                text-align: right !important;
+                max-width: var(--header-width) !important;
+            }
+
+            /* Constrain to printable page width: 8.5" - 0.5" margins = 8" = 768px @ 96dpi */
+            .container {
+                max-width: 760px !important;  /* 65px label + 5px gap + (6 × 110px cards) + (5 × 6px gaps) = 760px */
+                width: 760px !important;
+                margin: 0 !important;  /* Left-align instead of center to keep content in printable area */
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: flex-start;
+            }
+
+            .opus-row {
+                display: flex !important;
+                align-items: flex-start !important;
+                flex-wrap: nowrap !important;
+                margin-bottom: 8px;
+                page-break-inside: avoid;
+                break-inside: avoid;
+                width: 760px !important;
+                background: none !important;  /* Remove gradient backgrounds */
+            }
+
+            /* Combined rows: use spacer for alignment, no wrapping */
+            .opus-row.combined-pair {
+                display: flex !important;
+                flex-wrap: nowrap !important;  /* No wrapping - spacer handles alignment */
+                justify-content: flex-start !important;  /* Force left-alignment, no space distribution */
+                gap: 0 !important;  /* No gap - use explicit spacing */
+                width: 760px !important;
+                max-width: 760px !important;
+                background: none !important;
+            }
+
+            /* Keep each label+quartets pair together on same line */
+            .opus-row.combined-pair .opus-label {
+                flex: 0 0 65px !important;  /* Explicit flex-basis */
+                width: 65px !important;
+                max-width: 65px !important;
+            }
+
+            .opus-row.combined-pair .quartets-container {
+                flex: 0 0 auto !important;  /* don't grow or shrink */
+                flex-grow: 0 !important;  /* Explicitly prevent growing */
+                margin-left: 5px !important;
+            }
+
+            /* Opus label: 65px width, 110px height to match cards exactly */
+            .opus-label {
+                flex-shrink: 0;
+                width: 65px !important;
+                height: 110px !important;  /* Match card height exactly */
+                min-height: 110px !important;
+                max-height: 110px !important;
+                padding: 0 !important;  /* Remove padding to achieve exact 65px width */
+                margin: 0 !important;
+                background: none !important;  /* Remove gradient backgrounds */
+                page-break-inside: avoid;
+                box-sizing: border-box !important;
+            }
+
+            /* Remove category badge backgrounds */
+            .opus-label.grande-bg,
+            .opus-label.piccola-bg {
+                background: none !important;
+            }
+
+            /* Scale internal opus label sections to match 110px height */
+            .opus-label .year-age {
+                height: var(--print-top-height) !important;
+                min-height: var(--print-top-height) !important;
+                max-height: var(--print-top-height) !important;
+                overflow: hidden !important;
+            }
+
+            .opus-label .opus-number {
+                height: var(--print-middle-height) !important;
+                min-height: var(--print-middle-height) !important;
+                max-height: var(--print-middle-height) !important;
+                margin-bottom: var(--print-nickname-height) !important;
+                overflow: hidden !important;
+            }
+
+            .opus-label .bottom-section {
+                height: var(--print-bottom-height) !important;
+                min-height: var(--print-bottom-height) !important;
+                /* Don't hide overflow - let IMSLP links be visible */
+            }
+
+            /* Quartets container: 6 cards at 110px + 5 gaps at 6px = 690px + 65px label + 5px gap = 760px */
+            .quartets-container {
+                display: flex !important;
+                flex-wrap: nowrap !important;
+                justify-content: flex-start !important;  /* Force left-alignment, no centering */
+                gap: 6px !important;
+                margin-left: 5px !important;
+                flex-shrink: 0;
+                page-break-inside: avoid;
+            }
+
+            .quartet-card {
+                width: 110px !important;  /* Larger cards to use page width efficiently */
+                height: 110px !important;
+                min-height: 110px !important;
+                max-height: 110px !important;
+                box-sizing: border-box !important;  /* Include borders in height */
+                flex-shrink: 0;
+                page-break-inside: avoid;
+                break-inside: avoid;
+                background: none !important;  /* Remove white background for clean print */
+                box-shadow: none !important;  /* Remove shadows */
+                border: 1px solid #999 !important;  /* Thinner border for print */
+            }
+
+            /* Remove major key backgrounds, keep minor key pink */
+            .mode-bar.major {
+                background: transparent !important;
+            }
+
+            /* Scale internal quartet card sections to match 110px height */
+            .quartet-card .mode-bar {
+                height: var(--print-top-height) !important;
+                min-height: var(--print-top-height) !important;
+                max-height: var(--print-top-height) !important;
+            }
+
+            .quartet-card .key-section {
+                height: var(--print-middle-height) !important;
+                min-height: var(--print-middle-height) !important;
+                max-height: var(--print-middle-height) !important;
+                margin-bottom: var(--print-nickname-height) !important;
+            }
+
+            .quartet-card .movements-count {
+                height: var(--print-bottom-height) !important;
+                min-height: var(--print-bottom-height) !important;
+                max-height: var(--print-bottom-height) !important;
+            }
+
+            /* Spacer widths calculated for column alignment with Op. 33 */
+            /* Default spacer (shouldn't be used, but just in case) */
+            .opus-spacer {
+                height: 110px !important;
+                margin: 0 !important;
+            }
+
+            /* Row 10 (Op. 39 + Op. 41): Op. 39 has 1 quartet */
+            .container > .opus-row:nth-child(10) .opus-spacer {
+                flex: 0 0 168px !important;
+                width: 168px !important;
+            }
+
+            /* Row 11 (Op. 42 + Op. 43): Op. 42 has 2 quartets */
+            .container > .opus-row:nth-child(11) .opus-spacer {
+                flex: 0 0 168px !important;
+                width: 168px !important;
+            }
+
+            /* Hide interactive elements in print */
+            .tooltip {
+                display: none !important;
+            }
+
+            /* Ensure links are visible and properly positioned */
+            .imslp-link,
+            .qr-link {
+                color: #2196F3;
+                text-decoration: none;
+            }
+
+            /* Fix opus label IMSLP link to match quartet card links */
+            .opus-label .imslp-link {
+                position: absolute !important;  /* Keep absolute positioning */
+                bottom: calc(100% + 2px) !important;  /* Position above bottom-section with small gap */
+                left: 0 !important;
+                font-size: 7px !important;  /* Absolute size to match card-links at 0.65em of 11px base ≈ 7px */
+                padding: 2px 4px !important;
+                line-height: 1 !important;
+                font-weight: 400 !important;
+            }
+
+            /* Ensure bottom sections are vertically centered */
+            .opus-label .bottom-section {
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: center !important;
+                align-items: flex-end !important;
+            }
+
+            /* Fix category badge sizing to match movements-count exactly */
+            .category-badge {
+                font-size: 7px !important;  /* Absolute size, same as movements-count */
+                line-height: 1 !important;
+                height: 100% !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+            }
+
+            /* Fix movements-count sizing */
+            .movements-count {
+                font-size: 7px !important;  /* Absolute size to ensure alignment */
+                line-height: 1 !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+            }
+
+            /* Fix quartet card IMSLP/QR links sizing */
+            .card-links {
+                font-size: 7px !important;  /* Absolute size to match opus label links */
+                padding: 2px 4px !important;
+                line-height: 1 !important;
+            }
+
+        }
+
         /* === MOBILE RESPONSIVE === */
         @media (max-width: 768px) {
             body {
