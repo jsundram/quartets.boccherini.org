@@ -29,6 +29,9 @@
             --middle-font-size: 2.8em;
             --bottom-font-size: 0.7em;
 
+            /* Header widths */
+            --header-width: 900px;
+
             /* === DEBUG MODE === */
             --debug-mode: 0; /* Set to 1 to show bounding boxes, 0 to hide */
         }
@@ -78,7 +81,7 @@
         }
 
         h1 {
-            max-width: 700px;           /* Constrain width to match title */
+            max-width: var(--header-width);
             margin: 0 auto 5px auto;    /* Center horizontally, small gap below */
             text-align: center;
             color: #333;
@@ -86,8 +89,8 @@
         }
 
         .subtitle {
-            max-width: 700px;           /* Same width as title for alignment */
-            margin: 0 auto 25px auto;   /* Center horizontally, larger gap below */
+            max-width: var(--header-width);  /* Same width as title for alignment */
+            margin: 0 auto 25px auto;        /* Center horizontally, larger gap below */
             text-align: right;          /* Right-align text within container */
             color: #666;
             font-size: 0.9em;
@@ -351,16 +354,24 @@
             color: #333;
         }
 
-        .imslp-link {
-            font-size: 0.65em;
-            color: #2196F3;
-            text-decoration: none;
+        /* Links container for quartet cards - holds IMSLP and QR links */
+        .card-links {
+            display: flex;
+            justify-content: space-between;  /* IMSLP left, QR right */
+            align-items: center;
             padding: 2px 4px;
-            align-self: flex-start;        /* Left align */
-            font-weight: 400;              /* Lighter weight */
+            font-size: 0.65em;
+            font-weight: 400;
         }
 
-        .imslp-link:hover {
+        .imslp-link,
+        .qr-link {
+            color: #2196F3;
+            text-decoration: none;
+        }
+
+        .imslp-link:hover,
+        .qr-link:hover {
             text-decoration: underline;
             color: #1976D2;
         }
@@ -372,6 +383,8 @@
             left: 0;                       /* Left align to match quartet cells */
             margin-bottom: 1px;            /* Minimal space below link */
             padding: 2px 4px;              /* Match quartet cell link padding */
+            font-size: 0.65em;             /* Match quartet cell link size */
+            font-weight: 400;              /* Lighter weight */
         }
 
         .movements-count {
@@ -455,7 +468,7 @@
 <body>
     <div class="container">
         <div class="header-group">
-            <h1>Luigi Boccherini – String Quartets (1743–1805)</h1>
+            <h1>Luigi Boccherini (1743–1805) – 91 String Quartets</h1>
             <p class="subtitle">see also <a href="https://quartetroulette.com/Boccherini/" target="_blank">Quartet Roulette</a></p>
         </div>
         <div id="visualization"></div>
@@ -649,10 +662,14 @@
                         .attr('class', 'key-mode')
                         .text(quartet.major ? 'major' : 'minor');
 
-                    // IMSLP link (appended to card, positioned above movement bar)
+                    // Links container (IMSLP and QR) - appended to card, positioned above movement bar
+                    const linksContainer = card.append('div')
+                        .attr('class', 'card-links');
+
+                    // IMSLP link (left-aligned)
                     const imslpLink = quartet.imslp || opus.imslp;
                     if (imslpLink) {
-                        card.append('a')
+                        linksContainer.append('a')
                             .attr('class', 'imslp-link')
                             .attr('href', imslpLink)
                             .attr('target', '_blank')
@@ -661,7 +678,21 @@
                             .on('click', function(event) {
                                 event.stopPropagation(); // Prevent card click
                             });
+                    } else {
+                        // Empty span to maintain spacing when no IMSLP link
+                        linksContainer.append('span');
                     }
+
+                    // QR link (right-aligned) - always present
+                    linksContainer.append('a')
+                        .attr('class', 'qr-link')
+                        .attr('href', `https://quartetroulette.com/boccherini-g${quartet.gerard}/`)
+                        .attr('target', '_blank')
+                        .attr('rel', 'noopener noreferrer')
+                        .text('QR')
+                        .on('click', function(event) {
+                            event.stopPropagation(); // Prevent card click
+                        });
 
                     // Movement count (appended to card, not content, so it's at the bottom)
                     const mvmtCount = quartet.mvmts.length;
