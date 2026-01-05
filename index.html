@@ -34,6 +34,9 @@
 
             /* === DEBUG MODE === */
             --debug-mode: 0; /* Set to 1 to show bounding boxes, 0 to hide */
+
+            /* === OWNERSHIP INDICATOR === */
+            --show-ownership: 1; /* Set to 1 to show repeat signs on owned parts, 0 to hide */
         }
 
         /* Debug bounding boxes - controlled by --debug-mode */
@@ -435,10 +438,26 @@
             align-items: center;           /* Vertically center text */
             justify-content: center;       /* Horizontally center text */
             margin: 0;
-            padding: 0;                    /* No padding - height is explicit */
+            padding: 0 4px;                /* Small padding for repeat glyphs */
             border-radius: 0;              /* Square edges like top bar */
             font-weight: 500;
             line-height: 1;                /* Match category badge */
+        }
+
+        /* Repeat glyphs for parts.json quartets */
+        .movements-count .repeat-start,
+        .movements-count .repeat-end {
+            font-size: 1.75em;  /* Make glyphs taller */
+            line-height: 1;
+            opacity: var(--show-ownership);  /* Controlled by CSS variable */
+        }
+
+        .movements-count .repeat-start {
+            margin-right: auto;
+        }
+
+        .movements-count .repeat-end {
+            margin-left: auto;
         }
 
         /* Diverging color scheme: Purple (short) -> Gray (standard) -> Green (long) */
@@ -881,9 +900,15 @@
 
                 // Movement count (appended to card, not content, so it's at the bottom)
                 const mvmtCount = quartet.mvmts.length;
-                card.append('div')
-                    .attr('class', `movements-count mvmt-${mvmtCount}`)
-                    .text(`${mvmtCount} movement${mvmtCount === 1 ? '' : 's'}`);
+                const movementsDiv = card.append('div')
+                    .attr('class', `movements-count mvmt-${mvmtCount}`);
+
+                // Add repeat glyphs for quartets in parts.json
+                if (quartet.edition) {
+                    movementsDiv.html(`<span class="repeat-start">𝄆</span><span>${mvmtCount} movement${mvmtCount === 1 ? '' : 's'}</span><span class="repeat-end">𝄇</span>`);
+                } else {
+                    movementsDiv.text(`${mvmtCount} movement${mvmtCount === 1 ? '' : 's'}`);
+                }
 
                 return card;
             }
