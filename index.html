@@ -460,6 +460,20 @@
             margin-left: auto;
         }
 
+        /* Movement text container - stacks text and lines */
+        .movements-count .mvmt-text {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+        }
+
+        /* SVG movement lines */
+        .movements-count .mvmt-lines-svg {
+            display: block;
+        }
+
         /* Diverging color scheme: Purple (short) -> Gray (standard) -> Green (long) */
         .movements-count.mvmt-1 {
             background-color: #9C27B0;
@@ -905,9 +919,47 @@
 
                 // Add repeat glyphs for quartets in parts.json
                 if (quartet.edition) {
-                    movementsDiv.html(`<span class="repeat-start">𝄆</span><span>${mvmtCount} movement${mvmtCount === 1 ? '' : 's'}</span><span class="repeat-end">𝄇</span>`);
-                } else {
-                    movementsDiv.text(`${mvmtCount} movement${mvmtCount === 1 ? '' : 's'}`);
+                    movementsDiv.append('span')
+                        .attr('class', 'repeat-start')
+                        .text('𝄆');
+                }
+
+                // Create movement text container
+                const mvmtText = movementsDiv.append('div')
+                    .attr('class', 'mvmt-text');
+
+                // Add movement count text
+                mvmtText.append('span')
+                    .attr('class', 'mvmt-count-text')
+                    .text(`${mvmtCount} movement${mvmtCount === 1 ? '' : 's'}`);
+
+                // Create SVG for movement lines
+                const lineWidth = 12;
+                const lineSpacing = 4;
+                const lineGap = lineWidth + lineSpacing;
+                const minuetIdx = quartet.mvmts.findIndex(m => m.includes('Minuetto'));
+
+                const svg = mvmtText.append('svg')
+                    .attr('class', 'mvmt-lines-svg')
+                    .attr('width', mvmtCount * lineGap - lineSpacing)
+                    .attr('height', 3);
+
+                // Draw lines using d3 data binding
+                svg.selectAll('line')
+                    .data(d3.range(mvmtCount))
+                    .enter()
+                    .append('line')
+                    .attr('x1', d => d * lineGap)
+                    .attr('y1', 1.5)
+                    .attr('x2', d => d * lineGap + lineWidth)
+                    .attr('y2', 1.5)
+                    .attr('stroke', d => d === minuetIdx ? 'white' : 'currentColor')
+                    .attr('stroke-width', 1);
+
+                if (quartet.edition) {
+                    movementsDiv.append('span')
+                        .attr('class', 'repeat-end')
+                        .text('𝄇');
                 }
 
                 return card;
