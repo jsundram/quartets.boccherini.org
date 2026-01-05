@@ -1,0 +1,11 @@
+[
+    {"number": 1, "label": "8#5", "actual": "15#1", "Gerard": 177, "glabel": 169},
+    {"number": 2, "label": "32#4", "actual": "26#4", "Gerard": 198, "glabel": 204},
+    {"number": 3, "label": "6#6", "actual": "8#6", "Gerard": 170, "glabel": null},
+    {"number": 4, "label": "10#2", "actual": "9#2", "Gerard": 172, "glabel": null},
+    {"number": 5, "label": "27#2", "actual": "24#6", "Gerard": 194, "glabel": null},
+    {"number": 6, "label": "10#5", "actual": "9#6", "Gerard": 176, "glabel": null},
+    {"number": 7, "label": "33#5", "actual": "32#5", "Gerard": 205, "glabel": 211},
+    {"number": 8, "label": "33#6", "actual": "32#6", "Gerard": 206, "glabel": 212},
+    {"number": 9, "label": "39#1", "actual": "52#1", "Gerard": 232, "glabel": 213}
+]

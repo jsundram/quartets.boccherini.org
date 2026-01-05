@@ -269,6 +269,32 @@
             border-color: #888;
         }
 
+        /* Edition-specific styling via border colors */
+        .quartet-card[data-edition="Peters"] {
+            border-color: #2196F3;  /* Blue */
+            border-width: 3px;
+        }
+
+        .quartet-card[data-edition="Edition Moeck"] {
+            border-color: #4CAF50;  /* Green */
+            border-width: 3px;
+        }
+
+        .quartet-card[data-edition="Edition Steglein"] {
+            border-color: #FF9800;  /* Orange */
+            border-width: 3px;
+        }
+
+        .quartet-card[data-edition="Simrock"] {
+            border-color: #9C27B0;  /* Purple */
+            border-width: 3px;
+        }
+
+        .quartet-card[data-edition="Ricordi"] {
+            border-color: #F44336;  /* Red */
+            border-width: 3px;
+        }
+
         .mode-bar {
             height: var(--top-section-height);  /* Aligns with year-age section */
             width: 100%;
@@ -611,8 +637,38 @@
     </div>
 
     <script>
-        // Load the opera.json data
-        d3.json('opera.json').then(data => {
+        // Load all JSON files: peters.json, parts.json, then opera.json
+        Promise.all([
+            d3.json('peters.json'),
+            d3.json('parts.json'),
+            d3.json('opera.json')
+        ]).then(([petersData, partsData, operaData]) => {
+            // Create lookup maps keyed by Gerard number
+            const petersMap = new Map(petersData.map(p => [p.Gerard, { number: p.number, label: p.label }]));
+            const glabelMap = new Map(petersData.filter(p => p.glabel != null).map(p => [p.glabel, p.actual]));
+            const partsMap = new Map(partsData.map(p => [p.Gerard, p.edition]));
+
+            // Enrich opera data with peters nicknames and parts editions
+            operaData.forEach(opus => {
+                opus.quartets.forEach(quartet => {
+                    // Add nickname from peters.json if available
+                    if (petersMap.has(quartet.gerard)) {
+                        const peters = petersMap.get(quartet.gerard);
+                        quartet.nickname = `Peters ${peters.number}: ${peters.label}`;
+                    }
+                    // Add "see also" nickname for glabel references
+                    else if (glabelMap.has(quartet.gerard)) {
+                        const actual = glabelMap.get(quartet.gerard);
+                        quartet.nickname = `Peters: see ${actual}`;
+                    }
+                    // Add edition info from parts.json for styling
+                    if (partsMap.has(quartet.gerard)) {
+                        quartet.edition = partsMap.get(quartet.gerard);
+                    }
+                });
+            });
+
+            const data = operaData;  // Use enriched data
             const container = d3.select('#visualization');
 
             // Create tooltip
@@ -920,11 +976,11 @@
                 renderCombinedRow(container, ...currentRowOpuses);
             }
         }).catch(error => {
-            console.error('Error loading opera.json:', error);
+            console.error('Error loading JSON data:', error);
             d3.select('#visualization')
                 .append('p')
                 .style('color', 'red')
-                .text('Error loading data. Please ensure opera.json is in the same directory as this HTML file.');
+                .text('Error loading data. Please ensure peters.json, parts.json, and opera.json are in the same directory as this HTML file.');
         });
     </script>
 </body>
