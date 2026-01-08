@@ -937,14 +937,19 @@
                 const lineWidth = 12;
                 const lineSpacing = 4;
                 const lineGap = lineWidth + lineSpacing;
-                const minuetIdx = quartet.mvmts.findIndex(m => m.includes('Minuetto'));
+
+                // Find all minuet positions (handles multiple minuets like G.202)
+                const minuetIndices = new Set(
+                    quartet.mvmts.map((m, i) => m.includes('Minuetto') ? i : -1)
+                        .filter(i => i >= 0)
+                );
 
                 const svg = mvmtText.append('svg')
                     .attr('class', 'mvmt-lines-svg')
                     .attr('width', mvmtCount * lineGap - lineSpacing)
                     .attr('height', 3);
 
-                // Draw lines using d3 data binding
+                // Draw lines: white for minuets, black for others
                 svg.selectAll('line')
                     .data(d3.range(mvmtCount))
                     .enter()
@@ -953,7 +958,7 @@
                     .attr('y1', 1.5)
                     .attr('x2', d => d * lineGap + lineWidth)
                     .attr('y2', 1.5)
-                    .attr('stroke', d => d === minuetIdx ? 'white' : 'currentColor')
+                    .attr('stroke', d => minuetIndices.has(d) ? 'white' : 'black')
                     .attr('stroke-width', 1);
 
                 if (quartet.edition) {
