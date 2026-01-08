@@ -272,6 +272,11 @@
             border-color: #888;
         }
 
+        /* Subtle gray wash for quartets without minuets */
+        .quartet-card.no-minuet {
+            background: rgba(0, 0, 0, 0.03);
+        }
+
         /* Edition-specific styling via border colors */
         .quartet-card[data-edition="Peters"] {
             border-color: #2196F3;  /* Blue */
@@ -824,8 +829,11 @@
                     activeTooltip = false;
                 };
 
+                // Check if quartet has any minuets
+                const hasMinuet = quartet.mvmts.some(m => m.includes('Minuetto'));
+
                 const card = parent.append('div')
-                    .attr('class', 'quartet-card')
+                    .attr('class', hasMinuet ? 'quartet-card' : 'quartet-card no-minuet')
                     .on('mouseover', showTooltip)
                     .on('mouseout', hideTooltip)
                     .on('click', function(event) {
