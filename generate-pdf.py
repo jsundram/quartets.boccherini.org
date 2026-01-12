@@ -18,9 +18,12 @@ First-time setup (install Playwright browsers):
 Requirements:
     - uv installed (https://docs.astral.sh/uv/)
     - Local server running at http://localhost:8000
+    - qpdf installed (for linearization/optimization)
 """
 
 import sys
+import subprocess
+import os
 from playwright.sync_api import sync_playwright
 
 
@@ -46,9 +49,10 @@ def generate_pdf():
             'left': '0in',
             'right': '0in'
         }
+        outfile = 'boccherini-quartets-temp.pdf'
         # Generate PDF with exact settings
         page.pdf(
-            path='boccherini-quartets-temp.pdf',
+            path=outfile,
             format='Letter',
             print_background=True,  # Enable background graphics
             tagged=False,           # Generate tagged PDF for accessibility?
@@ -58,8 +62,36 @@ def generate_pdf():
 
         browser.close()
 
-    print("✓ PDF saved to: boccherini-quartets.pdf")
-    print("next: `qpdf --linearize boccherini-quartets-temp.pdf boccherini-quartets.pdf`")
+    print(f"✓ Temporary PDF generated: {outfile}")
+
+    # Linearize the PDF using qpdf to avoid AirPrint issues.
+    final_pdf = 'boccherini-quartets.pdf'
+    print(f"🔄 Linearizing PDF with qpdf...")
+
+    try:
+        subprocess.run(
+            ['qpdf', '--linearize', outfile, final_pdf],
+            check=True,
+            capture_output=True,
+            text=True
+        )
+        print(f"✓ Linearized PDF saved to: {final_pdf}")
+
+        # Clean up temporary file
+        os.remove(outfile)
+        print(f"✓ Cleaned up temporary file: {outfile}")
+
+    except FileNotFoundError:
+        print("\n⚠️  qpdf not found.")
+        print("\nPlease install qpdf:")
+        print("  brew install qpdf  (macOS)")
+        print(f"\nTemporary PDF available at: {outfile}")
+        print(f"Run manually: qpdf --linearize {outfile} {final_pdf}")
+        sys.exit(1)
+    except subprocess.CalledProcessError as e:
+        print(f"\n⚠️  qpdf failed: {e.stderr}")
+        print(f"Temporary PDF available at: {outfile}")
+        sys.exit(1)
 
 
 if __name__ == "__main__":
