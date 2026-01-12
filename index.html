@@ -9,11 +9,12 @@
 
     <style>
         :root {
-            /* === ALIGNMENT SYSTEM === */
-            --card-height: 140px;
-            --top-section-height: 20px;
-            --nickname-height: 15px;        /* Fixed height for nickname section */
-            --bottom-section-height: 20px;  /* Fixed height for badge/movement count */
+            /* === DYNAMIC SIZING SYSTEM === */
+            /* Cards smoothly scale from 140px (desktop) to 80px (mobile) */
+            --card-height: clamp(80px, 12vw, 140px);
+            --top-section-height: clamp(14px, 1.7vw, 20px);
+            --nickname-height: clamp(10px, 1.3vw, 15px);
+            --bottom-section-height: clamp(14px, 1.7vw, 20px);
 
             /* Calculated middle section height - same for both sides */
             --middle-section-height: calc(
@@ -22,7 +23,6 @@
                 - var(--nickname-height)
                 - var(--bottom-section-height)
             );
-            /* = 140px - 20px - 15px - 20px = 85px */
 
             /* Font sizes for aligned elements */
             --top-font-size: 0.8em;
@@ -80,23 +80,27 @@
         }
 
         .header-group {
-            margin-left: 95px;          /* Shift right by opus-label width */
+            /* Header centered over visualization at all widths */
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         h1 {
-            max-width: var(--header-width);
+            max-width: min(var(--header-width), 100%);  /* Responsive width */
             margin: 0 auto 5px auto;    /* Center horizontally, small gap below */
             text-align: center;
             color: #333;
-            font-size: 2em;
+            font-size: clamp(1.3em, 1.8vw, 2em);  /* Scales smoothly */
         }
 
         .subtitle {
-            max-width: var(--header-width);  /* Same width as title for alignment */
+            max-width: min(var(--header-width), 100%);  /* Responsive width */
             margin: 0 auto 25px auto;        /* Center horizontally, larger gap below */
             text-align: right;          /* Right-align text within container */
             color: #666;
-            font-size: 0.9em;
+            font-size: clamp(0.75em, 0.85vw, 0.9em);  /* Scales smoothly */
             font-style: italic;
         }
 
@@ -120,7 +124,7 @@
         .opus-row {
             display: flex;
             align-items: flex-start;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
 
         /* Combined rows - no special CSS needed, just flex layout */
@@ -131,10 +135,10 @@
         /* === OPUS LABEL SECTION (easy to tweak) === */
 
         .opus-label {
-            /* Container sizing - MATCHES CARD HEIGHT */
-            width: 95px;
+            /* Container sizing - MATCHES CARD HEIGHT, scales proportionally */
+            width: clamp(50px, 8vw, 95px);
             height: var(--card-height);
-            padding: 2px 6px 0 10px;        /* 2px top, 6px right, 0 bottom, 10px left */
+            padding: clamp(1px, 0.2vw, 2px) clamp(3px, 0.5vw, 6px) 0 clamp(5px, 0.8vw, 10px);
 
             /* Layout - vertical alignment structure */
             display: flex;
@@ -238,21 +242,21 @@
         .quartets-container {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
-            margin-left: 10px; /* Gap between label and cards */
+            gap: clamp(6px, 0.8vw, 10px);
+            margin-left: clamp(6px, 0.8vw, 10px); /* Gap between label and cards */
         }
 
         /* Spacer between opus groups in combined rows */
         .opus-spacer {
-            width: 177px;         /* Calculated for pixel-perfect vertical alignment */
+            width: clamp(120px, 15vw, 177px);  /* Scales with viewport */
             height: var(--card-height);
             flex-shrink: 0;
-            margin: 0 10px; /* Gap on both sides */
+            margin: 0 clamp(6px, 0.8vw, 10px); /* Gap on both sides */
         }
 
         .quartet-card {
-            width: 140px;
-            height: var(--card-height);     /* Matches opus-label height */
+            width: var(--card-height);      /* Square cards - width matches height */
+            height: var(--card-height);
             background: white;
             border: 2px solid #ddd;
             border-radius: 4px;
@@ -558,14 +562,34 @@
         @media print {
             @page {
                 margin: 0;  /* Reset all margins to 0 first */
-                margin-top: 0.25in;  /* Only top margin */
+                margin-top: 0.25in;
+                margin-left: 0in;
+                margin-right: 0in;
+                margin-bottom: 0in;
                 size: letter portrait;
+            }
+
+            /* Override responsive sizing with fixed desktop values for print */
+            :root {
+                --card-height: 140px;
+                --top-section-height: 20px;
+                --nickname-height: 15px;
+                --bottom-section-height: 20px;
             }
 
             body {
                 font-size: 9pt;
                 background: white !important;
                 zoom: 0.73;  /* Scale to 73% to fit on page */
+            }
+
+            /* Override responsive font sizes with fixed desktop values for print */
+            h1 {
+                font-size: 2em !important;
+            }
+
+            .subtitle {
+                font-size: 0.9em !important;
             }
 
             /* Page break controls */
@@ -580,22 +604,18 @@
 
             /* Clean aesthetics for print */
             .opus-label {
-                background: none !important;
+                width: 95px;  /* Fixed width for print (not responsive) */
+                box-shadow: none !important;  /* Remove sticky shadow */
+                /* position: static;  /* Remove sticky positioning */*/
             }
 
-            .opus-label.grande-bg,
-            .opus-label.piccola-bg {
-                background: none !important;
+            .opus-spacer {
+                width: 179px;
             }
 
             .quartet-card {
-                background: none !important;
                 box-shadow: none !important;
                 border: 1px solid #999;
-            }
-
-            .mode-bar.major {
-                background: transparent !important;
             }
 
             /* Hide interactive elements */
@@ -608,59 +628,59 @@
             .qr-link {
                 color: #2196F3;
             }
+
+            /*
+            ChatGPT suggests that if your table has very thin rules (≤0.25pt),
+            this reduces Quartz/CUPS line thinning on some printers.
+            */
+
+            * {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
         }
 
         /* === MOBILE RESPONSIVE === */
         @media (max-width: 768px) {
             body {
-                margin: 10px;
+                margin: 5px;
+                overflow-x: hidden;
             }
 
             .header-group {
-                margin-left: 0;
-                text-align: center;
-            }
-
-            h1 {
-                font-size: 1.5em;
-                margin-bottom: 10px;
-            }
-
-            .subtitle {
-                font-size: 0.8em;
-                text-align: center;
-                margin-bottom: 15px;
+               /* text-align: center;*/
             }
 
             .container {
                 max-width: 100%;
+                overflow-x: auto;
                 align-items: flex-start;
             }
 
+            /* Make rows scrollable horizontally before they wrap */
             .opus-row {
-                flex-wrap: wrap;
-                margin-bottom: 10px;
-                width: 100%;
-            }
-
-            /* On mobile, opus label takes full width, then cards wrap below */
-            .opus-label {
-                width: 100%;
-                text-align: left;
-                height: auto;
-                min-height: var(--card-height);
+                flex-wrap: nowrap;
+                overflow-x: auto;
                 margin-bottom: 5px;
+                min-width: fit-content;
             }
 
+            /* Sticky opus labels - stay visible while scrolling */
+            .opus-label {
+                position: sticky;
+                left: 0;
+                z-index: 10;
+                background: white;
+                box-shadow: 2px 0 4px rgba(0,0,0,0.1);
+            }
+
+            /* Quartets container and spacers scale with card height */
             .quartets-container {
-                margin-left: 0;
-                width: 100%;
-                justify-content: center;
+                gap: clamp(3px, 0.4vw, 6px);
             }
 
-            /* Hide spacers on mobile - not needed when rows wrap */
             .opus-spacer {
-                display: none;
+                width: calc(var(--card-height) + clamp(3px, 0.4vw, 6px));
             }
         }
     </style>
@@ -929,7 +949,7 @@
                 if (quartet.edition) {
                     movementsDiv.append('span')
                         .attr('class', 'repeat-start')
-                        .text('𝄆');
+                        .text('𝄆');//.text('x');
                 }
 
                 // Create movement text container
@@ -972,7 +992,7 @@
                 if (quartet.edition) {
                     movementsDiv.append('span')
                         .attr('class', 'repeat-end')
-                        .text('𝄇');
+                        .text('𝄇');//.text('x');
                 }
 
                 return card;
