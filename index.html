@@ -405,10 +405,10 @@
             color: #333;
         }
 
-        /* Links container for quartet cards - holds IMSLP and QR links */
+        /* Links container for quartet cards - holds IMSLP, QR, and Recording indicator */
         .card-links {
-            display: flex;
-            justify-content: space-between;  /* IMSLP left, QR right */
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;  /* 3 equal columns: IMSLP (left), QR (center), Recording (right) */
             align-items: center;
             padding: 2px 4px;
             font-size: 0.65em;
@@ -416,9 +416,23 @@
         }
 
         .imslp-link,
-        .qr-link {
+        .qr-link,
+        .recording-indicator {
             color: #2196F3;
             text-decoration: none;
+        }
+
+        .imslp-link {
+            justify-self: start;  /* Left-aligned in its grid cell */
+        }
+
+        .qr-link {
+            justify-self: center;  /* Center-aligned in its grid cell */
+        }
+
+        .recording-indicator {
+            justify-self: end;  /* Right-aligned in its grid cell */
+            cursor: default;  /* Not clickable */
         }
 
         .imslp-link:hover,
@@ -623,9 +637,10 @@
                 display: none !important;
             }
 
-            /* Ensure links are visible */
+            /* Ensure links and recording indicator are visible */
             .imslp-link,
-            .qr-link {
+            .qr-link,
+            .recording-indicator {
                 color: #2196F3;
             }
 
@@ -852,6 +867,9 @@
                 // Check if quartet has any minuets
                 const hasMinuet = quartet.mvmts.some(m => m.includes('Minuetto'));
 
+                // TODO: remove this once the data is updated
+                quartet.hasRecording = d3.randomUniform()(1) < .5;
+
                 const card = parent.append('div')
                     .attr('class', hasMinuet ? 'quartet-card' : 'quartet-card no-minuet')
                     .on('mouseover', showTooltip)
@@ -908,11 +926,11 @@
                     .attr('class', 'key-mode')
                     .text(quartet.major ? 'major' : 'minor');
 
-                // Links container (IMSLP and QR) - appended to card, positioned above movement bar
+                // Links container (IMSLP, QR, and Recording) - appended to card, positioned above movement bar
                 const linksContainer = card.append('div')
                     .attr('class', 'card-links');
 
-                // IMSLP link (left-aligned)
+                // IMSLP link (left-aligned in grid column 1)
                 const imslpLink = quartet.imslp || opus.imslp;
                 if (imslpLink) {
                     linksContainer.append('a')
@@ -925,11 +943,11 @@
                             event.stopPropagation(); // Prevent card click
                         });
                 } else {
-                    // Empty span to maintain spacing when no IMSLP link
+                    // Empty span to maintain grid structure when no IMSLP link
                     linksContainer.append('span');
                 }
 
-                // QR link (right-aligned) - always present
+                // QR link (center-aligned in grid column 2) - always present
                 linksContainer.append('a')
                     .attr('class', 'qr-link')
                     .attr('href', `https://quartetroulette.com/boccherini-g${quartet.gerard}/`)
@@ -939,6 +957,16 @@
                     .on('click', function(event) {
                         event.stopPropagation(); // Prevent card click
                     });
+
+                // Recording indicator (right-aligned in grid column 3)
+                if (quartet.hasRecording) {
+                    linksContainer.append('span')
+                        .attr('class', 'recording-indicator')
+                        .text('♩');
+                } else {
+                    // Empty span to maintain grid structure when no recording
+                    linksContainer.append('span');
+                }
 
                 // Movement count (appended to card, not content, so it's at the bottom)
                 const mvmtCount = quartet.mvmts.length;
