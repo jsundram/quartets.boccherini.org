@@ -48,7 +48,7 @@ def generate_pdf():
         }
         # Generate PDF with exact settings
         page.pdf(
-            path='boccherini-quartets.pdf',
+            path='boccherini-quartets-temp.pdf',
             format='Letter',
             print_background=True,  # Enable background graphics
             tagged=False,           # Generate tagged PDF for accessibility?
@@ -59,10 +59,7 @@ def generate_pdf():
         browser.close()
 
     print("✓ PDF saved to: boccherini-quartets.pdf")
-    print("next: cupsfilter boccherini-quartets.pdf > boccherini-quartets-quartz.pdf")
-    print("then: lp -d LaserJetz -o pdf-as-image boccherini-quartets-quartz.pdf")
-    print("This is still only one-sided!")
-
+    print("next: `qpdf --linearize boccherini-quartets-temp.pdf boccherini-quartets.pdf`")
 
 
 if __name__ == "__main__":
