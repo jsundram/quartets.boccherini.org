@@ -25,7 +25,7 @@ from playwright.sync_api import sync_playwright
 
 
 def generate_pdf():
-    """Generate the PDF with exact settings"""
+    """Generate the PDF"""
     print("📄 Generating Boccherini Quartets PDF...")
     print("   Loading http://localhost:8000/index.html")
 
@@ -33,26 +33,36 @@ def generate_pdf():
         browser = p.chromium.launch()
         page = browser.new_page()
 
+        # Set viewport size for proper layout (desktop view)
+        # Below 1200px width, responsive layout causes wrapping
+        page.set_viewport_size({'width': 1400, 'height': 2000})
+
         # Navigate to the page
         page.goto('http://localhost:8000/index.html', wait_until='networkidle')
 
+        margin = {
+            'top': '0in',
+            'bottom': '0in',
+            'left': '0in',
+            'right': '0in'
+        }
         # Generate PDF with exact settings
         page.pdf(
             path='boccherini-quartets.pdf',
             format='Letter',
             print_background=True,  # Enable background graphics
-            margin={
-                'top': '0.25in',    # Top margin for spacing
-                'bottom': '0in',    # Minimum margins
-                'left': '0in',
-                'right': '0in'
-            },
+            tagged=False,           # Generate tagged PDF for accessibility?
+            # margin=margin,        # Ignored since we are using css below.
             prefer_css_page_size=True  # Use CSS @page size settings
         )
 
         browser.close()
 
     print("✓ PDF saved to: boccherini-quartets.pdf")
+    print("next: cupsfilter boccherini-quartets.pdf > boccherini-quartets-quartz.pdf")
+    print("then: lp -d LaserJetz -o pdf-as-image boccherini-quartets-quartz.pdf")
+    print("This is still only one-sided!")
+
 
 
 if __name__ == "__main__":
