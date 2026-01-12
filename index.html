@@ -750,6 +750,32 @@
                 .attr('class', 'tooltip')
                 .style('opacity', 0);
 
+            // Detect touch device
+            const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+            // Track currently active tooltip card (for touch devices)
+            let activeCard = null;
+
+            // On touch devices, enable pointer events on tooltip and prevent click passthrough
+            if (isTouchDevice) {
+                tooltip.style('pointer-events', 'auto');
+
+                tooltip.on('click', function(event) {
+                    // Prevent clicks on tooltip from passing through
+                    event.stopPropagation();
+                });
+
+                // Close tooltip when clicking outside on touch devices
+                d3.select('body').on('click', function(event) {
+                    // Only close if clicking outside tooltip and cards
+                    if (!event.target.closest('.quartet-card') && !event.target.closest('.tooltip')) {
+                        tooltip.style('opacity', 0);
+                        d3.selectAll('.quartet-card').style('border-color', '#ddd');
+                        activeCard = null;
+                    }
+                });
+            }
+
             // === HELPER FUNCTIONS ===
 
             // Render opus label (left side of row)
@@ -830,10 +856,14 @@
             }
 
             // Render quartet card
-            function renderQuartetCard(parent, opus, quartet, tooltip) {
-                let activeTooltip = false;
-
+            function renderQuartetCard(parent, opus, quartet, tooltip, isTouchDevice) {
                 const showTooltip = function(event) {
+                    // Close any previously active tooltip
+                    if (activeCard && activeCard !== this) {
+                        d3.select(activeCard).style('border-color', '#ddd');
+                    }
+
+                    activeCard = this;
                     d3.select(this).style('border-color', '#333');
 
                     const movements = quartet.mvmts.map((m, i) => `${i + 1}. ${m}`).join('<br>');
@@ -854,14 +884,12 @@
                         .style('left', (x + 10) + 'px')
                         .style('top', (y - 10) + 'px')
                         .style('opacity', 1);
-
-                    activeTooltip = true;
                 };
 
                 const hideTooltip = function() {
                     d3.select(this).style('border-color', '#ddd');
                     tooltip.style('opacity', 0);
-                    activeTooltip = false;
+                    activeCard = null;
                 };
 
                 // Check if quartet has any minuets
@@ -871,20 +899,25 @@
                 quartet.hasRecording = d3.randomUniform()(1) < .5;
 
                 const card = parent.append('div')
-                    .attr('class', hasMinuet ? 'quartet-card' : 'quartet-card no-minuet')
-                    .on('mouseover', showTooltip)
-                    .on('mouseout', hideTooltip)
-                    .on('click', function(event) {
-                        // Toggle tooltip on mobile tap
-                        if ('ontouchstart' in window) {
-                            event.preventDefault();
-                            if (activeTooltip) {
-                                hideTooltip.call(this);
-                            } else {
-                                showTooltip.call(this, event);
-                            }
+                    .attr('class', hasMinuet ? 'quartet-card' : 'quartet-card no-minuet');
+
+                if (isTouchDevice) {
+                    // Touch device: use click to toggle, ignore mouse events
+                    card.on('click', function(event) {
+                        event.stopPropagation();
+                        if (activeCard === this) {
+                            // Clicking same card: close tooltip
+                            hideTooltip.call(this);
+                        } else {
+                            // Clicking different card: show its tooltip
+                            showTooltip.call(this, event);
                         }
                     });
+                } else {
+                    // Desktop: use hover
+                    card.on('mouseover', showTooltip)
+                        .on('mouseout', hideTooltip);
+                }
 
                 // Add colored top bar for major/minor with numbers
                 const modeBar = card.append('div')
@@ -1050,7 +1083,7 @@
 
                 // Render quartet cards
                 opus.quartets.forEach(quartet => {
-                    renderQuartetCard(quartetContainer, opus, quartet, tooltip);
+                    renderQuartetCard(quartetContainer, opus, quartet, tooltip, isTouchDevice);
                 });
             }
 
@@ -1069,7 +1102,7 @@
 
                     // Render quartet cards
                     opus.quartets.forEach(quartet => {
-                        renderQuartetCard(quartetContainer, opus, quartet, tooltip);
+                        renderQuartetCard(quartetContainer, opus, quartet, tooltip, isTouchDevice);
                     });
 
                     // Add spacer between opus groups (but not after the last one)
