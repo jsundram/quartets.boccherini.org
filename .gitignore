@@ -4,3 +4,6 @@
 # Local workflow files
 .gist_id
 sync-gist.sh
+
+# Visual regression testing output (baselines/ is tracked)
+diffs/
