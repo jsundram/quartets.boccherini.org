@@ -640,7 +640,10 @@
             body {
                 margin: 0;
                 /* Scale to fit ~1000px content into 375px viewport */
-                zoom: 0.37;
+                /* Use transform instead of zoom for Safari compatibility */
+                transform: scale(0.37);
+                transform-origin: 0 0;
+                width: calc(100% / 0.37);  /* Compensate: content laid out at ~270% then scaled down */
             }
 
             h1 {
@@ -660,6 +663,13 @@
             .opus-spacer {
                 width: 177px;
                 margin: 0 10px;
+            }
+
+            /* Prevent text wrapping in bottom sections */
+            .movements-count,
+            .opus-label .category-badge {
+                white-space: nowrap;
+                overflow: hidden;
             }
         }
     </style>
