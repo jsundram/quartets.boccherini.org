@@ -573,18 +573,15 @@
 
             /* Override responsive font sizes with fixed desktop values for print */
             h1 {
-                font-size: 2em !important;
+                font-size: 3.5em !important;
+                max-width: 100%;  /* Responsive width */
             }
 
             .subtitle {
-                font-size: 0.9em !important;
+                font-size: 1.5em !important;
             }
 
             /* Page break controls */
-            h1, .subtitle {
-                page-break-after: avoid;
-            }
-
             .opus-row {
                 page-break-inside: avoid;
                 break-inside: avoid;
