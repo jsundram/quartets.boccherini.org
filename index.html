@@ -854,9 +854,18 @@
                     const x = event.pageX || (event.touches && event.touches[0].pageX) || 0;
                     const y = event.pageY || (event.touches && event.touches[0].pageY) || 0;
 
+                    // Account for body transform scale on mobile
+                    const bodyTransform = window.getComputedStyle(document.body).transform;
+                    let scale = 1;
+                    if (bodyTransform && bodyTransform !== 'none') {
+                        // transform matrix(a, b, c, d, tx, ty) - 'a' is the scale factor
+                        const match = bodyTransform.match(/matrix\(([^,]+)/);
+                        if (match) scale = parseFloat(match[1]);
+                    }
+
                     tooltip.html(tooltipText)
-                        .style('left', (x + 10) + 'px')
-                        .style('top', (y - 10) + 'px')
+                        .style('left', (x / scale + 10) + 'px')
+                        .style('top', (y / scale - 10) + 'px')
                         .style('opacity', 1);
                 };
 
