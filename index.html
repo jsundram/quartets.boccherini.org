@@ -81,24 +81,24 @@
 
         .header-group {
             /* Header centered over visualization at all widths */
-            width: 100%;
             display: flex;
             flex-direction: column;
-            align-items: center;
+            align-items: stretch;       /* Children stretch to container width */
+            width: fit-content;         /* Shrink to fit widest child (title) */
+            max-width: 100%;            /* Don't overflow viewport */
+            margin: 0 auto;             /* Center the group */
         }
 
         h1 {
-            max-width: min(var(--header-width), 100%);  /* Responsive width */
-            margin: 0 auto 5px auto;    /* Center horizontally, small gap below */
+            margin: 0 0 5px 0;          /* Small gap below */
             text-align: center;
             color: #333;
             font-size: clamp(1.3em, 1.8vw, 2em);  /* Scales smoothly */
         }
 
         .subtitle {
-            max-width: min(var(--header-width), 100%);  /* Responsive width */
-            margin: 0 auto 25px auto;        /* Center horizontally, larger gap below */
-            text-align: right;          /* Right-align text within container */
+            margin: 0 0 25px 0;         /* Larger gap below */
+            text-align: right;          /* Right-align to match title's right edge */
             color: #666;
             font-size: clamp(0.75em, 0.85vw, 0.9em);  /* Scales smoothly */
             font-style: italic;
@@ -635,6 +635,10 @@
 
             .header-group {
                /* text-align: center;*/
+            }
+
+            h1 {
+                font-size: 1.05em;  /* Smaller to fit on one line on iPhone */
             }
 
             .container {
