@@ -712,14 +712,53 @@
             d3.json('parts.json'),
             d3.json('opera.json')
         ]).then(([petersData, partsData, operaData]) => {
+            // Counter in Javascript
+            let count = l => l.reduce((d, k) => {d[k] = (d[k] || 0) + 1; return d;}, {})
+            // hand-coded from https://en.wikipedia.org/wiki/Circle_of_fifths#/media/File:Circle_of_fifths_deluxe_4.svg
+            const c5 = new Map(Object.entries({
+                "C major": {count: 0, sign: ""},
+                "A minor": {count: 0, sign: ""},
+
+                "G major": {count: 1, sign: "♯"},
+                "E minor": {count: 1, sign: "♯"},
+                "D major": {count: 2, sign: "♯"},
+                "B minor": {count: 2, sign: "♯"},
+                "A major": {count: 3, sign: "♯"},
+                "F-sharp minor": {count: 3, sign: "♯"},
+                "E major": {count: 4, sign: "♯"},
+                "C-sharp minor": {count: 4, sign: "♯"},
+                "B major": {count: 5, sign: "♯"},
+                "G-sharp minor": {count: 5, sign: "♯"},
+                "F-sharp major": {count: 6, sign: "♯"},
+                "D-sharp minor": {count: 6, sign: "♯"},
+                "C-sharp major": {count: 7, sign: "♯"},
+
+                "F major": {count: 1, sign: "♭"},
+                "D minor": {count: 1, sign: "♭"},
+                "B-flat major": {count: 2, sign: "♭"},
+                "G minor": {count: 2, sign: "♭"},
+                "E-flat major": {count: 3, sign: "♭"},
+                "C minor": {count: 3, sign: "♭"},
+                "A-flat major": {count: 4, sign: "♭"},
+                "F minor": {count: 4, sign: "♭"},
+                "D-flat major": {count: 5, sign: "♭"},
+                "B-flat minor": {count: 5, sign: "♭"},
+                "G-flat major": {count: 6, sign: "♭"},
+                "E-flat minor": {count: 6, sign: "♭"},
+                "C-flat major": {count: 7, sign: "♭"},
+            }));
+            window.data = operaData;
+            console.log(operaData);
             // Create lookup maps keyed by Gerard number
             const petersMap = new Map(petersData.map(p => [p.Gerard, { number: p.number, label: p.label }]));
             const glabelMap = new Map(petersData.filter(p => p.glabel != null).map(p => [p.glabel, p.actual]));
             const partsMap = new Map(partsData.map(p => [p.Gerard, p.edition]));
 
             // Enrich opera data with peters nicknames and parts editions
+            let quartets = [];
             operaData.forEach(opus => {
                 opus.quartets.forEach(quartet => {
+                    quartet.opus = opus.opus;
                     // Add nickname from peters.json if available
                     if (petersMap.has(quartet.gerard)) {
                         const peters = petersMap.get(quartet.gerard);
@@ -734,8 +773,17 @@
                     if (partsMap.has(quartet.gerard)) {
                         quartet.edition = partsMap.get(quartet.gerard);
                     }
+                    quartets.push(quartet);
                 });
             });
+            window.quartets = quartets;
+            const key  = q => (q.key + " " + (q.major ? "major" : "minor"));
+            const key_counts = count(quartets.map(key))
+            window.key_counts = key_counts;
+            // can use for UI as follows:
+            console.log(Object.entries(key_counts).map(([k, v]) =>
+                ({key: k, count: v, sign: c5.get(k).sign.repeat(c5.get(k).count)})
+            ));
 
             const data = operaData;  // Use enriched data
             const container = d3.select('#visualization');
