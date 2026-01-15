@@ -79,21 +79,28 @@
             padding: 0;
         }
 
+        .container {
+            width: fit-content;         /* Shrink to visualization width */
+            margin: 0 auto;             /* Center the container */
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;       /* Children match container width */
+        }
+
         .header-group {
-            /* Header centered over visualization at all widths */
+            /* Header spans full width of visualization */
             display: flex;
             flex-direction: column;
             align-items: stretch;       /* Children stretch to container width */
-            width: fit-content;         /* Shrink to fit widest child (title) */
-            max-width: 100%;            /* Don't overflow viewport */
-            margin: 0 auto;             /* Center the group */
+            container-type: inline-size; /* Enable container queries for children */
         }
 
         h1 {
             margin: 0 0 5px 0;          /* Small gap below */
             text-align: center;
             color: #333;
-            font-size: clamp(1.3em, 1.8vw, 2em);  /* Scales smoothly */
+            font-size: 4.3cqw;          /* Scale to span container width */
+            white-space: nowrap;        /* Keep on one line */
         }
 
         .subtitle {
@@ -111,14 +118,6 @@
 
         .subtitle a:hover {
             text-decoration: underline;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
         }
 
         .opus-row {
@@ -646,12 +645,21 @@
                 width: calc(100% / 0.37);  /* Compensate: content laid out at ~270% then scaled down */
             }
 
+            .container {
+                width: auto;  /* Override fit-content for scaled view */
+                align-items: center;      /* Keep centered */
+            }
+
+            .header-group {
+                container-type: normal;
+            }
+
             h1 {
-                font-size: 2em;  /* Fixed desktop size */
+                font-size: 2.7em;
             }
 
             .opus-label {
-                width: 95px;  /* Fixed desktop width */
+                width: 95px;
             }
 
             .quartets-container {
@@ -684,6 +692,7 @@
             .card-links {
                 padding: 0px 2px;
             }
+
         }
     </style>
 </head>
