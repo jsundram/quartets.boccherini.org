@@ -434,7 +434,7 @@
             align-items: center;           /* Vertically center text */
             justify-content: center;       /* Horizontally center text */
             margin: 0;
-            padding: 0 4px;                /* Small padding for repeat glyphs */
+            padding: 0 0px;                /* Small padding for repeat glyphs */
             border-radius: 0;              /* Square edges like top bar */
             font-weight: 500;
             line-height: 1;                /* Match category badge */
@@ -638,11 +638,11 @@
 
             body {
                 margin: 0;
-                /* Scale to fit ~1000px content into 375px viewport */
+                /* Scale to fit ~1000px content into 375px viewport with margins */
                 /* Use transform instead of zoom for Safari compatibility */
-                transform: scale(0.37);
+                transform: scale(0.35);
                 transform-origin: 0 0;
-                width: calc(100% / 0.37);  /* Compensate: content laid out at ~270% then scaled down */
+                width: calc(100% / 0.35);  /* Compensate: content laid out at ~286% then scaled down */
             }
 
             .container {
@@ -678,15 +678,6 @@
             .opus-label .category-badge {
                 white-space: nowrap;
                 overflow: hidden;
-            }
-
-            /* Tighten repeat sign spacing */
-            .movements-count .repeat-start {
-                margin-left: -4px;
-            }
-
-            .movements-count .repeat-end {
-                margin-right: -4px;
             }
 
             .card-links {
