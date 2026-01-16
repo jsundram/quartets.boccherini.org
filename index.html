@@ -10,8 +10,8 @@
     <style>
         :root {
             /* === DYNAMIC SIZING SYSTEM === */
-            /* Cards smoothly scale from 140px (desktop) to 80px (mobile) */
-            --card-height: clamp(80px, 12vw, 140px);
+            /* Scale Card Size based on browser window width */
+            --card-height: clamp(100px, 12vw, 140px);
             --top-section-height: clamp(14px, 1.7vw, 20px);
             --nickname-height: clamp(10px, 1.3vw, 15px);
             --bottom-section-height: clamp(14px, 1.7vw, 20px);
@@ -135,7 +135,7 @@
 
         .opus-label {
             /* Container sizing - MATCHES CARD HEIGHT, scales proportionally */
-            width: clamp(50px, 8vw, 95px);
+            width: clamp(85px, 8vw, 95px);
             height: var(--card-height);
             padding: clamp(1px, 0.2vw, 2px) clamp(3px, 0.5vw, 6px) 0 clamp(5px, 0.8vw, 10px);
 
@@ -213,7 +213,7 @@
         /* Dedication - absolutely positioned above opus number to preserve alignment */
         .opus-label .dedication {
             position: absolute;             /* Remove from layout flow */
-            top: 22px;                      /* Position below year/age */
+            top: calc(var(--top-section-height) + 2px);  /* Position below year/age */
             left: 0;
             right: 0;
             font-size: 0.6em;               /* Size: smallest */
@@ -498,7 +498,7 @@
 
         .nickname {
             position: absolute;              /* Remove from layout flow to preserve alignment */
-            top: 22px;                       /* Match dedication positioning */
+            top: calc(var(--top-section-height) + 2px);  /* Match dedication positioning */
             left: 0;
             right: 0;
             max-height: 13px;                /* Constrain to allocated space (22px to 35px) */
@@ -529,7 +529,7 @@
             font-size: 0.7em;
             color: #666;
             font-style: italic;
-            margin-left: 5px;
+            margin-left: 2px;
         }
 
         /* === PRINT STYLES === */
@@ -627,7 +627,7 @@
 
         /* === MOBILE RESPONSIVE (iPhone) === */
         /* Mini version of desktop - scaled down, no scrolling, pinch-to-zoom */
-        @media (max-width: 767px) {
+        @media (max-width: 800px) {
             /* Override responsive sizing with fixed desktop values */
             :root {
                 --card-height: 140px;
