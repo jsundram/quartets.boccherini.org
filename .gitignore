@@ -1,9 +1,32 @@
-# macOS system files
+# macOS
 .DS_Store
 
-# Local workflow files
+# Generated output
+diffs/
+*.pdf
+
+# Playwright
+.playwright-mcp/
+
+# Debug/temporary files
+broken.html
+debug-*.py
+test-*.py
+*-history.txt
+*.png
+*.webp
+!baselines/*.png
+
+# Personal/reference (not needed for app)
+TODO.md
+parts.md
+peters.md
+minuets.py
+
+# Deprecated gist workflow
 .gist_id
 sync-gist.sh
 
-# Visual regression testing output (baselines/ is tracked)
-diffs/
+# Python
+__pycache__/
+*.pyc

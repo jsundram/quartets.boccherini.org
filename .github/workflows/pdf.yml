@@ -1,0 +1,48 @@
+name: Generate PDF
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  generate-pdf:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: Install Playwright browsers
+        run: uvx playwright install chromium --with-deps
+
+      - name: Install qpdf
+        run: sudo apt-get install -y qpdf
+
+      - name: Start local server
+        run: python -m http.server 8000 &
+
+      - name: Wait for server
+        run: sleep 2
+
+      - name: Generate PDF
+        run: uv run tools/generate-pdf.py
+
+      - name: Upload PDF artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: boccherini-quartets-pdf
+          path: boccherini-quartets.pdf
+
+      - name: Attach to release
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: boccherini-quartets.pdf
