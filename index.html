@@ -12,6 +12,8 @@
             /* === DYNAMIC SIZING SYSTEM === */
             /* Scale Card Size based on browser window width */
             --card-height: clamp(100px, 12vw, 140px);
+            --card-gap: clamp(6px, 0.8vw, 10px);
+            --opus-label-width: clamp(85px, 8vw, 95px);
             --top-section-height: clamp(14px, 1.7vw, 20px);
             --nickname-height: clamp(10px, 1.3vw, 15px);
             --bottom-section-height: clamp(14px, 1.7vw, 20px);
@@ -135,7 +137,7 @@
 
         .opus-label {
             /* Container sizing - MATCHES CARD HEIGHT, scales proportionally */
-            width: clamp(85px, 8vw, 95px);
+            width: var(--opus-label-width);
             height: var(--card-height);
             padding: clamp(1px, 0.2vw, 2px) clamp(3px, 0.5vw, 6px) 0 clamp(5px, 0.8vw, 10px);
 
@@ -241,16 +243,17 @@
         .quartets-container {
             display: flex;
             flex-wrap: wrap;
-            gap: clamp(6px, 0.8vw, 10px);
-            margin-left: clamp(6px, 0.8vw, 10px); /* Gap between label and cards */
+            gap: var(--card-gap);
+            margin-left: var(--card-gap); /* Gap between label and cards */
         }
 
         /* Spacer between opus groups in combined rows */
         .opus-spacer {
-            width: clamp(120px, 15vw, 177px);  /* Scales with viewport */
+            /* Responsive scaling for desktop/iPad; print/mobile override with calc() */
+            width: clamp(120px, 15vw, 177px);
             height: var(--card-height);
             flex-shrink: 0;
-            margin: 0 clamp(6px, 0.8vw, 10px); /* Gap on both sides */
+            margin: 0 var(--card-gap);
         }
 
         .quartet-card {
@@ -594,7 +597,7 @@
             }
 
             .opus-spacer {
-                width: 179px;
+                width: 179px;  /* Fixed width for print */
             }
 
             .quartet-card {
@@ -631,6 +634,8 @@
             /* Override responsive sizing with fixed desktop values */
             :root {
                 --card-height: 140px;
+                --card-gap: 10px;
+                --opus-label-width: 95px;
                 --top-section-height: 20px;
                 --nickname-height: 15px;
                 --bottom-section-height: 20px;
@@ -658,19 +663,14 @@
                 font-size: 2.7em;
             }
 
-            .opus-label {
-                width: 95px;
-            }
-
             .quartets-container {
                 flex-wrap: nowrap;  /* Prevent cards from wrapping */
-                gap: 10px;
-                margin-left: 10px;
             }
 
             .opus-spacer {
-                width: 177px;
-                margin: 0 10px;
+                /* Width = 2 cards - opus label + 2 gaps (fixed values on mobile) */
+                width: calc(2 * var(--card-height) - var(--opus-label-width) + 2 * var(--card-gap));
+                margin: 0;  /* Gap handled by container */
             }
 
             /* Prevent text wrapping in bottom sections */
