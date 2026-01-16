@@ -1,0 +1,42 @@
+#!/bin/bash
+#
+# Pre-commit hook: Regenerate PDF before committing
+#
+# This hook ensures boccherini-quartets.pdf is always up-to-date with index.html
+#
+
+set -e
+
+# Only run if index.html or opera.json is being committed
+if ! git diff --cached --name-only | grep -qE '^(index\.html|opera\.json)$'; then
+    exit 0
+fi
+
+echo "📄 Regenerating PDF (index.html or opera.json changed)..."
+
+# Check if server is already running
+SERVER_RUNNING=false
+if nc -z localhost 8000 2>/dev/null; then
+    SERVER_RUNNING=true
+fi
+
+# Start server if needed
+if [ "$SERVER_RUNNING" = false ]; then
+    echo "   Starting local server..."
+    python3 -m http.server 8000 &>/dev/null &
+    SERVER_PID=$!
+    sleep 1
+fi
+
+# Generate PDF
+uv run tools/generate-pdf.py
+
+# Stop server if we started it
+if [ "$SERVER_RUNNING" = false ] && [ -n "$SERVER_PID" ]; then
+    kill $SERVER_PID 2>/dev/null || true
+fi
+
+# Stage the updated PDF
+git add boccherini-quartets.pdf
+
+echo "✓ PDF regenerated and staged"
