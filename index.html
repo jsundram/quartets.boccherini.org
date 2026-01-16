@@ -242,7 +242,7 @@
 
         .quartets-container {
             display: flex;
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
             gap: var(--card-gap);
             margin-left: var(--card-gap); /* Gap between label and cards */
         }
@@ -629,8 +629,9 @@
         }
 
         /* === MOBILE RESPONSIVE (iPhone) === */
-        /* Mini version of desktop - scaled down, no scrolling, pinch-to-zoom */
-        @media (max-width: 800px) {
+        /* Small touch devices */
+        /* hover:none = no mouse, pointer:coarse = touch screen */
+        @media (hover: none) and (pointer: coarse) and (max-width: 800px) {
             /* Override responsive sizing with fixed desktop values */
             :root {
                 --card-height: 140px;
@@ -661,10 +662,6 @@
 
             h1 {
                 font-size: 2.7em;
-            }
-
-            .quartets-container {
-                flex-wrap: nowrap;  /* Prevent cards from wrapping */
             }
 
             .opus-spacer {
