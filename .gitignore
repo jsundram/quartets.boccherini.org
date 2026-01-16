@@ -4,7 +4,7 @@
 # Generated output
 diffs/
 *.pdf
-!boccherini-quartets.pdf
+!print.pdf
 
 # Playwright
 .playwright-mcp/

@@ -37,6 +37,6 @@ if [ "$SERVER_RUNNING" = false ] && [ -n "$SERVER_PID" ]; then
 fi
 
 # Stage the updated PDF
-git add boccherini-quartets.pdf
+git add print.pdf
 
 echo "✓ PDF regenerated and staged"

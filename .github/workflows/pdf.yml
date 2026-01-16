@@ -38,11 +38,11 @@ jobs:
       - name: Upload PDF artifact
         uses: actions/upload-artifact@v4
         with:
-          name: boccherini-quartets-pdf
-          path: boccherini-quartets.pdf
+          name: print-pdf
+          path: print.pdf
 
       - name: Attach to release
         if: github.event_name == 'release'
         uses: softprops/action-gh-release@v2
         with:
-          files: boccherini-quartets.pdf
+          files: print.pdf

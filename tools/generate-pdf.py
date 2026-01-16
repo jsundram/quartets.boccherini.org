@@ -65,7 +65,7 @@ def generate_pdf():
     print(f"✓ Temporary PDF generated: {outfile}")
 
     # Linearize the PDF using qpdf to avoid AirPrint issues.
-    final_pdf = 'boccherini-quartets.pdf'
+    final_pdf = 'print.pdf'
     print(f"🔄 Linearizing PDF with qpdf...")
 
     try:
