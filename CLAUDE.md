@@ -152,7 +152,12 @@ uv run tools/share-diff.py
 uv run tools/share-diff.py --new
 ```
 
-**Authentication** - The script will prompt for a GitHub token if needed. Create one at https://github.com/settings/tokens with the `gist` scope.
+**Authentication** - The script requires a GitHub token with the `gist` scope. Create one at https://github.com/settings/tokens
+
+**For Claude Code web/mobile sessions**: After the setup script runs, prompt the user for their GitHub token. Store it for the session and pass it via `--token`:
+```bash
+uv run tools/share-diff.py --token USER_PROVIDED_TOKEN
+```
 
 The script outputs a GitHack URL that renders the HTML report with embedded images.
 
