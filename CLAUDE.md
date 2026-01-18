@@ -135,9 +135,30 @@ When making CSS changes that should only affect specific formats:
 Workflow:
 1. Make the CSS change
 2. Run `uv run tools/visual-diff.py test index.html`
-3. Tell user the results and let them inspect the diff report
-4. **Wait for explicit user approval** (e.g., "looks good", "accept", "update baselines")
-5. Only then run `uv run tools/visual-diff.py baseline`
+3. Share the report for review: `uv run tools/share-diff.py`
+4. Tell user the results and provide the GitHack URL for inspection
+5. **Wait for explicit user approval** (e.g., "looks good", "accept", "update baselines")
+6. Only then run `uv run tools/visual-diff.py baseline`
+
+### Sharing Diff Reports (Claude Code Web/Mobile)
+
+In sandboxed environments like Claude Code web/mobile, use `share-diff.py` to upload the visual diff report to a GitHub Gist and get a viewable URL:
+
+```bash
+# After running visual-diff.py test, share the report
+uv run tools/share-diff.py
+
+# Force create a new gist (even if one exists)
+uv run tools/share-diff.py --new
+```
+
+**Authentication required** - Set `GH_TOKEN` environment variable or run `gh auth login`:
+```bash
+export GH_TOKEN=ghp_your_token_here
+uv run tools/share-diff.py
+```
+
+The script outputs a GitHack URL that renders the HTML report with embedded images.
 
 ### Iteration Protocol
 

@@ -24,8 +24,9 @@ parts.md
 peters.md
 minuets.py
 
-# Deprecated gist workflow
+# Gist workflow
 .gist_id
+.diff-gist-id
 sync-gist.sh
 
 # Python
