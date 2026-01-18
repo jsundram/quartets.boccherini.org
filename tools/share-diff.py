@@ -10,14 +10,15 @@ Creates a self-contained HTML report with embedded images and uploads it
 to a GitHub Gist, then provides a GitHack URL for viewing.
 
 Usage:
-    uv run tools/share-diff.py              Upload diffs/report.html to gist
-    uv run tools/share-diff.py --update     Update existing gist
-    uv run tools/share-diff.py --new        Force create a new gist
+    uv run tools/share-diff.py --token TOKEN    Upload with explicit token
+    uv run tools/share-diff.py                  Upload (prompts for token if needed)
+    uv run tools/share-diff.py --new            Force create a new gist
 
 Authentication (in order of preference):
-    1. GH_TOKEN environment variable
-    2. gh CLI (if authenticated)
-    3. Interactive prompt (will ask for token)
+    1. --token argument
+    2. GH_TOKEN environment variable
+    3. gh CLI (if authenticated)
+    4. Interactive prompt (will ask for token)
 
 To create a token: https://github.com/settings/tokens
 Required scope: gist
@@ -48,10 +49,10 @@ GITHUB_API = 'https://api.github.com'
 
 
 class GitHubAuth:
-    """Handle GitHub authentication via GH_TOKEN, gh CLI, or interactive prompt."""
+    """Handle GitHub authentication via token, GH_TOKEN, gh CLI, or interactive prompt."""
 
-    def __init__(self):
-        self.token = os.environ.get('GH_TOKEN') or os.environ.get('GITHUB_TOKEN')
+    def __init__(self, token=None):
+        self.token = token or os.environ.get('GH_TOKEN') or os.environ.get('GITHUB_TOKEN')
         self.username = None
         self._check_auth()
 
@@ -299,6 +300,8 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=__doc__
     )
+    parser.add_argument('--token', '-t',
+                        help='GitHub personal access token (alternative to GH_TOKEN env var)')
     parser.add_argument('--update', action='store_true',
                         help='Update existing gist instead of creating new')
     parser.add_argument('--new', action='store_true',
@@ -306,7 +309,7 @@ def main():
     args = parser.parse_args()
 
     # Check prerequisites and get auth
-    auth = GitHubAuth()
+    auth = GitHubAuth(token=args.token)
 
     # Create self-contained HTML
     html_content = create_self_contained_report()
