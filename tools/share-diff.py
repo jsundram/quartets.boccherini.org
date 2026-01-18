@@ -14,17 +14,13 @@ Usage:
     uv run tools/share-diff.py --update     Update existing gist
     uv run tools/share-diff.py --new        Force create a new gist
 
-Authentication:
-    Option 1: Set GH_TOKEN environment variable
-        export GH_TOKEN=ghp_your_token_here
-        uv run tools/share-diff.py
+Authentication (in order of preference):
+    1. GH_TOKEN environment variable
+    2. gh CLI (if authenticated)
+    3. Interactive prompt (will ask for token)
 
-    Option 2: Authenticate gh CLI
-        gh auth login
-        uv run tools/share-diff.py
-
-    To create a token: https://github.com/settings/tokens
-    Required scope: gist
+To create a token: https://github.com/settings/tokens
+Required scope: gist
 
 Requirements:
     - diffs/ directory with report.html and images from visual-diff.py
@@ -52,7 +48,7 @@ GITHUB_API = 'https://api.github.com'
 
 
 class GitHubAuth:
-    """Handle GitHub authentication via GH_TOKEN or gh CLI."""
+    """Handle GitHub authentication via GH_TOKEN, gh CLI, or interactive prompt."""
 
     def __init__(self):
         self.token = os.environ.get('GH_TOKEN') or os.environ.get('GITHUB_TOKEN')
@@ -63,14 +59,8 @@ class GitHubAuth:
         """Verify authentication and get username."""
         if self.token:
             # Use token directly
-            try:
-                data = self._api_request('GET', '/user')
-                self.username = data['login']
-                print(f"Authenticated via token as: {self.username}")
+            if self._try_token(self.token):
                 return
-            except Exception as e:
-                print(f"Token authentication failed: {e}")
-                self.token = None
 
         # Try gh CLI
         result = subprocess.run(['gh', 'auth', 'status'], capture_output=True, text=True)
@@ -85,21 +75,52 @@ class GitHubAuth:
                 print(f"Authenticated via gh CLI as: {self.username}")
                 return
 
-        # No authentication
+        # Prompt for token interactively
+        self._prompt_for_token()
+
+    def _try_token(self, token):
+        """Try to authenticate with a token. Returns True on success."""
+        self.token = token
+        try:
+            data = self._api_request('GET', '/user')
+            self.username = data['login']
+            print(f"Authenticated as: {self.username}")
+            return True
+        except Exception as e:
+            print(f"Token authentication failed: {e}")
+            self.token = None
+            return False
+
+    def _prompt_for_token(self):
+        """Prompt user to enter a GitHub token interactively."""
         print("=" * 70)
-        print("ERROR: GitHub authentication required")
+        print("GitHub authentication required")
         print("=" * 70)
-        print("\nOption 1: Set GH_TOKEN environment variable")
-        print("    export GH_TOKEN=ghp_your_token_here")
-        print("    uv run tools/share-diff.py")
-        print("\nOption 2: Authenticate gh CLI")
-        print("    gh auth login")
-        print("    uv run tools/share-diff.py")
         print("\nTo create a personal access token:")
-        print("    https://github.com/settings/tokens")
-        print("    Required scope: gist")
+        print("  1. Go to: https://github.com/settings/tokens")
+        print("  2. Click 'Generate new token (classic)'")
+        print("  3. Select scope: 'gist'")
+        print("  4. Copy the token and paste below")
         print("=" * 70)
-        sys.exit(1)
+
+        while True:
+            try:
+                token = input("\nEnter GitHub token (or 'q' to quit): ").strip()
+            except (EOFError, KeyboardInterrupt):
+                print("\nAborted.")
+                sys.exit(1)
+
+            if token.lower() == 'q':
+                sys.exit(0)
+
+            if not token:
+                print("Token cannot be empty.")
+                continue
+
+            if self._try_token(token):
+                return
+
+            print("Invalid token. Please try again.")
 
     def _api_request(self, method, endpoint, data=None):
         """Make a GitHub API request."""

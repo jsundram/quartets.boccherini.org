@@ -152,11 +152,7 @@ uv run tools/share-diff.py
 uv run tools/share-diff.py --new
 ```
 
-**Authentication required** - Set `GH_TOKEN` environment variable or run `gh auth login`:
-```bash
-export GH_TOKEN=ghp_your_token_here
-uv run tools/share-diff.py
-```
+**Authentication** - The script will prompt for a GitHub token if needed. Create one at https://github.com/settings/tokens with the `gist` scope.
 
 The script outputs a GitHack URL that renders the HTML report with embedded images.
 
