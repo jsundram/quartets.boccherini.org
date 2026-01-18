@@ -32,7 +32,13 @@ uv run tools/visual-diff.py test index.html --open
 
 # Update baselines after intentional changes
 uv run tools/visual-diff.py baseline
+
+# Dark mode testing (uses --dark flag)
+uv run tools/visual-diff.py baseline --dark      # Generate dark mode baselines
+uv run tools/visual-diff.py test index.html --dark --open  # Test dark mode
 ```
+
+The `--dark` flag injects the `.dark-mode` CSS class before capturing screenshots. Dark mode baselines use `-dark` suffix (e.g., `desktop-dark.png`). PDF format is skipped for dark mode since print always uses light mode.
 
 See **Visual Regression Workflow** section below for detailed instructions.
 
@@ -173,8 +179,10 @@ If a CSS change produces unexpected results:
 Current: **1%** - Changes below this are acceptable noise.
 
 ### Key CSS Locations
-- **Lines 11-42**: CSS variables (`:root`)
-- **Lines 82-100**: Header and title styles
-- **Lines 243-248**: `.quartets-container` (flex layout, nowrap)
-- **Lines 575-629**: `@media print` styles
-- **Lines 631-695**: `@media (hover: none) and (pointer: coarse)` mobile/touch styles
+- **Lines 21-110**: CSS variables (`:root`) - light mode defaults
+- **Lines 112-172**: Dark mode colors (`@media (prefers-color-scheme: dark)`)
+- **Lines 174-233**: Explicit dark mode class (`.dark-mode`) for testing
+- **Lines 291-314**: Header and title styles
+- **Lines 434-439**: `.quartets-container` (flex layout, nowrap)
+- **Lines 743-858**: `@media print` styles
+- **Lines 863-913**: `@media (hover: none) and (pointer: coarse)` mobile/touch styles

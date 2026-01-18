@@ -21,6 +21,7 @@ Options:
     --format FORMAT     Only test specific format: pdf|desktop|ipad|iphone
     --threshold FLOAT   Pixel diff threshold (default: 0.01 = 1%)
     --open              Open HTML report in browser after completion
+    --dark              Enable dark mode (adds .dark-mode CSS class)
 """
 
 import argparse
@@ -89,7 +90,7 @@ def capture_screenshot(page, format_name, config, output_path):
     return output_path
 
 
-def capture_all_formats(html_file, output_dir, formats=None):
+def capture_all_formats(html_file, output_dir, formats=None, dark_mode=False):
     """Capture screenshots for all formats from an HTML file."""
     if formats is None:
         formats = list(FORMATS.keys())
@@ -104,6 +105,9 @@ def capture_all_formats(html_file, output_dir, formats=None):
         url = f'http://localhost:8000/{html_file}'
 
     results = {}
+
+    # File suffix for dark mode
+    suffix = '-dark' if dark_mode else ''
 
     # Group formats by browser type
     formats_by_browser = {}
@@ -126,7 +130,7 @@ def capture_all_formats(html_file, output_dir, formats=None):
 
             for format_name in browser_formats:
                 config = FORMATS[format_name]
-                output_path = output_dir / f'{format_name}.png'
+                output_path = output_dir / f'{format_name}{suffix}.png'
 
                 # Create page with device options
                 device_scale_factor = config.get('device_scale_factor', 1)
@@ -135,13 +139,18 @@ def capture_all_formats(html_file, output_dir, formats=None):
                 page.goto(url)
                 page.wait_for_load_state('networkidle')
 
+                # Enable dark mode by adding CSS class
+                if dark_mode:
+                    page.evaluate("document.documentElement.classList.add('dark-mode')")
+
                 capture_screenshot(page, format_name, config, output_path)
                 results[format_name] = output_path
 
                 browser_label = f" [{browser_type}]" if browser_type != 'chromium' else ""
                 scale_label = f" @{device_scale_factor}x" if device_scale_factor > 1 else ""
-                print(f"  Captured {format_name}: {config['width']}x{config['height']}" +
-                      (" (print)" if config.get('print') else "") + browser_label + scale_label)
+                dark_label = " (dark)" if dark_mode else ""
+                print(f"  Captured {format_name}{suffix}: {config['width']}x{config['height']}" +
+                      (" (print)" if config.get('print') else "") + browser_label + scale_label + dark_label)
 
                 page.close()
 
@@ -230,14 +239,16 @@ def compute_diff(baseline_path, test_path, diff_path):
     return result
 
 
-def generate_html_report(results, threshold, output_path):
+def generate_html_report(results, threshold, output_path, dark_mode=False):
     """Generate an HTML report with side-by-side comparisons."""
+    suffix = '-dark' if dark_mode else ''
+    mode_label = " (Dark Mode)" if dark_mode else ""
     html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visual Regression Report - {datetime.now().strftime('%Y-%m-%d %H:%M')}</title>
+    <title>Visual Regression Report{mode_label} - {datetime.now().strftime('%Y-%m-%d %H:%M')}</title>
     <style>
         * {{ box-sizing: border-box; }}
         body {{
@@ -330,7 +341,7 @@ def generate_html_report(results, threshold, output_path):
     </style>
 </head>
 <body>
-    <h1>Visual Regression Report</h1>
+    <h1>Visual Regression Report{mode_label}</h1>
     <p>Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
     <p>Threshold: {threshold * 100:.2f}%</p>
 
@@ -386,15 +397,15 @@ def generate_html_report(results, threshold, output_path):
         <div class="comparison">
             <div class="comparison-item">
                 <h3>Baseline</h3>
-                <img src="../baselines/{format_name}.png" alt="Baseline" onclick="zoomImage(this)">
+                <img src="../baselines/{format_name}{suffix}.png" alt="Baseline" onclick="zoomImage(this)">
             </div>
             <div class="comparison-item">
                 <h3>Current</h3>
-                <img src="{format_name}-test.png" alt="Current" onclick="zoomImage(this)">
+                <img src="{format_name}{suffix}-test.png" alt="Current" onclick="zoomImage(this)">
             </div>
             <div class="comparison-item">
                 <h3>Difference</h3>
-                <img src="{format_name}-diff.png" alt="Diff" onclick="zoomImage(this)">
+                <img src="{format_name}{suffix}-diff.png" alt="Diff" onclick="zoomImage(this)">
             </div>
         </div>
     </div>
@@ -432,15 +443,18 @@ def cmd_baseline(args):
     """Generate baseline images."""
     html_file = args.file or 'index.html'
     formats = [args.format] if args.format else None
+    dark_mode = getattr(args, 'dark', False)
 
-    print(f"Generating baselines from {html_file}...")
+    mode_label = " (dark mode)" if dark_mode else ""
+    print(f"Generating baselines from {html_file}{mode_label}...")
     ensure_server_running()
 
-    results = capture_all_formats(html_file, BASELINES_DIR, formats)
+    results = capture_all_formats(html_file, BASELINES_DIR, formats, dark_mode=dark_mode)
 
+    suffix = '-dark' if dark_mode else ''
     print(f"\nBaselines saved to {BASELINES_DIR}/")
     for format_name, path in results.items():
-        print(f"  {format_name}.png")
+        print(f"  {format_name}{suffix}.png")
 
     return 0
 
@@ -450,35 +464,40 @@ def cmd_test(args):
     html_file = args.file
     threshold = args.threshold
     formats = [args.format] if args.format else list(FORMATS.keys())
+    dark_mode = getattr(args, 'dark', False)
 
-    print(f"Testing {html_file} against baselines...")
+    suffix = '-dark' if dark_mode else ''
+    mode_label = " (dark mode)" if dark_mode else ""
+
+    print(f"Testing {html_file} against baselines{mode_label}...")
     ensure_server_running()
 
     # Check baselines exist
     missing_baselines = []
     for format_name in formats:
-        baseline_path = BASELINES_DIR / f'{format_name}.png'
+        baseline_path = BASELINES_DIR / f'{format_name}{suffix}.png'
         if not baseline_path.exists():
             missing_baselines.append(format_name)
 
     if missing_baselines:
         print(f"ERROR: Missing baselines for: {', '.join(missing_baselines)}")
-        print("Run 'python visual-diff.py baseline' first")
+        dark_flag = ' --dark' if dark_mode else ''
+        print(f"Run 'python visual-diff.py baseline{dark_flag}' first")
         return 1
 
     # Capture test screenshots
     print("\nCapturing test screenshots...")
-    test_results = capture_all_formats(html_file, DIFFS_DIR, formats)
+    test_results = capture_all_formats(html_file, DIFFS_DIR, formats, dark_mode=dark_mode)
 
     # Rename test screenshots and compute diffs
     print("\nComparing against baselines...")
     diff_results = {}
 
     for format_name in formats:
-        test_path = DIFFS_DIR / f'{format_name}.png'
-        test_renamed = DIFFS_DIR / f'{format_name}-test.png'
-        baseline_path = BASELINES_DIR / f'{format_name}.png'
-        diff_path = DIFFS_DIR / f'{format_name}-diff.png'
+        test_path = DIFFS_DIR / f'{format_name}{suffix}.png'
+        test_renamed = DIFFS_DIR / f'{format_name}{suffix}-test.png'
+        baseline_path = BASELINES_DIR / f'{format_name}{suffix}.png'
+        diff_path = DIFFS_DIR / f'{format_name}{suffix}-diff.png'
 
         # Rename test file
         if test_path.exists():
@@ -489,11 +508,12 @@ def cmd_test(args):
         diff_results[format_name] = result
 
     # Generate HTML report
-    report_path = generate_html_report(diff_results, threshold, DIFFS_DIR / 'report.html')
+    report_name = 'report-dark.html' if dark_mode else 'report.html'
+    report_path = generate_html_report(diff_results, threshold, DIFFS_DIR / report_name, dark_mode=dark_mode)
 
     # Print console summary
     print("\n" + "=" * 70)
-    print("Visual Regression Test Results")
+    print(f"Visual Regression Test Results{mode_label}")
     print("=" * 70)
     print(f"{'Format':<12} {'Status':<10} {'Diff %':<25} {'Threshold':<10}")
     print("-" * 70)
@@ -522,7 +542,7 @@ def cmd_test(args):
     print(f"Report: {report_path}")
 
     if args.open:
-        webbrowser.open('http://localhost:8000/diffs/report.html')
+        webbrowser.open(f'http://localhost:8000/diffs/{report_name}')
 
     return 1 if failures > 0 else 0
 
@@ -637,6 +657,8 @@ def main():
                                   help='HTML file to use (default: index.html)')
     baseline_parser.add_argument('--format', choices=list(FORMATS.keys()),
                                   help='Only generate specific format')
+    baseline_parser.add_argument('--dark', action='store_true',
+                                  help='Enable dark mode (adds .dark-mode CSS class)')
 
     # test command
     test_parser = subparsers.add_parser('test', help='Test file against baselines')
@@ -647,6 +669,8 @@ def main():
                               help=f'Diff threshold (default: {DEFAULT_THRESHOLD})')
     test_parser.add_argument('--open', action='store_true',
                               help='Open report in browser')
+    test_parser.add_argument('--dark', action='store_true',
+                              help='Enable dark mode (adds .dark-mode CSS class)')
 
     # compare command
     compare_parser = subparsers.add_parser('compare', help='Compare two HTML files')
