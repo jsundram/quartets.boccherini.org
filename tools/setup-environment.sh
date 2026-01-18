@@ -70,10 +70,10 @@ fi
 echo "Checking WebKit system dependencies..."
 
 # Test if WebKit can launch by checking for missing libs
-# We do this by running playwright's dependency check
-if playwright install-deps webkit --dry-run 2>&1 | grep -q "missing"; then
+# We do this by running playwright's dependency check using Python playwright via uv
+if uv run --with playwright python -m playwright install-deps webkit --dry-run 2>&1 | grep -q "apt-get install"; then
     echo "  Installing WebKit system dependencies..."
-    playwright install-deps webkit
+    uv run --with playwright python -m playwright install-deps webkit
     INSTALLED+=("WebKit system dependencies")
 else
     SKIPPED+=("WebKit system dependencies (already satisfied)")
