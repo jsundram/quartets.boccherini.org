@@ -1,5 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+<!--
+    DARK MODE TESTING:
+    To test dark mode explicitly (regardless of system preference):
+    1. Open browser console (F12)
+    2. Run: document.documentElement.classList.add('dark-mode')
+    3. To disable: document.documentElement.classList.remove('dark-mode')
+
+    Dark mode automatically follows system preference via @media (prefers-color-scheme: dark)
+    PDF output always uses light mode for better printing.
+-->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -39,6 +49,187 @@
 
             /* === OWNERSHIP INDICATOR === */
             --show-ownership: 1; /* Set to 1 to show repeat signs on owned parts, 0 to hide */
+
+            /* === COLOR SYSTEM (LIGHT MODE DEFAULT) === */
+            /* Background colors */
+            --bg-body: #f5f5f5;
+            --bg-card: white;
+            --bg-card-no-minuet: rgba(0, 0, 0, 0.03);
+            --bg-tooltip: rgba(0, 0, 0, 0.9);
+            --bg-mode-bar-major: transparent;
+            --bg-mode-bar-minor: #E91E63;
+
+            /* Text colors */
+            --text-primary: #222;
+            --text-secondary: #333;
+            --text-tertiary: #444;
+            --text-muted: #666;
+            --text-light: #777;
+            --text-lighter: #888;
+            --text-lightest: #999;
+            --text-link: #2196F3;
+            --text-link-hover: #1976D2;
+            --text-on-tooltip: white;
+
+            /* Mode bar text colors */
+            --text-gerard-major: #444;
+            --text-quartet-major: #888;
+            --text-gerard-minor: white;
+            --text-quartet-minor: rgba(255, 255, 255, 0.85);
+
+            /* Border colors */
+            --border-card: #ddd;
+            --border-card-hover: #888;
+            --border-card-active: #333;
+
+            /* Shadow colors */
+            --shadow-card: rgba(0, 0, 0, 0.1);
+            --shadow-card-hover: rgba(0, 0, 0, 0.2);
+
+            /* Movement count colors (diverging palette) */
+            --mvmt-1-bg: #9C27B0;
+            --mvmt-1-text: white;
+            --mvmt-2-bg: #CE93D8;
+            --mvmt-2-text: #333;
+            --mvmt-3-bg: #B0BEC5;
+            --mvmt-3-text: #333;
+            --mvmt-4-bg: #81C784;
+            --mvmt-4-text: #333;
+            --mvmt-5-bg: #2E7D32;
+            --mvmt-5-text: white;
+
+            /* Category badge colors */
+            --badge-grande-bg: #81C784;
+            --badge-grande-text: #333;
+            --badge-piccola-bg: #CE93D8;
+            --badge-piccola-text: #333;
+
+            /* Opus label gradient backgrounds */
+            --gradient-grande: rgba(129, 199, 132, 0.12);
+            --gradient-piccola: rgba(206, 147, 216, 0.12);
+        }
+
+        /* === DARK MODE COLORS === */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                /* Background colors */
+                --bg-body: #1a1a1a;
+                --bg-card: #2d2d2d;
+                --bg-card-no-minuet: rgba(255, 255, 255, 0.03);
+                --bg-tooltip: rgba(240, 240, 240, 0.95);
+                --bg-mode-bar-major: transparent;
+                --bg-mode-bar-minor: #E91E63;
+
+                /* Text colors */
+                --text-primary: #f0f0f0;
+                --text-secondary: #e0e0e0;
+                --text-tertiary: #d0d0d0;
+                --text-muted: #b0b0b0;
+                --text-light: #999;
+                --text-lighter: #888;
+                --text-lightest: #707070;
+                --text-link: #64B5F6;
+                --text-link-hover: #90CAF9;
+                --text-on-tooltip: #222;
+
+                /* Mode bar text colors */
+                --text-gerard-major: #d0d0d0;
+                --text-quartet-major: #999;
+                --text-gerard-minor: white;
+                --text-quartet-minor: rgba(255, 255, 255, 0.85);
+
+                /* Border colors */
+                --border-card: #555;
+                --border-card-hover: #888;
+                --border-card-active: #aaa;
+
+                /* Shadow colors - more subtle in dark mode */
+                --shadow-card: rgba(0, 0, 0, 0.3);
+                --shadow-card-hover: rgba(0, 0, 0, 0.5);
+
+                /* Movement count colors - same backgrounds, adjusted text for contrast */
+                --mvmt-1-bg: #9C27B0;
+                --mvmt-1-text: white;
+                --mvmt-2-bg: #CE93D8;
+                --mvmt-2-text: #1a1a1a;
+                --mvmt-3-bg: #B0BEC5;
+                --mvmt-3-text: #1a1a1a;
+                --mvmt-4-bg: #81C784;
+                --mvmt-4-text: #1a1a1a;
+                --mvmt-5-bg: #2E7D32;
+                --mvmt-5-text: white;
+
+                /* Category badge colors - same backgrounds, adjusted text */
+                --badge-grande-bg: #81C784;
+                --badge-grande-text: #1a1a1a;
+                --badge-piccola-bg: #CE93D8;
+                --badge-piccola-text: #1a1a1a;
+
+                /* Opus label gradient backgrounds - reduced opacity */
+                --gradient-grande: rgba(129, 199, 132, 0.08);
+                --gradient-piccola: rgba(206, 147, 216, 0.08);
+            }
+        }
+
+        /* === EXPLICIT DARK MODE CLASS (FOR TESTING) === */
+        /* Use: <html class="dark-mode"> or document.documentElement.classList.add('dark-mode') */
+        .dark-mode {
+            /* Background colors */
+            --bg-body: #1a1a1a;
+            --bg-card: #2d2d2d;
+            --bg-card-no-minuet: rgba(255, 255, 255, 0.03);
+            --bg-tooltip: rgba(240, 240, 240, 0.95);
+            --bg-mode-bar-major: transparent;
+            --bg-mode-bar-minor: #E91E63;
+
+            /* Text colors */
+            --text-primary: #f0f0f0;
+            --text-secondary: #e0e0e0;
+            --text-tertiary: #d0d0d0;
+            --text-muted: #b0b0b0;
+            --text-light: #999;
+            --text-lighter: #888;
+            --text-lightest: #707070;
+            --text-link: #64B5F6;
+            --text-link-hover: #90CAF9;
+            --text-on-tooltip: #222;
+
+            /* Mode bar text colors */
+            --text-gerard-major: #d0d0d0;
+            --text-quartet-major: #999;
+            --text-gerard-minor: white;
+            --text-quartet-minor: rgba(255, 255, 255, 0.85);
+
+            /* Border colors */
+            --border-card: #555;
+            --border-card-hover: #888;
+            --border-card-active: #aaa;
+
+            /* Shadow colors */
+            --shadow-card: rgba(0, 0, 0, 0.3);
+            --shadow-card-hover: rgba(0, 0, 0, 0.5);
+
+            /* Movement count colors */
+            --mvmt-1-bg: #9C27B0;
+            --mvmt-1-text: white;
+            --mvmt-2-bg: #CE93D8;
+            --mvmt-2-text: #1a1a1a;
+            --mvmt-3-bg: #B0BEC5;
+            --mvmt-3-text: #1a1a1a;
+            --mvmt-4-bg: #81C784;
+            --mvmt-4-text: #1a1a1a;
+            --mvmt-5-bg: #2E7D32;
+            --mvmt-5-text: white;
+
+            /* Category badge colors */
+            --badge-grande-bg: #81C784;
+            --badge-grande-text: #1a1a1a;
+            --badge-piccola-bg: #CE93D8;
+            --badge-piccola-text: #1a1a1a;
+
+            /* Opus label gradient backgrounds */
+            --gradient-grande: rgba(129, 199, 132, 0.08);
+            --gradient-piccola: rgba(206, 147, 216, 0.08);
         }
 
         /* Debug bounding boxes - controlled by --debug-mode */
@@ -76,7 +267,7 @@
 
         body {
             font-family: 'Helvetica Neue', Arial, sans-serif;
-            background-color: #f5f5f5;
+            background-color: var(--bg-body);
             margin: 20px;
             padding: 0;
         }
@@ -100,7 +291,7 @@
         h1 {
             margin: 0 0 5px 0;          /* Small gap below */
             text-align: center;
-            color: #333;
+            color: var(--text-secondary);
             font-size: 4.3cqw;          /* Scale to span container width */
             white-space: nowrap;        /* Keep on one line */
         }
@@ -108,13 +299,13 @@
         .subtitle {
             margin: 0 0 25px 0;         /* Larger gap below */
             text-align: right;          /* Right-align to match title's right edge */
-            color: #666;
+            color: var(--text-muted);
             font-size: clamp(0.75em, 0.85vw, 0.9em);  /* Scales smoothly */
             font-style: italic;
         }
 
         .subtitle a {
-            color: #2196F3;
+            color: var(--text-link);
             text-decoration: none;
         }
 
@@ -153,13 +344,13 @@
         .opus-label.grande-bg {
             background: linear-gradient(to right,
                 transparent 0%,
-                rgba(129, 199, 132, 0.12) 100%);  /* Light green fade */
+                var(--gradient-grande) 100%);  /* Light green fade */
         }
 
         .opus-label.piccola-bg {
             background: linear-gradient(to right,
                 transparent 0%,
-                rgba(206, 147, 216, 0.12) 100%);  /* Light purple fade */
+                var(--gradient-piccola) 100%);  /* Light purple fade */
         }
 
         /* TOP SECTION: Year and Age - ALIGNS WITH MODE BAR */
@@ -175,14 +366,14 @@
         .opus-label .year {
             font-size: var(--top-font-size);
             font-weight: 700;               /* Slightly bolder for clarity */
-            color: #444;                    /* Slightly darker */
+            color: var(--text-tertiary);    /* Slightly darker */
             line-height: 1;                 /* Exact alignment */
         }
 
         .opus-label .age {
             font-size: calc(var(--top-font-size) * 0.85);  /* Slightly larger */
             font-weight: 400;               /* Regular weight */
-            color: #777;                    /* Slightly darker */
+            color: var(--text-light);       /* Slightly darker */
             line-height: 1;                 /* Exact alignment */
         }
 
@@ -190,7 +381,7 @@
         .opus-label .opus-number {
             font-size: var(--middle-font-size);
             font-weight: 900;
-            color: #222;
+            color: var(--text-primary);
             line-height: 1;
             letter-spacing: -0.03em;
             height: var(--middle-section-height);  /* Fixed height to match key-section */
@@ -220,7 +411,7 @@
             right: 0;
             font-size: 0.6em;               /* Size: smallest */
             font-style: italic;             /* Style: italic */
-            color: #999;                    /* Color: lighter gray */
+            color: var(--text-lightest);    /* Color: lighter gray */
             text-align: center;             /* Center align */
             line-height: 1.2;               /* Tighter line height for wrapping */
             z-index: 1;                     /* Above background */
@@ -259,11 +450,11 @@
         .quartet-card {
             width: var(--card-height);      /* Square cards - width matches height */
             height: var(--card-height);
-            background: white;
-            border: 2px solid #ddd;
+            background: var(--bg-card);
+            border: 2px solid var(--border-card);
             border-radius: 4px;
             padding: 0;
-            box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 2px 2px 5px var(--shadow-card);
             cursor: pointer;
             transition: all 0.2s;
             position: relative;
@@ -274,13 +465,13 @@
 
         .quartet-card:hover {
             transform: translateY(-3px);
-            box-shadow: 3px 3px 10px rgba(0,0,0,0.2);
-            border-color: #888;
+            box-shadow: 3px 3px 10px var(--shadow-card-hover);
+            border-color: var(--border-card-hover);
         }
 
         /* Subtle gray wash for quartets without minuets */
         .quartet-card.no-minuet {
-            background: rgba(0, 0, 0, 0.03);
+            background: var(--bg-card-no-minuet);
         }
 
         .mode-bar {
@@ -295,11 +486,11 @@
         }
 
         .mode-bar.major {
-            background: transparent;
+            background: var(--bg-mode-bar-major);
         }
 
         .mode-bar.minor {
-            background: #E91E63;
+            background: var(--bg-mode-bar-minor);
         }
 
         .card-content {
@@ -314,7 +505,7 @@
         /* Text colors for major keys (on transparent background) */
         .mode-bar.major .quartet-number {
             font-size: var(--top-font-size);   /* Aligns with year */
-            color: #888;                       /* Lighter gray */
+            color: var(--text-quartet-major);  /* Lighter gray */
             font-weight: 600;                  /* Semi-bold */
             line-height: 1;                    /* Exact alignment */
         }
@@ -322,14 +513,14 @@
         .mode-bar.major .gerard-number {
             font-size: var(--top-font-size);   /* Aligns with year */
             font-weight: 700;                  /* Bold for emphasis */
-            color: #444;                       /* Darker for readability */
+            color: var(--text-gerard-major);   /* Darker for readability */
             line-height: 1;                    /* Exact alignment */
         }
 
         /* Text colors for minor keys (on colored background) */
         .mode-bar.minor .quartet-number {
             font-size: var(--top-font-size);   /* Aligns with year */
-            color: rgba(255, 255, 255, 0.85);  /* Slightly less opaque */
+            color: var(--text-quartet-minor);  /* Slightly less opaque */
             font-weight: 600;                  /* Semi-bold */
             line-height: 1;                    /* Exact alignment */
         }
@@ -337,7 +528,7 @@
         .mode-bar.minor .gerard-number {
             font-size: var(--top-font-size);   /* Aligns with year */
             font-weight: 700;                  /* Bold for emphasis */
-            color: white;
+            color: var(--text-gerard-minor);
             line-height: 1;                    /* Exact alignment */
         }
 
@@ -357,7 +548,7 @@
             text-align: center;
             font-size: calc(var(--middle-font-size) * 0.64);  /* Proportional to opus number */
             font-weight: bold;
-            color: #222;
+            color: var(--text-primary);
             line-height: 1;
             margin: 0;                     /* Remove margin for proper centering */
         }
@@ -365,20 +556,20 @@
         .key-mode {
             text-align: center;
             font-size: 0.75em;
-            color: #666;
+            color: var(--text-muted);
             margin: 0;                     /* Remove margin for proper centering */
             line-height: 1;
             margin-top: 2px;               /* Small space above, not below key-signature */
         }
 
         .category-badge.grande {
-            background-color: #81C784;
-            color: #333;
+            background-color: var(--badge-grande-bg);
+            color: var(--badge-grande-text);
         }
 
         .category-badge.piccola {
-            background-color: #CE93D8;
-            color: #333;
+            background-color: var(--badge-piccola-bg);
+            color: var(--badge-piccola-text);
         }
 
         /* Links container for quartet cards - holds IMSLP, QR, and Recording indicator */
@@ -394,7 +585,7 @@
         .imslp-link,
         .qr-link,
         .recording-indicator {
-            color: #2196F3;
+            color: var(--text-link);
             text-decoration: none;
         }
 
@@ -414,7 +605,7 @@
         .imslp-link:hover,
         .qr-link:hover {
             text-decoration: underline;
-            color: #1976D2;
+            color: var(--text-link-hover);
         }
 
         /* IMSLP link in opus label - positioned absolutely to not affect layout */
@@ -475,28 +666,28 @@
 
         /* Diverging color scheme: Purple (short) -> Gray (standard) -> Green (long) */
         .movements-count.mvmt-1 {
-            background-color: #9C27B0;
-            color: white;
+            background-color: var(--mvmt-1-bg);
+            color: var(--mvmt-1-text);
         }
 
         .movements-count.mvmt-2 {
-            background-color: #CE93D8;
-            color: #333;
+            background-color: var(--mvmt-2-bg);
+            color: var(--mvmt-2-text);
         }
 
         .movements-count.mvmt-3 {
-            background-color: #B0BEC5;
-            color: #333;
+            background-color: var(--mvmt-3-bg);
+            color: var(--mvmt-3-text);
         }
 
         .movements-count.mvmt-4 {
-            background-color: #81C784;
-            color: #333;
+            background-color: var(--mvmt-4-bg);
+            color: var(--mvmt-4-text);
         }
 
         .movements-count.mvmt-5 {
-            background-color: #2E7D32;
-            color: white;
+            background-color: var(--mvmt-5-bg);
+            color: var(--mvmt-5-text);
         }
 
         .nickname {
@@ -508,7 +699,7 @@
             overflow: hidden;                /* Clip overflow to prevent overlapping key section */
             font-size: 0.55em;               /* Slightly smaller for tighter fit in limited space */
             font-style: italic;              /* Same as dedication */
-            color: #999;                     /* Same as dedication */
+            color: var(--text-lightest);     /* Same as dedication */
             text-align: center;              /* Center align */
             line-height: 1;                  /* Tight line-height to maximize space */
             z-index: 2;                      /* Above mode bar */
@@ -517,8 +708,8 @@
 
         .tooltip {
             position: absolute;
-            background: rgba(0, 0, 0, 0.9);
-            color: white;
+            background: var(--bg-tooltip);
+            color: var(--text-on-tooltip);
             padding: 10px;
             border-radius: 5px;
             font-size: 0.85em;
@@ -530,7 +721,7 @@
 
         .dedication {
             font-size: 0.7em;
-            color: #666;
+            color: var(--text-muted);
             font-style: italic;
             margin-left: 2px;
         }
@@ -565,6 +756,49 @@
                 --top-section-height: 20px;
                 --nickname-height: 15px;
                 --bottom-section-height: 20px;
+
+                /* Force light mode colors for print */
+                --bg-body: #f5f5f5;
+                --bg-card: white;
+                --bg-card-no-minuet: rgba(0, 0, 0, 0.03);
+                --bg-tooltip: rgba(0, 0, 0, 0.9);
+                --bg-mode-bar-major: transparent;
+                --bg-mode-bar-minor: #E91E63;
+                --text-primary: #222;
+                --text-secondary: #333;
+                --text-tertiary: #444;
+                --text-muted: #666;
+                --text-light: #777;
+                --text-lighter: #888;
+                --text-lightest: #999;
+                --text-link: #2196F3;
+                --text-link-hover: #1976D2;
+                --text-on-tooltip: white;
+                --text-gerard-major: #444;
+                --text-quartet-major: #888;
+                --text-gerard-minor: white;
+                --text-quartet-minor: rgba(255, 255, 255, 0.85);
+                --border-card: #ddd;
+                --border-card-hover: #888;
+                --border-card-active: #333;
+                --shadow-card: rgba(0, 0, 0, 0.1);
+                --shadow-card-hover: rgba(0, 0, 0, 0.2);
+                --mvmt-1-bg: #9C27B0;
+                --mvmt-1-text: white;
+                --mvmt-2-bg: #CE93D8;
+                --mvmt-2-text: #333;
+                --mvmt-3-bg: #B0BEC5;
+                --mvmt-3-text: #333;
+                --mvmt-4-bg: #81C784;
+                --mvmt-4-text: #333;
+                --mvmt-5-bg: #2E7D32;
+                --mvmt-5-text: white;
+                --badge-grande-bg: #81C784;
+                --badge-grande-text: #333;
+                --badge-piccola-bg: #CE93D8;
+                --badge-piccola-text: #333;
+                --gradient-grande: rgba(129, 199, 132, 0.12);
+                --gradient-piccola: rgba(206, 147, 216, 0.12);
             }
 
             body {
@@ -610,12 +844,7 @@
                 display: none !important;
             }
 
-            /* Ensure links and recording indicator are visible */
-            .imslp-link,
-            .qr-link,
-            .recording-indicator {
-                color: #2196F3;
-            }
+            /* Ensure links and recording indicator are visible in print (already using variables) */
 
             /*
             ChatGPT suggests that if your table has very thin rules (≤0.25pt),
@@ -788,6 +1017,10 @@
             // Track currently active tooltip card (for touch devices)
             let activeCard = null;
 
+            // Get CSS variable values for border colors
+            const getBorderColor = () => getComputedStyle(document.documentElement).getPropertyValue('--border-card').trim();
+            const getActiveBorderColor = () => getComputedStyle(document.documentElement).getPropertyValue('--border-card-active').trim();
+
             // On touch devices, enable pointer events on tooltip and prevent click passthrough
             if (isTouchDevice) {
                 tooltip.style('pointer-events', 'auto');
@@ -802,7 +1035,7 @@
                     // Only close if clicking outside tooltip and cards
                     if (!event.target.closest('.quartet-card') && !event.target.closest('.tooltip')) {
                         tooltip.style('opacity', 0);
-                        d3.selectAll('.quartet-card').style('border-color', '#ddd');
+                        d3.selectAll('.quartet-card').style('border-color', getBorderColor());
                         activeCard = null;
                     }
                 });
@@ -892,11 +1125,11 @@
                 const showTooltip = function(event) {
                     // Close any previously active tooltip
                     if (activeCard && activeCard !== this) {
-                        d3.select(activeCard).style('border-color', '#ddd');
+                        d3.select(activeCard).style('border-color', getBorderColor());
                     }
 
                     activeCard = this;
-                    d3.select(this).style('border-color', '#333');
+                    d3.select(this).style('border-color', getActiveBorderColor());
 
                     const movements = quartet.mvmts.map((m, i) => `${i + 1}. ${m}`).join('<br>');
                     const keyFull = `${quartet.key} ${quartet.major ? 'major' : 'minor'}`;
@@ -928,7 +1161,7 @@
                 };
 
                 const hideTooltip = function() {
-                    d3.select(this).style('border-color', '#ddd');
+                    d3.select(this).style('border-color', getBorderColor());
                     tooltip.style('opacity', 0);
                     activeCard = null;
                 };
