@@ -20,6 +20,17 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 
+# -----------------------------------------------------------------------------
+# Only run in cloud sandbox environments (not on local machines)
+# -----------------------------------------------------------------------------
+# Cloud sandboxes typically run as root with /home/user as the workspace.
+# Skip setup on local machines where the user has their own environment.
+
+if [ "$(id -u)" != "0" ] || [ ! -d "/home/user" ]; then
+    echo "Skipping setup (not in cloud sandbox environment)"
+    exit 0
+fi
+
 echo "Setting up environment for Boccherini Quartets development..."
 echo ""
 
