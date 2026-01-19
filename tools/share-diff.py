@@ -45,8 +45,8 @@ DIFFS_DIR = PROJECT_ROOT / 'diffs'
 BASELINES_DIR = PROJECT_ROOT / 'baselines'
 
 # Hard-coded gist IDs (light and dark mode)
-GIST_ID_LIGHT = '9fc50df2a1437d2d1582abcfb70dfa7b'
-GIST_ID_DARK = 'cae03a252a66aa123ebfb4914e367801'
+GIST_ID_LIGHT = '836fc17f088e333c8387200498a1e434'
+GIST_ID_DARK = '88dbd41e583cac61762e2c4e562c046f'
 
 GIST_FILENAME = 'visual-diff-report.html'
 GIST_FILENAME_DARK = 'visual-diff-report-dark.html'

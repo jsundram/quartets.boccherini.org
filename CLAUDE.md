@@ -158,8 +158,8 @@ uv run tools/share-diff.py
 **Authentication** - The script requires a GitHub token with the `gist` scope. Create one at https://github.com/settings/tokens
 
 The script auto-detects light vs dark mode from the report filename (`report.html` vs `report-dark.html`) and updates the appropriate hard-coded gist. Each mode has its own permanent gist:
-- Light mode: https://gist.github.com/jsundram/9fc50df2a1437d2d1582abcfb70dfa7b
-- Dark mode: https://gist.github.com/jsundram/cae03a252a66aa123ebfb4914e367801
+- Light mode: https://gist.github.com/jsundram/836fc17f088e333c8387200498a1e434
+- Dark mode: https://gist.github.com/jsundram/88dbd41e583cac61762e2c4e562c046f
 
 Set `GH_TOKEN` environment variable or pass token directly:
 ```bash
