@@ -67,16 +67,17 @@ def ensure_server_running(port=8000):
         sys.exit(1)
 
 
-def capture_screenshot(page, format_name, config, output_path):
+def capture_screenshot(page, format_name, config, output_path, dark_mode=False):
     """Capture a screenshot for the given format configuration."""
     # Set viewport size
     page.set_viewport_size({'width': config['width'], 'height': config['height']})
 
     # Enable print media emulation if needed
+    color_scheme = 'dark' if dark_mode else 'light'
     if config.get('print'):
-        page.emulate_media(media='print')
+        page.emulate_media(media='print', color_scheme=color_scheme)
     else:
-        page.emulate_media(media='screen')
+        page.emulate_media(media='screen', color_scheme=color_scheme)
 
     # Wait for any animations/transitions to settle
     page.wait_for_timeout(500)
@@ -143,7 +144,7 @@ def capture_all_formats(html_file, output_dir, formats=None, dark_mode=False):
                 if dark_mode:
                     page.evaluate("document.documentElement.classList.add('dark-mode')")
 
-                capture_screenshot(page, format_name, config, output_path)
+                capture_screenshot(page, format_name, config, output_path, dark_mode=dark_mode)
                 results[format_name] = output_path
 
                 browser_label = f" [{browser_type}]" if browser_type != 'chromium' else ""

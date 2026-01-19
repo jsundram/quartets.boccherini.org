@@ -1,11 +1,13 @@
 # Claude Context for Boccherini Quartets Project
 
 ## Project Overview
-Boccherini String Quartets Visualization - an interactive periodic table-style grid displaying all 91 of Luigi Boccherini's string quartets (1761-1804). It has 4 main output targets, each of which need to work:
-- PDF
+Boccherini String Quartets Visualization - an interactive periodic table-style grid displaying all 91 of Luigi Boccherini's string quartets (1761-1804). It has 4 main output targets, each supporting both light and dark color modes:
+- PDF (print output)
 - Desktop
 - iPad
 - iPhone
+
+**Color Modes**: All targets support both light mode (default) and dark mode via `@media (prefers-color-scheme: dark)` or explicit `.dark-mode` class.
 
 ## File Structure
 - **Main file**: `index.html` - Single-file architecture: HTML + CSS + JavaScript
@@ -36,9 +38,12 @@ uv run tools/visual-diff.py baseline
 # Dark mode testing (uses --dark flag)
 uv run tools/visual-diff.py baseline --dark      # Generate dark mode baselines
 uv run tools/visual-diff.py test index.html --dark --open  # Test dark mode
+
+# Test specific format in dark mode
+uv run tools/visual-diff.py test index.html --dark --format pdf
 ```
 
-The `--dark` flag injects the `.dark-mode` CSS class before capturing screenshots. Dark mode baselines use `-dark` suffix (e.g., `desktop-dark.png`). PDF format is skipped for dark mode since print always uses light mode.
+The `--dark` flag injects the `.dark-mode` CSS class and emulates `prefers-color-scheme: dark` before capturing screenshots. Dark mode baselines use `-dark` suffix (e.g., `desktop-dark.png`, `pdf-dark.png`). Dark mode works for all formats including PDF/print output.
 
 See **Visual Regression Workflow** section below for detailed instructions.
 
@@ -61,12 +66,19 @@ Four levels must align across row headers and quartet cards:
 3. **Bottom level**: Category badge ↔ Movement count
 
 ### Color System
-- **Major keys**: No special treatment
-- **Minor keys**: Pink (#E91E63)
-- **Movement counts**: Purple→Green diverging palette
+The visualization supports both light and dark color modes with semantic color tokens:
+
+**Semantic Colors** (adapt to light/dark mode):
+- **Major keys**: No special treatment (uses card background)
+- **Minor keys**: Pink (#E91E63) - consistent across both modes
+- **Movement counts**: Purple→Green diverging palette (consistent backgrounds, text adapts)
   - 1-2 movements: Purple (rare/piccola)
   - 3 movements: Blue-gray (standard)
   - 4-5 movements: Green (substantial/grande)
+
+**Mode-Specific Backgrounds**:
+- **Light mode**: Light gray body (#f5f5f5), white cards (#ffffff)
+- **Dark mode**: Dark gray body (#1a1a1a), charcoal cards (#2d2d2d)
 
 ### CSS Variables
 Use CSS custom properties for shared values to prevent inconsistencies:
@@ -102,12 +114,14 @@ Use `uv run tools/generate-pdf.py` to generate PDF output.
 ## Visual Regression Workflow
 
 ### Output Formats
-| Format | Viewport | Media Query | Notes |
-|--------|----------|-------------|-------|
-| PDF | 850×2000 | `@media print` | Print emulation, fixed sizes |
-| Desktop | 1400×900 | Base styles | Responsive `clamp()` sizing |
-| iPad | 1024×768 | Base styles | Responsive, uses WebKit |
-| iPhone | 375×1150 | Touch device query | Fixed sizes, scaled down |
+| Format  | Viewport | Media Query        | Notes                        |
+|---------|----------|--------------------|------------------------------|
+| PDF     | 850×2000 | `@media print`     | Print emulation, fixed sizes |
+| Desktop | 1400×900 | Base styles        | Responsive `clamp()` sizing  |
+| iPad    | 1024×768 | Base styles        | Responsive, uses WebKit      |
+| iPhone  | 375×1150 | Touch device query | Fixed sizes, scaled down     |
+
+**All formats** support both light and dark modes. Dark mode is activated via `@media (prefers-color-scheme: dark)` or the explicit `.dark-mode` CSS class for testing.
 
 ### Responsive vs Touch Device Targeting
 
@@ -122,17 +136,25 @@ This means desktop browser windows resized to < 800px still use responsive layou
 When making CSS changes that should only affect specific formats:
 
 1. **Specify the target**: PDF, iPhone, iPad, Desktop, or All
-2. **Make the change** using appropriate location:
+2. **Specify the color mode**: Light only, Dark only, or Both
+3. **Make the change** using appropriate location:
    - **iPhone only**: `@media (hover: none) and (pointer: coarse) and (max-width: 800px)`
    - **iPad/Desktop**: Base CSS (they share responsive `clamp()` values)
    - **PDF only**: `@media print`
-3. **Run regression test**: `uv run tools/visual-diff.py test index.html`
-4. **Verify results**:
-   - Only target format(s) should show FAIL (expected change)
-   - Non-target formats should show PASS
-5. **Iterate if needed**: If non-target formats changed, revise CSS to isolate
-6. **WAIT for user approval**: Do NOT update baselines until user explicitly accepts the change
-7. **Update baseline** (only after user approval): `uv run tools/visual-diff.py baseline --format <format>`
+   - **Dark mode colors**: `@media (prefers-color-scheme: dark)` or `.dark-mode` class
+   - **Light mode colors**: `:root` defaults
+4. **Run regression tests** for both color modes:
+   - Light mode: `uv run tools/visual-diff.py test index.html`
+   - Dark mode: `uv run tools/visual-diff.py test index.html --dark`
+   - **For color changes**: Always test BOTH modes to ensure no unintended changes
+5. **Verify results**:
+   - Only target format(s) and mode(s) should show FAIL (expected change)
+   - Non-target formats/modes should show PASS
+6. **Iterate if needed**: If non-target formats/modes changed, revise CSS to isolate
+7. **WAIT for user approval**: Do NOT update baselines until user explicitly accepts the change
+8. **Update baselines** (only after user approval):
+   - Light mode: `uv run tools/visual-diff.py baseline --format <format>`
+   - Dark mode: `uv run tools/visual-diff.py baseline --dark --format <format>`
 
 ### Important: Baseline Update Policy
 
@@ -178,9 +200,10 @@ The script outputs a GitHack URL that renders the HTML report with embedded imag
 
 If a CSS change produces unexpected results:
 1. Analyze the diff report to understand what changed
-2. Check if the change leaked to other media queries
+2. Check if the change leaked to other media queries or color modes
 3. Revise CSS to isolate the change properly
-4. Re-run test and repeat until only intended format(s) change
+4. Re-run tests for both light and dark modes
+5. Repeat until only intended format(s) and mode(s) change
 
 ### Threshold
 Current: **1%** - Changes below this are acceptable noise.
