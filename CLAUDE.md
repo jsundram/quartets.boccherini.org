@@ -151,8 +151,11 @@ Workflow:
 In sandboxed environments like Claude Code web/mobile, use `share-diff.py` to upload the visual diff report to a GitHub Gist and get a viewable URL:
 
 ```bash
-# After running visual-diff.py test, share the report
+# Share light mode report
 uv run tools/share-diff.py
+
+# Share dark mode report
+uv run tools/share-diff.py --dark
 ```
 
 **Authentication** - The script reads `GH_TOKEN` from the environment. In sandboxed environments, this should already be set. Verify with:
@@ -165,7 +168,7 @@ If not set, create a token with `gist` scope at https://github.com/settings/toke
 export GH_TOKEN=your_github_token_here
 ```
 
-The script auto-detects light vs dark mode from the report filename (`report.html` vs `report-dark.html`) and updates the appropriate hard-coded gist. Each mode has its own permanent gist:
+Use the `--dark` flag to specify which report to share. Each mode has its own permanent gist:
 - Light mode: https://gist.github.com/jsundram/836fc17f088e333c8387200498a1e434
 - Dark mode: https://gist.github.com/jsundram/88dbd41e583cac61762e2c4e562c046f
 

@@ -98,7 +98,6 @@ echo ""
 
 # Test 6: Create mock dark mode report
 echo "Test 6: Create mock dark mode diff report"
-rm -f diffs/report.html  # Remove light mode report
 cat > diffs/report-dark.html << 'EOF'
 <!DOCTYPE html>
 <html>
@@ -110,12 +109,12 @@ cat > diffs/report-dark.html << 'EOF'
 </body>
 </html>
 EOF
-pass "Created mock dark mode report"
+pass "Created mock dark mode report (both reports now exist)"
 echo ""
 
-# Test 7: Run share-diff.py for dark mode
-echo "Test 7: Upload dark mode report to gist"
-if uv run tools/share-diff.py 2>&1 | tee /tmp/share-diff-dark.log | grep -q "Visual Diff Report Shared.*dark mode"; then
+# Test 7: Run share-diff.py for dark mode with --dark flag
+echo "Test 7: Upload dark mode report to gist (with --dark flag)"
+if uv run tools/share-diff.py --dark 2>&1 | tee /tmp/share-diff-dark.log | grep -q "Visual Diff Report Shared.*dark mode"; then
     pass "Dark mode report uploaded successfully"
     GITHACK_URL=$(grep "View Report:" /tmp/share-diff-dark.log | awk '{print $3}')
     echo "   GitHack URL: $GITHACK_URL"

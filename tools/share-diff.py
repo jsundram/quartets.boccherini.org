@@ -10,16 +10,16 @@ Creates a self-contained HTML report with embedded images and uploads it
 to a GitHub Gist, then provides a GitHack URL for viewing.
 
 Usage:
+    uv run tools/share-diff.py              Upload light mode report
+    uv run tools/share-diff.py --dark       Upload dark mode report
     uv run tools/share-diff.py --token TOKEN    Upload with explicit token
-    uv run tools/share-diff.py                  Upload (prompts for token if needed)
 
 Authentication (in order of preference):
     1. --token argument or GH_TOKEN/GITHUB_TOKEN environment variable (trusted)
     2. gh CLI (if authenticated)
     3. Interactive prompt (only if no token found)
 
-The script auto-detects light/dark mode from the report filename and
-updates the appropriate hard-coded gist.
+Use --dark flag to share dark mode reports. Updates the appropriate hard-coded gist.
 
 To create a token: https://github.com/settings/tokens
 Required scope: gist
@@ -240,20 +240,6 @@ def image_to_data_url(image_path):
     return f'data:{mime_type};base64,{data}'
 
 
-def detect_dark_mode():
-    """Detect if we're working with a dark mode report."""
-    dark_report = DIFFS_DIR / 'report-dark.html'
-    light_report = DIFFS_DIR / 'report.html'
-
-    if dark_report.exists():
-        return True
-    elif light_report.exists():
-        return False
-    else:
-        # Neither exists, will error in create_self_contained_report
-        return False
-
-
 def create_self_contained_report(dark_mode=False):
     """Read the report HTML and embed all images as base64 data URLs."""
     report_filename = 'report-dark.html' if dark_mode else 'report.html'
@@ -322,13 +308,15 @@ def main():
     )
     parser.add_argument('--token', '-t',
                         help='GitHub personal access token (alternative to GH_TOKEN env var)')
+    parser.add_argument('--dark', action='store_true',
+                        help='Share dark mode report (report-dark.html instead of report.html)')
     args = parser.parse_args()
 
     # Check prerequisites and get auth
     auth = GitHubAuth(token=args.token)
 
-    # Detect dark mode from report filename
-    dark_mode = detect_dark_mode()
+    # Use explicit dark mode flag
+    dark_mode = args.dark
     mode_label = ' (dark mode)' if dark_mode else ''
     gist_id = GIST_ID_DARK if dark_mode else GIST_ID_LIGHT
     gist_filename = GIST_FILENAME_DARK if dark_mode else GIST_FILENAME

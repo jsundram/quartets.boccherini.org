@@ -64,14 +64,14 @@ This will verify all functionality automatically.
    ```bash
    uv run tools/visual-diff.py test index.html
    ```
-2. Share the report:
+2. Share the report (no flag = light mode):
    ```bash
    uv run tools/share-diff.py
    ```
 3. Note the GitHack URL in output
 
 **Expected**:
-- Script detects light mode (no "dark mode" label in output)
+- Script uses light mode by default (no "dark mode" label in output)
 - Updates gist `836fc17f088e333c8387200498a1e434`
 - Outputs: "Visual Diff Report Shared!"
 - Provides GitHack URL
@@ -92,14 +92,14 @@ This will verify all functionality automatically.
    ```bash
    uv run tools/visual-diff.py test index.html --dark
    ```
-2. Share the report:
+2. Share the report with `--dark` flag:
    ```bash
-   uv run tools/share-diff.py
+   uv run tools/share-diff.py --dark
    ```
 3. Note the GitHack URL in output
 
 **Expected**:
-- Script detects dark mode (shows "dark mode" label)
+- Script uses dark mode (shows "dark mode" label)
 - Updates gist `88dbd41e583cac61762e2c4e562c046f`
 - Outputs: "Visual Diff Report Shared (dark mode)!"
 - Provides GitHack URL
