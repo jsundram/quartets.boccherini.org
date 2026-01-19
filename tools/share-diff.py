@@ -10,15 +10,16 @@ Creates a self-contained HTML report with embedded images and uploads it
 to a GitHub Gist, then provides a GitHack URL for viewing.
 
 Usage:
+    uv run tools/share-diff.py              Upload light mode report
+    uv run tools/share-diff.py --dark       Upload dark mode report
     uv run tools/share-diff.py --token TOKEN    Upload with explicit token
-    uv run tools/share-diff.py                  Upload (prompts for token if needed)
-    uv run tools/share-diff.py --new            Force create a new gist
 
 Authentication (in order of preference):
-    1. --token argument
-    2. GH_TOKEN environment variable
-    3. gh CLI (if authenticated)
-    4. Interactive prompt (will ask for token)
+    1. --token argument or GH_TOKEN/GITHUB_TOKEN environment variable (trusted)
+    2. gh CLI (if authenticated)
+    3. Interactive prompt (only if no token found)
+
+Use --dark flag to share dark mode reports. Updates the appropriate hard-coded gist.
 
 To create a token: https://github.com/settings/tokens
 Required scope: gist
@@ -42,14 +43,18 @@ SCRIPT_DIR = Path(__file__).parent
 PROJECT_ROOT = SCRIPT_DIR.parent
 DIFFS_DIR = PROJECT_ROOT / 'diffs'
 BASELINES_DIR = PROJECT_ROOT / 'baselines'
-GIST_ID_FILE = PROJECT_ROOT / '.diff-gist-id'
+
+# Hard-coded gist IDs (light and dark mode)
+GIST_ID_LIGHT = '836fc17f088e333c8387200498a1e434'
+GIST_ID_DARK = '88dbd41e583cac61762e2c4e562c046f'
 
 GIST_FILENAME = 'visual-diff-report.html'
+GIST_FILENAME_DARK = 'visual-diff-report-dark.html'
 GITHUB_API = 'https://api.github.com'
 
 
 class GitHubAuth:
-    """Handle GitHub authentication via token, GH_TOKEN, gh CLI, or interactive prompt."""
+    """Handle GitHub authentication. Trusts env vars/args, then tries gh CLI, finally prompts."""
 
     def __init__(self, token=None):
         self.token = token or os.environ.get('GH_TOKEN') or os.environ.get('GITHUB_TOKEN')
@@ -57,13 +62,21 @@ class GitHubAuth:
         self._check_auth()
 
     def _check_auth(self):
-        """Verify authentication and get username."""
+        """Get username for authenticated user."""
         if self.token:
-            # Use token directly
-            if self._try_token(self.token):
+            # We have a token from env var or argument - trust it and get username
+            try:
+                data = self._api_request('GET', '/user')
+                self.username = data['login']
+                print(f"Authenticated as: {self.username}")
+                return
+            except Exception as e:
+                print(f"Warning: Could not validate token ({e}). Will try to proceed anyway.")
+                # Token might still work for gist operations, and we can get username from response
+                self.username = 'unknown'
                 return
 
-        # Try gh CLI
+        # No token from env/argument - try gh CLI
         result = subprocess.run(['gh', 'auth', 'status'], capture_output=True, text=True)
         if result.returncode == 0:
             # Get username from gh
@@ -76,20 +89,22 @@ class GitHubAuth:
                 print(f"Authenticated via gh CLI as: {self.username}")
                 return
 
-        # Prompt for token interactively
+        # No token and no gh CLI - prompt for token
         self._prompt_for_token()
 
     def _try_token(self, token):
-        """Try to authenticate with a token. Returns True on success."""
-        self.token = token
+        """Try to authenticate with a token during interactive prompt. Returns True on success."""
         try:
+            # Temporarily set token to test it
+            old_token = self.token
+            self.token = token
             data = self._api_request('GET', '/user')
             self.username = data['login']
             print(f"Authenticated as: {self.username}")
             return True
         except Exception as e:
             print(f"Token authentication failed: {e}")
-            self.token = None
+            self.token = old_token  # Restore previous token
             return False
 
     def _prompt_for_token(self):
@@ -225,13 +240,15 @@ def image_to_data_url(image_path):
     return f'data:{mime_type};base64,{data}'
 
 
-def create_self_contained_report():
+def create_self_contained_report(dark_mode=False):
     """Read the report HTML and embed all images as base64 data URLs."""
-    report_path = DIFFS_DIR / 'report.html'
+    report_filename = 'report-dark.html' if dark_mode else 'report.html'
+    report_path = DIFFS_DIR / report_filename
 
     if not report_path.exists():
         print(f"ERROR: Report not found at {report_path}")
-        print("Run: uv run tools/visual-diff.py test index.html")
+        dark_flag = ' --dark' if dark_mode else ''
+        print(f"Run: uv run tools/visual-diff.py test index.html{dark_flag}")
         sys.exit(1)
 
     html = report_path.read_text()
@@ -274,22 +291,11 @@ def create_self_contained_report():
     return embedded_html
 
 
-def get_existing_gist_id():
-    """Get the gist ID from the local cache file."""
-    if GIST_ID_FILE.exists():
-        return GIST_ID_FILE.read_text().strip()
-    return None
-
-
-def save_gist_id(gist_id):
-    """Save the gist ID to the local cache file."""
-    GIST_ID_FILE.write_text(gist_id)
-
-
-def get_githack_url(username, gist_id):
+def get_githack_url(username, gist_id, dark_mode=False):
     """Generate the GitHack URL for viewing the HTML."""
     # GitHack CDN URL format for gists
-    return f"https://gistcdn.githack.com/{username}/{gist_id}/raw/{GIST_FILENAME}"
+    filename = GIST_FILENAME_DARK if dark_mode else GIST_FILENAME
+    return f"https://gistcdn.githack.com/{username}/{gist_id}/raw/{filename}"
 
 
 def main():
@@ -302,64 +308,36 @@ def main():
     )
     parser.add_argument('--token', '-t',
                         help='GitHub personal access token (alternative to GH_TOKEN env var)')
-    parser.add_argument('--update', action='store_true',
-                        help='Update existing gist instead of creating new')
-    parser.add_argument('--new', action='store_true',
-                        help='Force create a new gist even if one exists')
+    parser.add_argument('--dark', action='store_true',
+                        help='Share dark mode report (report-dark.html instead of report.html)')
     args = parser.parse_args()
 
     # Check prerequisites and get auth
     auth = GitHubAuth(token=args.token)
 
+    # Use explicit dark mode flag
+    dark_mode = args.dark
+    mode_label = ' (dark mode)' if dark_mode else ''
+    gist_id = GIST_ID_DARK if dark_mode else GIST_ID_LIGHT
+    gist_filename = GIST_FILENAME_DARK if dark_mode else GIST_FILENAME
+
     # Create self-contained HTML
-    html_content = create_self_contained_report()
+    html_content = create_self_contained_report(dark_mode)
     print(f"Report size: {len(html_content) / 1024:.1f} KB")
 
-    # Create or update gist
-    existing_id = get_existing_gist_id()
-
+    # Update the hard-coded gist
+    print(f"Updating gist {gist_id}{mode_label}...")
     try:
-        if args.new or (not existing_id and not args.update):
-            print("Creating new gist...")
-            gist_id, gist_url = auth.create_gist(
-                GIST_FILENAME,
-                html_content,
-                'Visual Diff Report - Boccherini Quartets',
-                public=True
-            )
-            save_gist_id(gist_id)
-        elif existing_id:
-            print(f"Updating gist {existing_id}...")
-            try:
-                gist_id, gist_url = auth.update_gist(existing_id, GIST_FILENAME, html_content)
-            except Exception as e:
-                print(f"Update failed: {e}")
-                print("Creating new gist instead...")
-                gist_id, gist_url = auth.create_gist(
-                    GIST_FILENAME,
-                    html_content,
-                    'Visual Diff Report - Boccherini Quartets',
-                    public=True
-                )
-                save_gist_id(gist_id)
-        else:
-            print("Creating new gist...")
-            gist_id, gist_url = auth.create_gist(
-                GIST_FILENAME,
-                html_content,
-                'Visual Diff Report - Boccherini Quartets',
-                public=True
-            )
-            save_gist_id(gist_id)
+        gist_id, gist_url = auth.update_gist(gist_id, gist_filename, html_content)
     except Exception as e:
         print(f"ERROR: {e}")
         sys.exit(1)
 
     # Generate URLs
-    githack_url = get_githack_url(auth.username, gist_id)
+    githack_url = get_githack_url(auth.username, gist_id, dark_mode)
 
     print("\n" + "=" * 70)
-    print("Visual Diff Report Shared!")
+    print(f"Visual Diff Report Shared{mode_label}!")
     print("=" * 70)
     print(f"\nGist URL:    {gist_url}")
     print(f"\nView Report: {githack_url}")
