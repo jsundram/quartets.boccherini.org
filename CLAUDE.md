@@ -140,11 +140,11 @@ When making CSS changes that should only affect specific formats:
 
 Workflow:
 1. Make the CSS change
-2. Run `uv run tools/visual-diff.py test index.html`
-3. Share the report for review: `uv run tools/share-diff.py`
+2. Run `uv run tools/visual-diff.py test index.html` (add `--dark` for dark mode)
+3. Share the report for review: `uv run tools/share-diff.py` (add `--dark` for dark mode)
 4. Tell user the results and provide the GitHack URL for inspection
 5. **Wait for explicit user approval** (e.g., "looks good", "accept", "update baselines")
-6. Only then run `uv run tools/visual-diff.py baseline`
+6. Only then run `uv run tools/visual-diff.py baseline` (add `--dark` for dark mode)
 
 ### Sharing Diff Reports (Claude Code Web/Mobile)
 
