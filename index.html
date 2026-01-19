@@ -8,7 +8,7 @@
     3. To disable: document.documentElement.classList.remove('dark-mode')
 
     Dark mode automatically follows system preference via @media (prefers-color-scheme: dark)
-    PDF output always uses light mode for better printing.
+    Dark mode also works for print/PDF output.
 -->
 <head>
     <meta charset="UTF-8">
@@ -756,49 +756,6 @@
                 --top-section-height: 20px;
                 --nickname-height: 15px;
                 --bottom-section-height: 20px;
-
-                /* Force light mode colors for print */
-                --bg-body: #f5f5f5;
-                --bg-card: white;
-                --bg-card-no-minuet: rgba(0, 0, 0, 0.03);
-                --bg-tooltip: rgba(0, 0, 0, 0.9);
-                --bg-mode-bar-major: transparent;
-                --bg-mode-bar-minor: #E91E63;
-                --text-primary: #222;
-                --text-secondary: #333;
-                --text-tertiary: #444;
-                --text-muted: #666;
-                --text-light: #777;
-                --text-lighter: #888;
-                --text-lightest: #999;
-                --text-link: #2196F3;
-                --text-link-hover: #1976D2;
-                --text-on-tooltip: white;
-                --text-gerard-major: #444;
-                --text-quartet-major: #888;
-                --text-gerard-minor: white;
-                --text-quartet-minor: rgba(255, 255, 255, 0.85);
-                --border-card: #ddd;
-                --border-card-hover: #888;
-                --border-card-active: #333;
-                --shadow-card: rgba(0, 0, 0, 0.1);
-                --shadow-card-hover: rgba(0, 0, 0, 0.2);
-                --mvmt-1-bg: #9C27B0;
-                --mvmt-1-text: white;
-                --mvmt-2-bg: #CE93D8;
-                --mvmt-2-text: #333;
-                --mvmt-3-bg: #B0BEC5;
-                --mvmt-3-text: #333;
-                --mvmt-4-bg: #81C784;
-                --mvmt-4-text: #333;
-                --mvmt-5-bg: #2E7D32;
-                --mvmt-5-text: white;
-                --badge-grande-bg: #81C784;
-                --badge-grande-text: #333;
-                --badge-piccola-bg: #CE93D8;
-                --badge-piccola-text: #333;
-                --gradient-grande: rgba(129, 199, 132, 0.12);
-                --gradient-piccola: rgba(206, 147, 216, 0.12);
             }
 
             body {
