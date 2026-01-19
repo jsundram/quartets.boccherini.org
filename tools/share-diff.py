@@ -21,8 +21,11 @@ Authentication (in order of preference):
     4. Interactive prompt (will ask for token)
 
 Gist ID Persistence (for updating instead of creating new gists):
-    1. GIST_ID environment variable (recommended for sandboxed environments)
-    2. .diff-gist-id file in project root
+    1. GIST_ID / GIST_ID_DARK environment variables (recommended for sandboxed)
+    2. .diff-gist-id / .diff-gist-id-dark files in project root
+
+    The script auto-detects light/dark mode from the report filename and uses
+    the appropriate gist ID variable/file.
 
 To create a token: https://github.com/settings/tokens
 Required scope: gist
@@ -47,8 +50,10 @@ PROJECT_ROOT = SCRIPT_DIR.parent
 DIFFS_DIR = PROJECT_ROOT / 'diffs'
 BASELINES_DIR = PROJECT_ROOT / 'baselines'
 GIST_ID_FILE = PROJECT_ROOT / '.diff-gist-id'
+GIST_ID_FILE_DARK = PROJECT_ROOT / '.diff-gist-id-dark'
 
 GIST_FILENAME = 'visual-diff-report.html'
+GIST_FILENAME_DARK = 'visual-diff-report-dark.html'
 GITHUB_API = 'https://api.github.com'
 
 
@@ -229,13 +234,29 @@ def image_to_data_url(image_path):
     return f'data:{mime_type};base64,{data}'
 
 
-def create_self_contained_report():
+def detect_dark_mode():
+    """Detect if we're working with a dark mode report."""
+    dark_report = DIFFS_DIR / 'report-dark.html'
+    light_report = DIFFS_DIR / 'report.html'
+
+    if dark_report.exists():
+        return True
+    elif light_report.exists():
+        return False
+    else:
+        # Neither exists, will error in create_self_contained_report
+        return False
+
+
+def create_self_contained_report(dark_mode=False):
     """Read the report HTML and embed all images as base64 data URLs."""
-    report_path = DIFFS_DIR / 'report.html'
+    report_filename = 'report-dark.html' if dark_mode else 'report.html'
+    report_path = DIFFS_DIR / report_filename
 
     if not report_path.exists():
         print(f"ERROR: Report not found at {report_path}")
-        print("Run: uv run tools/visual-diff.py test index.html")
+        dark_flag = ' --dark' if dark_mode else ''
+        print(f"Run: uv run tools/visual-diff.py test index.html{dark_flag}")
         sys.exit(1)
 
     html = report_path.read_text()
@@ -278,30 +299,37 @@ def create_self_contained_report():
     return embedded_html
 
 
-def get_existing_gist_id():
+def get_existing_gist_id(dark_mode=False):
     """Get the gist ID from environment variable or local cache file."""
     # Check environment variable first (for ephemeral/sandboxed environments)
-    gist_id = os.environ.get('GIST_ID')
+    env_var = 'GIST_ID_DARK' if dark_mode else 'GIST_ID'
+    gist_id = os.environ.get(env_var)
     if gist_id:
         return gist_id.strip()
 
     # Fall back to file cache
-    if GIST_ID_FILE.exists():
-        return GIST_ID_FILE.read_text().strip()
+    gist_file = GIST_ID_FILE_DARK if dark_mode else GIST_ID_FILE
+    if gist_file.exists():
+        return gist_file.read_text().strip()
     return None
 
 
-def save_gist_id(gist_id):
+def save_gist_id(gist_id, dark_mode=False):
     """Save the gist ID to the local cache file and print env var hint."""
-    GIST_ID_FILE.write_text(gist_id)
-    print(f"\nTo persist this gist ID across sessions, set:")
-    print(f"  export GIST_ID={gist_id}")
+    gist_file = GIST_ID_FILE_DARK if dark_mode else GIST_ID_FILE
+    env_var = 'GIST_ID_DARK' if dark_mode else 'GIST_ID'
+    mode_label = ' (dark mode)' if dark_mode else ''
+
+    gist_file.write_text(gist_id)
+    print(f"\nTo persist this gist ID{mode_label} across sessions, set:")
+    print(f"  export {env_var}={gist_id}")
 
 
-def get_githack_url(username, gist_id):
+def get_githack_url(username, gist_id, dark_mode=False):
     """Generate the GitHack URL for viewing the HTML."""
     # GitHack CDN URL format for gists
-    return f"https://gistcdn.githack.com/{username}/{gist_id}/raw/{GIST_FILENAME}"
+    filename = GIST_FILENAME_DARK if dark_mode else GIST_FILENAME
+    return f"https://gistcdn.githack.com/{username}/{gist_id}/raw/{filename}"
 
 
 def main():
@@ -323,55 +351,61 @@ def main():
     # Check prerequisites and get auth
     auth = GitHubAuth(token=args.token)
 
+    # Detect dark mode from report filename
+    dark_mode = detect_dark_mode()
+    mode_label = ' (dark mode)' if dark_mode else ''
+    gist_filename = GIST_FILENAME_DARK if dark_mode else GIST_FILENAME
+    gist_description = f'Visual Diff Report - Boccherini Quartets{mode_label}'
+
     # Create self-contained HTML
-    html_content = create_self_contained_report()
+    html_content = create_self_contained_report(dark_mode)
     print(f"Report size: {len(html_content) / 1024:.1f} KB")
 
     # Create or update gist
-    existing_id = get_existing_gist_id()
+    existing_id = get_existing_gist_id(dark_mode)
 
     try:
         if args.new or (not existing_id and not args.update):
-            print("Creating new gist...")
+            print(f"Creating new gist{mode_label}...")
             gist_id, gist_url = auth.create_gist(
-                GIST_FILENAME,
+                gist_filename,
                 html_content,
-                'Visual Diff Report - Boccherini Quartets',
+                gist_description,
                 public=True
             )
-            save_gist_id(gist_id)
+            save_gist_id(gist_id, dark_mode)
         elif existing_id:
-            print(f"Updating gist {existing_id}...")
+            print(f"Updating gist {existing_id}{mode_label}...")
             try:
-                gist_id, gist_url = auth.update_gist(existing_id, GIST_FILENAME, html_content)
+                gist_id, gist_url = auth.update_gist(existing_id, gist_filename, html_content)
             except Exception as e:
                 print(f"Update failed: {e}")
-                print("Creating new gist instead...")
+                print(f"Creating new gist{mode_label} instead...")
                 gist_id, gist_url = auth.create_gist(
-                    GIST_FILENAME,
+                    gist_filename,
                     html_content,
-                    'Visual Diff Report - Boccherini Quartets',
+                    gist_description,
                     public=True
                 )
-                save_gist_id(gist_id)
+                save_gist_id(gist_id, dark_mode)
         else:
-            print("Creating new gist...")
+            print(f"Creating new gist{mode_label}...")
             gist_id, gist_url = auth.create_gist(
-                GIST_FILENAME,
+                gist_filename,
                 html_content,
-                'Visual Diff Report - Boccherini Quartets',
+                gist_description,
                 public=True
             )
-            save_gist_id(gist_id)
+            save_gist_id(gist_id, dark_mode)
     except Exception as e:
         print(f"ERROR: {e}")
         sys.exit(1)
 
     # Generate URLs
-    githack_url = get_githack_url(auth.username, gist_id)
+    githack_url = get_githack_url(auth.username, gist_id, dark_mode)
 
     print("\n" + "=" * 70)
-    print("Visual Diff Report Shared!")
+    print(f"Visual Diff Report Shared{mode_label}!")
     print("=" * 70)
     print(f"\nGist URL:    {gist_url}")
     print(f"\nView Report: {githack_url}")

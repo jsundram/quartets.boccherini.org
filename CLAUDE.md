@@ -166,11 +166,12 @@ uv run tools/share-diff.py --new
 # Set your GitHub token (required)
 export GH_TOKEN=your_github_token_here
 
-# Set gist ID to update existing gist instead of creating new ones (optional)
-export GIST_ID=your_gist_id_here
+# Set gist IDs to update existing gists instead of creating new ones (optional)
+export GIST_ID=your_light_mode_gist_id_here
+export GIST_ID_DARK=your_dark_mode_gist_id_here
 ```
 
-Without `GIST_ID` set, each run creates a new gist. After the first run, the script will print the export command you need.
+The script auto-detects light vs dark mode from the report filename (`report.html` vs `report-dark.html`) and uses the appropriate gist ID. Without the respective `GIST_ID` set, each run creates a new gist. After the first run, the script will print the export command you need.
 
 Alternatively, pass the token directly:
 ```bash
