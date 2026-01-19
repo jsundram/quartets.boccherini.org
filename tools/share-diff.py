@@ -225,13 +225,15 @@ def image_to_data_url(image_path):
     return f'data:{mime_type};base64,{data}'
 
 
-def create_self_contained_report():
+def create_self_contained_report(dark_mode=False):
     """Read the report HTML and embed all images as base64 data URLs."""
-    report_path = DIFFS_DIR / 'report.html'
+    report_name = 'report-dark.html' if dark_mode else 'report.html'
+    report_path = DIFFS_DIR / report_name
 
     if not report_path.exists():
         print(f"ERROR: Report not found at {report_path}")
-        print("Run: uv run tools/visual-diff.py test index.html")
+        dark_flag = " --dark" if dark_mode else ""
+        print(f"Run: uv run tools/visual-diff.py test index.html{dark_flag}")
         sys.exit(1)
 
     html = report_path.read_text()
@@ -306,17 +308,21 @@ def main():
                         help='Update existing gist instead of creating new')
     parser.add_argument('--new', action='store_true',
                         help='Force create a new gist even if one exists')
+    parser.add_argument('--dark', action='store_true',
+                        help='Share dark mode report (report-dark.html) instead of light mode')
     args = parser.parse_args()
 
     # Check prerequisites and get auth
     auth = GitHubAuth(token=args.token)
 
     # Create self-contained HTML
-    html_content = create_self_contained_report()
+    html_content = create_self_contained_report(dark_mode=args.dark)
     print(f"Report size: {len(html_content) / 1024:.1f} KB")
 
     # Create or update gist
     existing_id = get_existing_gist_id()
+    mode_label = " (Dark Mode)" if args.dark else ""
+    gist_description = f'Visual Diff Report - Boccherini Quartets{mode_label}'
 
     try:
         if args.new or (not existing_id and not args.update):
@@ -324,7 +330,7 @@ def main():
             gist_id, gist_url = auth.create_gist(
                 GIST_FILENAME,
                 html_content,
-                'Visual Diff Report - Boccherini Quartets',
+                gist_description,
                 public=True
             )
             save_gist_id(gist_id)
@@ -338,7 +344,7 @@ def main():
                 gist_id, gist_url = auth.create_gist(
                     GIST_FILENAME,
                     html_content,
-                    'Visual Diff Report - Boccherini Quartets',
+                    gist_description,
                     public=True
                 )
                 save_gist_id(gist_id)
@@ -347,7 +353,7 @@ def main():
             gist_id, gist_url = auth.create_gist(
                 GIST_FILENAME,
                 html_content,
-                'Visual Diff Report - Boccherini Quartets',
+                gist_description,
                 public=True
             )
             save_gist_id(gist_id)
