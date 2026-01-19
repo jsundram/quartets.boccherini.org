@@ -36,9 +36,12 @@ uv run tools/visual-diff.py baseline
 # Dark mode testing (uses --dark flag)
 uv run tools/visual-diff.py baseline --dark      # Generate dark mode baselines
 uv run tools/visual-diff.py test index.html --dark --open  # Test dark mode
+
+# Test specific format in dark mode
+uv run tools/visual-diff.py test index.html --dark --format pdf
 ```
 
-The `--dark` flag injects the `.dark-mode` CSS class before capturing screenshots. Dark mode baselines use `-dark` suffix (e.g., `desktop-dark.png`). PDF format is skipped for dark mode since print always uses light mode.
+The `--dark` flag injects the `.dark-mode` CSS class and emulates `prefers-color-scheme: dark` before capturing screenshots. Dark mode baselines use `-dark` suffix (e.g., `desktop-dark.png`, `pdf-dark.png`). Dark mode works for all formats including PDF/print output.
 
 See **Visual Regression Workflow** section below for detailed instructions.
 
@@ -142,20 +145,28 @@ Workflow:
 1. Make the CSS change
 2. Run `uv run tools/visual-diff.py test index.html`
 3. Share the report for review: `uv run tools/share-diff.py`
+   - For dark mode changes: `uv run tools/share-diff.py --dark`
 4. Tell user the results and provide the GitHack URL for inspection
 5. **Wait for explicit user approval** (e.g., "looks good", "accept", "update baselines")
 6. Only then run `uv run tools/visual-diff.py baseline`
+   - For dark mode: `uv run tools/visual-diff.py baseline --dark`
 
 ### Sharing Diff Reports (Claude Code Web/Mobile)
 
 In sandboxed environments like Claude Code web/mobile, use `share-diff.py` to upload the visual diff report to a GitHub Gist and get a viewable URL:
 
 ```bash
-# After running visual-diff.py test, share the report
+# After running visual-diff.py test, share the light mode report
 uv run tools/share-diff.py
+
+# Share dark mode report (report-dark.html)
+uv run tools/share-diff.py --dark
 
 # Force create a new gist (even if one exists)
 uv run tools/share-diff.py --new
+
+# Share dark mode report with new gist
+uv run tools/share-diff.py --dark --new
 ```
 
 **Authentication** - The script requires a GitHub token with the `gist` scope. Create one at https://github.com/settings/tokens
@@ -163,6 +174,9 @@ uv run tools/share-diff.py --new
 **For Claude Code web/mobile sessions**: After the setup script runs, prompt the user for their GitHub token. Store it for the session and pass it via `--token`:
 ```bash
 uv run tools/share-diff.py --token USER_PROVIDED_TOKEN
+
+# Share dark mode report with token
+uv run tools/share-diff.py --dark --token USER_PROVIDED_TOKEN
 ```
 
 The script outputs a GitHack URL that renders the HTML report with embedded images.
