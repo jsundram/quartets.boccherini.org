@@ -12,7 +12,6 @@ to a GitHub Gist, then provides a GitHack URL for viewing.
 Usage:
     uv run tools/share-diff.py --token TOKEN    Upload with explicit token
     uv run tools/share-diff.py                  Upload (prompts for token if needed)
-    uv run tools/share-diff.py --new            Force create a new gist
 
 Authentication (in order of preference):
     1. --token argument
@@ -20,12 +19,8 @@ Authentication (in order of preference):
     3. gh CLI (if authenticated)
     4. Interactive prompt (will ask for token)
 
-Gist ID Persistence (for updating instead of creating new gists):
-    1. GIST_ID / GIST_ID_DARK environment variables (recommended for sandboxed)
-    2. .diff-gist-id / .diff-gist-id-dark files in project root
-
-    The script auto-detects light/dark mode from the report filename and uses
-    the appropriate gist ID variable/file.
+The script auto-detects light/dark mode from the report filename and
+updates the appropriate hard-coded gist.
 
 To create a token: https://github.com/settings/tokens
 Required scope: gist
@@ -49,8 +44,10 @@ SCRIPT_DIR = Path(__file__).parent
 PROJECT_ROOT = SCRIPT_DIR.parent
 DIFFS_DIR = PROJECT_ROOT / 'diffs'
 BASELINES_DIR = PROJECT_ROOT / 'baselines'
-GIST_ID_FILE = PROJECT_ROOT / '.diff-gist-id'
-GIST_ID_FILE_DARK = PROJECT_ROOT / '.diff-gist-id-dark'
+
+# Hard-coded gist IDs (light and dark mode)
+GIST_ID_LIGHT = '9fc50df2a1437d2d1582abcfb70dfa7b'
+GIST_ID_DARK = 'cae03a252a66aa123ebfb4914e367801'
 
 GIST_FILENAME = 'visual-diff-report.html'
 GIST_FILENAME_DARK = 'visual-diff-report-dark.html'
@@ -299,32 +296,6 @@ def create_self_contained_report(dark_mode=False):
     return embedded_html
 
 
-def get_existing_gist_id(dark_mode=False):
-    """Get the gist ID from environment variable or local cache file."""
-    # Check environment variable first (for ephemeral/sandboxed environments)
-    env_var = 'GIST_ID_DARK' if dark_mode else 'GIST_ID'
-    gist_id = os.environ.get(env_var)
-    if gist_id:
-        return gist_id.strip()
-
-    # Fall back to file cache
-    gist_file = GIST_ID_FILE_DARK if dark_mode else GIST_ID_FILE
-    if gist_file.exists():
-        return gist_file.read_text().strip()
-    return None
-
-
-def save_gist_id(gist_id, dark_mode=False):
-    """Save the gist ID to the local cache file and print env var hint."""
-    gist_file = GIST_ID_FILE_DARK if dark_mode else GIST_ID_FILE
-    env_var = 'GIST_ID_DARK' if dark_mode else 'GIST_ID'
-    mode_label = ' (dark mode)' if dark_mode else ''
-
-    gist_file.write_text(gist_id)
-    print(f"\nTo persist this gist ID{mode_label} across sessions, set:")
-    print(f"  export {env_var}={gist_id}")
-
-
 def get_githack_url(username, gist_id, dark_mode=False):
     """Generate the GitHack URL for viewing the HTML."""
     # GitHack CDN URL format for gists
@@ -342,10 +313,6 @@ def main():
     )
     parser.add_argument('--token', '-t',
                         help='GitHub personal access token (alternative to GH_TOKEN env var)')
-    parser.add_argument('--update', action='store_true',
-                        help='Update existing gist instead of creating new')
-    parser.add_argument('--new', action='store_true',
-                        help='Force create a new gist even if one exists')
     args = parser.parse_args()
 
     # Check prerequisites and get auth
@@ -354,49 +321,17 @@ def main():
     # Detect dark mode from report filename
     dark_mode = detect_dark_mode()
     mode_label = ' (dark mode)' if dark_mode else ''
+    gist_id = GIST_ID_DARK if dark_mode else GIST_ID_LIGHT
     gist_filename = GIST_FILENAME_DARK if dark_mode else GIST_FILENAME
-    gist_description = f'Visual Diff Report - Boccherini Quartets{mode_label}'
 
     # Create self-contained HTML
     html_content = create_self_contained_report(dark_mode)
     print(f"Report size: {len(html_content) / 1024:.1f} KB")
 
-    # Create or update gist
-    existing_id = get_existing_gist_id(dark_mode)
-
+    # Update the hard-coded gist
+    print(f"Updating gist {gist_id}{mode_label}...")
     try:
-        if args.new or (not existing_id and not args.update):
-            print(f"Creating new gist{mode_label}...")
-            gist_id, gist_url = auth.create_gist(
-                gist_filename,
-                html_content,
-                gist_description,
-                public=True
-            )
-            save_gist_id(gist_id, dark_mode)
-        elif existing_id:
-            print(f"Updating gist {existing_id}{mode_label}...")
-            try:
-                gist_id, gist_url = auth.update_gist(existing_id, gist_filename, html_content)
-            except Exception as e:
-                print(f"Update failed: {e}")
-                print(f"Creating new gist{mode_label} instead...")
-                gist_id, gist_url = auth.create_gist(
-                    gist_filename,
-                    html_content,
-                    gist_description,
-                    public=True
-                )
-                save_gist_id(gist_id, dark_mode)
-        else:
-            print(f"Creating new gist{mode_label}...")
-            gist_id, gist_url = auth.create_gist(
-                gist_filename,
-                html_content,
-                gist_description,
-                public=True
-            )
-            save_gist_id(gist_id, dark_mode)
+        gist_id, gist_url = auth.update_gist(gist_id, gist_filename, html_content)
     except Exception as e:
         print(f"ERROR: {e}")
         sys.exit(1)

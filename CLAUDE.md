@@ -153,29 +153,18 @@ In sandboxed environments like Claude Code web/mobile, use `share-diff.py` to up
 ```bash
 # After running visual-diff.py test, share the report
 uv run tools/share-diff.py
-
-# Force create a new gist (even if one exists)
-uv run tools/share-diff.py --new
 ```
 
 **Authentication** - The script requires a GitHub token with the `gist` scope. Create one at https://github.com/settings/tokens
 
-**For sandboxed/ephemeral environments** (Claude Code web/mobile), use environment variables to persist settings across tool calls:
+The script auto-detects light vs dark mode from the report filename (`report.html` vs `report-dark.html`) and updates the appropriate hard-coded gist. Each mode has its own permanent gist:
+- Light mode: https://gist.github.com/jsundram/9fc50df2a1437d2d1582abcfb70dfa7b
+- Dark mode: https://gist.github.com/jsundram/cae03a252a66aa123ebfb4914e367801
 
+Set `GH_TOKEN` environment variable or pass token directly:
 ```bash
-# Set your GitHub token (required)
 export GH_TOKEN=your_github_token_here
-
-# Set gist IDs to update existing gists instead of creating new ones (optional)
-export GIST_ID=your_light_mode_gist_id_here
-export GIST_ID_DARK=your_dark_mode_gist_id_here
-```
-
-The script auto-detects light vs dark mode from the report filename (`report.html` vs `report-dark.html`) and uses the appropriate gist ID. Without the respective `GIST_ID` set, each run creates a new gist. After the first run, the script will print the export command you need.
-
-Alternatively, pass the token directly:
-```bash
-uv run tools/share-diff.py --token USER_PROVIDED_TOKEN
+# Or: uv run tools/share-diff.py --token YOUR_TOKEN
 ```
 
 The script outputs a GitHack URL that renders the HTML report with embedded images.
