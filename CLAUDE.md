@@ -114,12 +114,12 @@ Use `uv run tools/generate-pdf.py` to generate PDF output.
 ## Visual Regression Workflow
 
 ### Output Formats
-| Format | Viewport | Media Query | Dark Mode | Notes |
-|--------|----------|-------------|-----------|-------|
-| PDF | 850×2000 | `@media print` | ✓ | Print emulation, fixed sizes |
-| Desktop | 1400×900 | Base styles | ✓ | Responsive `clamp()` sizing |
-| iPad | 1024×768 | Base styles | ✓ | Responsive, uses WebKit |
-| iPhone | 375×1150 | Touch device query | ✓ | Fixed sizes, scaled down |
+| Format  | Viewport | Media Query        | Notes                        |
+|---------|----------|--------------------|------------------------------|
+| PDF     | 850×2000 | `@media print`     | Print emulation, fixed sizes |
+| Desktop | 1400×900 | Base styles        | Responsive `clamp()` sizing  |
+| iPad    | 1024×768 | Base styles        | Responsive, uses WebKit      |
+| iPhone  | 375×1150 | Touch device query | Fixed sizes, scaled down     |
 
 **All formats** support both light and dark modes. Dark mode is activated via `@media (prefers-color-scheme: dark)` or the explicit `.dark-mode` CSS class for testing.
 
@@ -162,41 +162,37 @@ When making CSS changes that should only affect specific formats:
 
 Workflow:
 1. Make the CSS change
-2. Run `uv run tools/visual-diff.py test index.html`
-3. Share the report for review: `uv run tools/share-diff.py`
-   - For dark mode changes: `uv run tools/share-diff.py --dark`
+2. Run `uv run tools/visual-diff.py test index.html` (add `--dark` for dark mode)
+3. Share the report for review: `uv run tools/share-diff.py` (add `--dark` for dark mode)
 4. Tell user the results and provide the GitHack URL for inspection
 5. **Wait for explicit user approval** (e.g., "looks good", "accept", "update baselines")
-6. Only then run `uv run tools/visual-diff.py baseline`
-   - For dark mode: `uv run tools/visual-diff.py baseline --dark`
+6. Only then run `uv run tools/visual-diff.py baseline` (add `--dark` for dark mode)
 
 ### Sharing Diff Reports (Claude Code Web/Mobile)
 
 In sandboxed environments like Claude Code web/mobile, use `share-diff.py` to upload the visual diff report to a GitHub Gist and get a viewable URL:
 
 ```bash
-# After running visual-diff.py test, share the light mode report
+# Share light mode report
 uv run tools/share-diff.py
 
-# Share dark mode report (report-dark.html)
+# Share dark mode report
 uv run tools/share-diff.py --dark
-
-# Force create a new gist (even if one exists)
-uv run tools/share-diff.py --new
-
-# Share dark mode report with new gist
-uv run tools/share-diff.py --dark --new
 ```
 
-**Authentication** - The script requires a GitHub token with the `gist` scope. Create one at https://github.com/settings/tokens
-
-**For Claude Code web/mobile sessions**: After the setup script runs, prompt the user for their GitHub token. Store it for the session and pass it via `--token`:
+**Authentication** - The script reads `GH_TOKEN` from the environment. In sandboxed environments, this should already be set. Verify with:
 ```bash
-uv run tools/share-diff.py --token USER_PROVIDED_TOKEN
-
-# Share dark mode report with token
-uv run tools/share-diff.py --dark --token USER_PROVIDED_TOKEN
+echo $GH_TOKEN  # Should show your GitHub token
 ```
+
+If not set, create a token with `gist` scope at https://github.com/settings/tokens and set it:
+```bash
+export GH_TOKEN=your_github_token_here
+```
+
+Use the `--dark` flag to specify which report to share. Each mode has its own permanent gist:
+- Light mode: https://gist.github.com/jsundram/836fc17f088e333c8387200498a1e434
+- Dark mode: https://gist.github.com/jsundram/88dbd41e583cac61762e2c4e562c046f
 
 The script outputs a GitHack URL that renders the HTML report with embedded images.
 
