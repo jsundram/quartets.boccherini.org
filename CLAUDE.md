@@ -160,7 +160,19 @@ uv run tools/share-diff.py --new
 
 **Authentication** - The script requires a GitHub token with the `gist` scope. Create one at https://github.com/settings/tokens
 
-**For Claude Code web/mobile sessions**: After the setup script runs, prompt the user for their GitHub token. Store it for the session and pass it via `--token`:
+**For sandboxed/ephemeral environments** (Claude Code web/mobile), use environment variables to persist settings across tool calls:
+
+```bash
+# Set your GitHub token (required)
+export GH_TOKEN=your_github_token_here
+
+# Set gist ID to update existing gist instead of creating new ones (optional)
+export GIST_ID=your_gist_id_here
+```
+
+Without `GIST_ID` set, each run creates a new gist. After the first run, the script will print the export command you need.
+
+Alternatively, pass the token directly:
 ```bash
 uv run tools/share-diff.py --token USER_PROVIDED_TOKEN
 ```

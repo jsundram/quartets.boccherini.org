@@ -16,9 +16,13 @@ Usage:
 
 Authentication (in order of preference):
     1. --token argument
-    2. GH_TOKEN environment variable
+    2. GH_TOKEN or GITHUB_TOKEN environment variable
     3. gh CLI (if authenticated)
     4. Interactive prompt (will ask for token)
+
+Gist ID Persistence (for updating instead of creating new gists):
+    1. GIST_ID environment variable (recommended for sandboxed environments)
+    2. .diff-gist-id file in project root
 
 To create a token: https://github.com/settings/tokens
 Required scope: gist
@@ -275,15 +279,23 @@ def create_self_contained_report():
 
 
 def get_existing_gist_id():
-    """Get the gist ID from the local cache file."""
+    """Get the gist ID from environment variable or local cache file."""
+    # Check environment variable first (for ephemeral/sandboxed environments)
+    gist_id = os.environ.get('GIST_ID')
+    if gist_id:
+        return gist_id.strip()
+
+    # Fall back to file cache
     if GIST_ID_FILE.exists():
         return GIST_ID_FILE.read_text().strip()
     return None
 
 
 def save_gist_id(gist_id):
-    """Save the gist ID to the local cache file."""
+    """Save the gist ID to the local cache file and print env var hint."""
     GIST_ID_FILE.write_text(gist_id)
+    print(f"\nTo persist this gist ID across sessions, set:")
+    print(f"  export GIST_ID={gist_id}")
 
 
 def get_githack_url(username, gist_id):
