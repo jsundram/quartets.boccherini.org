@@ -14,10 +14,9 @@ Usage:
     uv run tools/share-diff.py                  Upload (prompts for token if needed)
 
 Authentication (in order of preference):
-    1. --token argument
-    2. GH_TOKEN or GITHUB_TOKEN environment variable
-    3. gh CLI (if authenticated)
-    4. Interactive prompt (will ask for token)
+    1. --token argument or GH_TOKEN/GITHUB_TOKEN environment variable (trusted)
+    2. gh CLI (if authenticated)
+    3. Interactive prompt (only if no token found)
 
 The script auto-detects light/dark mode from the report filename and
 updates the appropriate hard-coded gist.
@@ -55,7 +54,7 @@ GITHUB_API = 'https://api.github.com'
 
 
 class GitHubAuth:
-    """Handle GitHub authentication via token, GH_TOKEN, gh CLI, or interactive prompt."""
+    """Handle GitHub authentication. Trusts env vars/args, then tries gh CLI, finally prompts."""
 
     def __init__(self, token=None):
         self.token = token or os.environ.get('GH_TOKEN') or os.environ.get('GITHUB_TOKEN')
@@ -63,13 +62,21 @@ class GitHubAuth:
         self._check_auth()
 
     def _check_auth(self):
-        """Verify authentication and get username."""
+        """Get username for authenticated user."""
         if self.token:
-            # Use token directly
-            if self._try_token(self.token):
+            # We have a token from env var or argument - trust it and get username
+            try:
+                data = self._api_request('GET', '/user')
+                self.username = data['login']
+                print(f"Authenticated as: {self.username}")
+                return
+            except Exception as e:
+                print(f"Warning: Could not validate token ({e}). Will try to proceed anyway.")
+                # Token might still work for gist operations, and we can get username from response
+                self.username = 'unknown'
                 return
 
-        # Try gh CLI
+        # No token from env/argument - try gh CLI
         result = subprocess.run(['gh', 'auth', 'status'], capture_output=True, text=True)
         if result.returncode == 0:
             # Get username from gh
@@ -82,20 +89,22 @@ class GitHubAuth:
                 print(f"Authenticated via gh CLI as: {self.username}")
                 return
 
-        # Prompt for token interactively
+        # No token and no gh CLI - prompt for token
         self._prompt_for_token()
 
     def _try_token(self, token):
-        """Try to authenticate with a token. Returns True on success."""
-        self.token = token
+        """Try to authenticate with a token during interactive prompt. Returns True on success."""
         try:
+            # Temporarily set token to test it
+            old_token = self.token
+            self.token = token
             data = self._api_request('GET', '/user')
             self.username = data['login']
             print(f"Authenticated as: {self.username}")
             return True
         except Exception as e:
             print(f"Token authentication failed: {e}")
-            self.token = None
+            self.token = old_token  # Restore previous token
             return False
 
     def _prompt_for_token(self):
