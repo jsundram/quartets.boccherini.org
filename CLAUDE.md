@@ -16,6 +16,33 @@ Boccherini String Quartets Visualization - an interactive periodic table-style g
 - **Baselines**: `baselines/` - Reference screenshots for visual regression testing
 - **Documentation**: `README.md` - detailed technical documentation
 
+## Environment Setup
+
+### Automatic Setup in Sandbox Environments
+
+**IMPORTANT**: In sandbox environments (Claude Code web/mobile), the setup script MUST run on startup to ensure all dependencies are available.
+
+The `tools/setup-environment.sh` script automatically configures the environment:
+- Installs GitHub CLI (`gh`) for gist uploads
+- Installs `qpdf` for PDF linearization
+- Installs WebKit system dependencies
+- Installs Playwright browsers (Chromium and WebKit) for visual regression testing
+- Starts HTTP server on port 8000 if not already running
+
+**Auto-detection**: The script detects sandbox environments automatically (runs as root with `/home/user` workspace) and skips setup on local machines.
+
+**Startup Hook**: Configure Claude Code to run this on session start:
+```bash
+bash tools/setup-environment.sh
+```
+
+**Manual execution** (if needed):
+```bash
+bash tools/setup-environment.sh
+```
+
+The script is idempotent - safe to run multiple times. It will skip already-installed components and only install what's missing.
+
 ## Development Workflow
 
 ### Preview Changes
