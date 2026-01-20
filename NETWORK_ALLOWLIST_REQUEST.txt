@@ -1,75 +1,200 @@
-REQUEST TO UPDATE PROXY ALLOWLIST FOR PLAYWRIGHT BROWSER DOWNLOADS
-======================================================================
+# Updated Proxy Allowlist for Claude Code Web
+# Date: 2026-01-20
+# Added domains for Playwright browser downloads:
+#   *.playwright.dev
+#   playwright.download.prss.microsoft.com
+#   *.azureedge.net
+#
+# Total domains: 191
 
-Date: 2026-01-20
-Project: Boccherini Quartets (quartets.boccherini.org)
-Environment: Claude Code Web/Remote Sessions
-
-
-SUMMARY
--------
-Please add the following domains to the GLOBAL_AGENT_HTTP_PROXY allowed_hosts
-list to enable Playwright browser downloads for automated visual regression testing.
-
-
-DOMAINS TO ADD (Option 1 - Recommended with wildcards)
--------------------------------------------------------
-*.playwright.dev
-playwright.download.prss.microsoft.com
+*.483703932474.us-east5.run.app
+*.amazonaws.com
+*.api.aws
 *.azureedge.net
-
-
-DOMAINS TO ADD (Option 2 - Minimal without wildcards)
-------------------------------------------------------
-cdn.playwright.dev
+*.data.mcr.microsoft.com
+*.datadoghq.com
+*.datadoghq.eu
+*.gcr.io
+*.googleapis.com
+*.microsoftonline.com
+*.modelcontextprotocol.io
+*.packagecloud.io
+*.playwright.dev
+*.sentry.io
+*.sourceforge.net
+*.ubuntu.com
+483703932474.us-east5.run.app
+accounts.google.com
+anaconda.com
+anaconda.org
+apache.org
+api-staging.anthropic.com
+api.anthropic.com
+api.bitbucket.org
+api.github.com
+api.metacpan.org
+api.nuget.org
+api.pub.dev
+api.rubygems.org
+api.statsig.com
+apt.releases.hashicorp.com
+archive.apache.org
+archive.releases.hashicorp.com
+archive.ubuntu.com
+artifactory.infra.ant.dev
+auth.docker.io
+avatars.githubusercontent.com
+azure.com
+bitbucket.org
+camo.githubusercontent.com
+cdn.cocoapods.org
+central.maven.org
+claude.ai
+cloud.google.com
+cocoapods.org
+code.claude.com
+codeload.github.com
+compute.googleapis.com
+conda.anaconda.org
+container.googleapis.com
+continuum.io
+cpan.org
+crates.io
+dev.azure.com
+dl.k8s.io
+docs.claude.com
+dot.net
+dotnet.microsoft.com
+download.docker.com
+download.eclipse.org
+download.oracle.com
+downloads.apache.org
+eclipse.org
+files.pythonhosted.org
+gcloud.google.com
+gcr.io
+get.rvm.io
+ghcr.io
+gist.github.com
+github.com
+gitlab.com
+golang.org
+goproxy.io
+gradle.org
+hackage.haskell.org
+hashicorp.com
+haskell.org
+hex.pm
+http-intake.logs.datadoghq.com
+hub.docker.com
+index.crates.io
+index.docker.io
+index.golang.org
+index.rubygems.org
+java.com
+java.net
+jcenter.bintray.com
+json-schema.org
+json.schemastore.org
+k8s.io
+launchpad.net
+maven.org
+mcr.microsoft.com
+metacpan.org
+microsoft.com
+nodejs.org
+npmjs.com
+npmjs.org
+nuget.org
+objects.githubusercontent.com
+oracle.com
+packagecloud.io
+packages.microsoft.com
+packagist.org
+pkg.go.dev
+pkgs.k8s.io
 playwright.download.prss.microsoft.com
-playwright.azureedge.net
-playwright-akamai.azureedge.net
-playwright-verizon.azureedge.net
-
-
-JUSTIFICATION
--------------
-1. Playwright is Microsoft's official browser automation framework
-2. These domains host browser binaries (Chromium, Firefox, WebKit)
-3. Required for visual regression testing in development environment
-4. Consistent with existing allowlist patterns (*.amazonaws.com, *.googleapis.com)
-5. Microsoft-owned infrastructure (playwright.download.prss.microsoft.com)
-
-
-CURRENT BEHAVIOR
-----------------
-Browser downloads fail with:
-  Error: Download failed: server returned code 403 body 'Host not allowed'
-  URL: https://cdn.playwright.dev/dbazure/download/playwright/builds/...
-
-
-EXPECTED BEHAVIOR AFTER UPDATE
--------------------------------
-Playwright browsers (Chromium, WebKit) download successfully during environment
-setup, enabling automated visual regression testing across multiple browsers.
-
-
-SECURITY NOTES
---------------
-- playwright.dev is owned by Microsoft (Playwright project)
-- azureedge.net is Microsoft's Azure CDN service
-- These are official distribution channels for open-source browser builds
-- Downloads are checksummed and verified by Playwright installer
-
-
-TECHNICAL CONTACT
------------------
-Repository: https://github.com/jsundram/quartets.boccherini.org
-Tool: Claude Code remote development environment
-Framework: Playwright (https://playwright.dev)
-
-
-ADDITIONAL CONTEXT
-------------------
-The proxy currently allows 188 domains including:
-- Package registries: npmjs.org, pypi.org, rubygems.org
-- Cloud providers: *.amazonaws.com, *.googleapis.com
-- Developer tools: github.com, gitlab.com, docker.io
-
-Adding Playwright CDN domains follows the same pattern for development tooling.
+portal.azure.com
+ppa.launchpad.net
+production.cloudflare.docker.com
+proxy.golang.org
+pub.dev
+public.ecr.aws
+pypa.io
+pypi.org
+pypi.python.org
+pythonhosted.org
+raw.githubusercontent.com
+registry-1.docker.io
+registry.gitlab.com
+registry.npmjs.org
+registry.yarnpkg.com
+releases.hashicorp.com
+repo.anaconda.com
+repo.maven.org
+repo.packagist.org
+repo.spring.io
+repo1.maven.org
+rpm.releases.hashicorp.com
+ruby-lang.org
+rubyforge.org
+rubygems.org
+rubyonrails.org
+rustup.rs
+rvm.io
+security.ubuntu.com
+sentry.io
+services.gradle.org
+sourceforge.net
+spring.io
+static.crates.io
+static.rust-lang.org
+statsig.anthropic.com
+statsig.com
+storage.googleapis.com
+sum.golang.org
+swift.org
+test.pypi.org
+ubuntu.com
+visualstudio.com
+www.anaconda.com
+www.apache.org
+www.bitbucket.org
+www.cocoapods.org
+www.cpan.org
+www.crates.io
+www.docker.com
+www.eclipse.org
+www.github.com
+www.gitlab.com
+www.golang.org
+www.gradle.org
+www.hashicorp.com
+www.haskell.org
+www.hex.pm
+www.java.com
+www.java.net
+www.json-schema.org
+www.k8s.io
+www.launchpad.net
+www.metacpan.org
+www.microsoft.com
+www.nodejs.org
+www.npmjs.com
+www.npmjs.org
+www.nuget.org
+www.oracle.com
+www.packagist.org
+www.pypa.io
+www.pypi.org
+www.ruby-lang.org
+www.rubyforge.org
+www.rubygems.org
+www.rubyonrails.org
+www.rust-lang.org
+www.schemastore.org
+www.statsig.com
+www.swift.org
+www.ubuntu.com
+yarnpkg.com
+yum.oracle.com
