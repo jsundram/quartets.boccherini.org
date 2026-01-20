@@ -15,7 +15,13 @@
                     "Largo",
                     "Allegro"
                 ],
-                "category": "opera grande"
+                "tracks": [
+                    "https://open.spotify.com/track/3Q3YssEyojIgtZLB0A41YE",
+                    "https://open.spotify.com/track/4KI4JP6fVj4Qir7hVwHjFR",
+                    "https://open.spotify.com/track/5cmak5GYmTbYbac9R6SyQR"
+                ],
+                "category": "opera grande",
+                "hasRecording": true
             },
             {
                 "number": 2,
@@ -28,7 +34,13 @@
                     "Largo",
                     "Fuga con spirito"
                 ],
-                "category": "opera grande"
+                "tracks": [
+                    "https://open.spotify.com/track/54rPlqEKodtfyozJFv7Zcu",
+                    "https://open.spotify.com/track/5HylnYKr9l52xa7kldddKo",
+                    "https://open.spotify.com/track/5kHg2Ew2xL9mxzOmj64K8T"
+                ],
+                "category": "opera grande",
+                "hasRecording": true
             },
             {
                 "number": 3,
@@ -41,7 +53,13 @@
                     "Largo",
                     "Minuetto"
                 ],
-                "category": "opera grande"
+                "tracks": [
+                    "https://open.spotify.com/track/3AlW0dOu9jJIUCYXsWKZ9a",
+                    "https://open.spotify.com/track/217OdhPAE86Bkkzwua85nc",
+                    "https://open.spotify.com/track/4wovGMYUwKnYM4Q5PPv58D"
+                ],
+                "category": "opera grande",
+                "hasRecording": true
             },
             {
                 "number": 4,
@@ -54,7 +72,13 @@
                     "Adagio",
                     "Minuetto"
                 ],
-                "category": "opera grande"
+                "tracks": [
+                    "https://open.spotify.com/track/1N8Do9rhOgp9t8NCIZTM43",
+                    "https://open.spotify.com/track/74UQyVpx5cHM2ruKONK4TB",
+                    "https://open.spotify.com/track/79iG7nwj2hcFZ2FbabCzmb"
+                ],
+                "category": "opera grande",
+                "hasRecording": true
             },
             {
                 "number": 5,
@@ -67,7 +91,13 @@
                     "Adagio",
                     "Allegro assai"
                 ],
-                "category": "opera grande"
+                "tracks": [
+                    "https://open.spotify.com/track/4MHjYSxnQvKnoU5qmlrVkd",
+                    "https://open.spotify.com/track/5DBhtLCR21xqpssjRgVYSp",
+                    "https://open.spotify.com/track/2cIhCijaeXlxjFL8h1D2Qg"
+                ],
+                "category": "opera grande",
+                "hasRecording": true
             },
             {
                 "number": 6,
@@ -80,13 +110,20 @@
                     "Largo",
                     "Minuetto"
                 ],
-                "category": "opera grande"
+                "tracks": [
+                    "https://open.spotify.com/track/26CBy8kqLxRByk3CsfYFer",
+                    "https://open.spotify.com/track/2jCywQrMOe2FfXz9s8OlJr",
+                    "https://open.spotify.com/track/0JvQ06Xr5KgvCDDTCGG6QE"
+                ],
+                "category": "opera grande",
+                "hasRecording": true
             }
         ]
     },
     {
         "opus": 8,
         "year": 1768,
+        "imslp": "https://imslp.org/wiki/6_String_Quartets%2C_G.165-170_(Boccherini%2C_Luigi)",
         "dedication": "Infante Luis of Spain",
         "quartets": [
             {
@@ -100,7 +137,13 @@
                     "Adagio",
                     "Allegro Rondeau"
                 ],
-                "category": "opera grande"
+                "tracks": [
+                    "https://open.spotify.com/track/3ezskbhhNXTmsjV8hRjnE3",
+                    "https://open.spotify.com/track/4s6CRdichkXULrXk70CgY3",
+                    "https://open.spotify.com/track/6k9cJ5xv8w15Q190mBEAgP"
+                ],
+                "category": "opera grande",
+                "hasRecording": true
             },
             {
                 "number": 2,
@@ -113,7 +156,13 @@
                     "Largo",
                     "Allegro"
                 ],
-                "category": "opera grande"
+                "tracks": [
+                    "https://open.spotify.com/track/5diaU1DF9SsK6N8JzL57pn",
+                    "https://open.spotify.com/track/5711Q4t85HQHFfxUl71ldU",
+                    "https://open.spotify.com/track/0wM42PJx5igPQsd6jnu7be"
+                ],
+                "category": "opera grande",
+                "hasRecording": true
             },
             {
                 "number": 3,
@@ -126,7 +175,13 @@
                     "Allegro",
                     "Tempo di Minuetto"
                 ],
-                "category": "opera grande"
+                "tracks": [
+                    "https://open.spotify.com/track/6wlE1MIomfLKqmALRSy6gY",
+                    "https://open.spotify.com/track/0xijm16sOeH9LKH4VVOvM3",
+                    "https://open.spotify.com/track/5xRO0uLdVITbnGrk1msblq"
+                ],
+                "category": "opera grande",
+                "hasRecording": true
             },
             {
                 "number": 4,
@@ -139,7 +194,13 @@
                     "Grave",
                     "Allegro"
                 ],
-                "category": "opera grande"
+                "tracks": [
+                    "https://open.spotify.com/track/5kb1SPX5eHD3Kr6RWNkNVe",
+                    "https://open.spotify.com/track/4okRrGM2da2sb7kjsevUSn",
+                    "https://open.spotify.com/track/6w1CuNHJ8SebmOMk91rrGw"
+                ],
+                "category": "opera grande",
+                "hasRecording": true
             },
             {
                 "number": 5,
@@ -152,7 +213,13 @@
                     "Allegro",
                     "Tempo di Minuetto"
                 ],
-                "category": "opera grande"
+                "tracks": [
+                    "https://open.spotify.com/track/7o8nP60zmtlV5sKzxUQHN8",
+                    "https://open.spotify.com/track/73o3e25TuB00quz2zvguou",
+                    "https://open.spotify.com/track/4TRYjObhFD0ZVTL0gpsjrU"
+                ],
+                "category": "opera grande",
+                "hasRecording": true
             },
             {
                 "number": 6,
@@ -165,13 +232,20 @@
                     "Amoroso",
                     "Allegro"
                 ],
-                "category": "opera grande"
+                "tracks": [
+                    "https://open.spotify.com/track/6O8Rbag3Uk9CiYIQ5rhiyM",
+                    "https://open.spotify.com/track/1xujaE33DzmoFHxY4ADtPk",
+                    "https://open.spotify.com/track/4H3pF6ZRkp4pDTKIMxOtA6"
+                ],
+                "category": "opera grande",
+                "hasRecording": true
             }
         ]
     },
     {
         "opus": 9,
         "year": 1770,
+        "imslp": "https://imslp.org/wiki/6_String_Quartets%2C_G.171-176_(Boccherini%2C_Luigi)",
         "dedication": "Alli Signori Diletanti di Madrid",
         "quartets": [
             {
@@ -186,7 +260,14 @@
                     "Minuetto",
                     "Presto"
                 ],
-                "category": "opera grande"
+                "tracks": [
+                    "",
+                    "",
+                    "",
+                    ""
+                ],
+                "category": "opera grande",
+                "hasRecording": false
             },
             {
                 "number": 2,
@@ -199,7 +280,13 @@
                     "Larghetto",
                     "Allegretto con moto"
                 ],
-                "category": "opera grande"
+                "tracks": [
+                    "",
+                    "",
+                    ""
+                ],
+                "category": "opera grande",
+                "hasRecording": false
             },
             {
                 "number": 3,
@@ -212,7 +299,13 @@
                     "Largo cantabile",
                     "Minuetto"
                 ],
-                "category": "opera grande"
+                "tracks": [
+                    "",
+                    "",
+                    ""
+                ],
+                "category": "opera grande",
+                "hasRecording": false
             },
             {
                 "number": 4,
@@ -225,7 +318,13 @@
                     "Allegro",
                     "Minuetto"
                 ],
-                "category": "opera grande"
+                "tracks": [
+                    "",
+                    "",
+                    ""
+                ],
+                "category": "opera grande",
+                "hasRecording": false
             },
             {
                 "number": 5,
@@ -238,7 +337,13 @@
                     "Allegro assai",
                     "Rondo Allegro"
                 ],
-                "category": "opera grande"
+                "tracks": [
+                    "",
+                    "",
+                    ""
+                ],
+                "category": "opera grande",
+                "hasRecording": false
             },
             {
                 "number": 6,
@@ -252,13 +357,21 @@
                     "Minuetto",
                     "Allegro assai"
                 ],
-                "category": "opera grande"
+                "tracks": [
+                    "https://open.spotify.com/track/32Sf0rHUdUUkWF2mGKbjLc",
+                    "https://open.spotify.com/track/2kVYr3c1SrLoA899dH07y1",
+                    "https://open.spotify.com/track/3QPnWLyTOhrjvFOpuGLkpV",
+                    "https://open.spotify.com/track/6lgyRWT5AzxvKDatqBFkMm"
+                ],
+                "category": "opera grande",
+                "hasRecording": true
             }
         ]
     },
     {
         "opus": 15,
         "year": 1772,
+        "imslp": "https://imslp.org/wiki/6_String_Quartets%2C_G.177-182_(Boccherini%2C_Luigi)",
         "quartets": [
             {
                 "number": 1,
@@ -270,7 +383,12 @@
                     "Presto",
                     "Allegro rondeau"
                 ],
-                "category": "opera piccola"
+                "tracks": [
+                    "https://open.spotify.com/track/5LHQ5xcvDUPwEyPLP7iZwU",
+                    "https://open.spotify.com/track/1Tg8bWQsZu3mmQ32k2YboO"
+                ],
+                "category": "opera piccola",
+                "hasRecording": true
             },
             {
                 "number": 2,
@@ -282,7 +400,12 @@
                     "Allegretto",
                     "Allegro Minuetto"
                 ],
-                "category": "opera piccola"
+                "tracks": [
+                    "https://open.spotify.com/track/6sRt9qHUznuxRZscTpygH4",
+                    "https://open.spotify.com/track/5inDLIDRdR6BIChpjRT8h4"
+                ],
+                "category": "opera piccola",
+                "hasRecording": true
             },
             {
                 "number": 3,
@@ -294,7 +417,12 @@
                     "Andantino",
                     "Prestissimo"
                 ],
-                "category": "opera piccola"
+                "tracks": [
+                    "https://open.spotify.com/track/6kFGHejPGQb4RyYIWwBncq",
+                    "https://open.spotify.com/track/2h9vGhNcsMrO2RYTz8XLpn"
+                ],
+                "category": "opera piccola",
+                "hasRecording": true
             },
             {
                 "number": 4,
@@ -306,7 +434,12 @@
                     "Prestissimo",
                     "Minuetto"
                 ],
-                "category": "opera piccola"
+                "tracks": [
+                    "https://open.spotify.com/track/7C4k5Qr68gDBwh34PivqCe",
+                    "https://open.spotify.com/track/5aZkaT1fnBXcrlspXIPvgr"
+                ],
+                "category": "opera piccola",
+                "hasRecording": true
             },
             {
                 "number": 5,
@@ -318,7 +451,12 @@
                     "Adagio con sordina",
                     "Minuetto"
                 ],
-                "category": "opera piccola"
+                "tracks": [
+                    "https://open.spotify.com/track/4xxezRDyTFLr5qn6PDCoyW",
+                    "https://open.spotify.com/track/691MmOICV5A74GR5D9myTV"
+                ],
+                "category": "opera piccola",
+                "hasRecording": true
             },
             {
                 "number": 6,
@@ -330,7 +468,12 @@
                     "Larghetto",
                     "Minuetto. Allegro moderato"
                 ],
-                "category": "opera piccola"
+                "tracks": [
+                    "https://open.spotify.com/track/1JeN4JzPMO19YMwJZITxUz",
+                    "https://open.spotify.com/track/6krRY468VAcSN0HycxrWrm"
+                ],
+                "category": "opera piccola",
+                "hasRecording": true
             }
         ]
     },
@@ -344,66 +487,102 @@
                 "gerard": 183,
                 "key": "C",
                 "major": true,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_C_major%2C_G.183_(Boccherini%2C_Luigi)",
                 "mvmts": [
                     "Allegro molto",
                     "Tempo di Minuetto"
                 ],
-                "category": "quartettino ... opera piccola"
+                "tracks": [
+                    "",
+                    ""
+                ],
+                "category": "opera piccola",
+                "hasRecording": false
             },
             {
                 "number": 2,
                 "gerard": 184,
                 "key": "D",
                 "major": true,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_D_major%2C_G.184_(Boccherini%2C_Luigi)",
                 "mvmts": [
                     "Moderato",
                     "Minuetto"
                 ],
-                "category": "quartettino ... opera piccola"
+                "tracks": [
+                    "",
+                    ""
+                ],
+                "category": "opera piccola",
+                "hasRecording": false
             },
             {
                 "number": 3,
                 "gerard": 185,
                 "key": "E-flat",
                 "major": true,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_E-flat_major%2C_G.185_(Boccherini%2C_Luigi)",
                 "mvmts": [
                     "Adagio",
                     "Rondeau Allegro"
                 ],
-                "category": "quartettino ... opera piccola"
+                "tracks": [
+                    "",
+                    ""
+                ],
+                "category": "opera piccola",
+                "hasRecording": false
             },
             {
                 "number": 4,
                 "gerard": 186,
                 "key": "B-flat",
                 "major": true,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_B-flat_major%2C_G.186_(Boccherini%2C_Luigi)",
                 "mvmts": [
                     "Allegretto moderato",
                     "Allegro vivace"
                 ],
-                "category": "quartettino ... opera piccola"
+                "tracks": [
+                    "",
+                    ""
+                ],
+                "category": "opera piccola",
+                "hasRecording": false
             },
             {
                 "number": 5,
                 "gerard": 187,
                 "key": "A",
                 "major": false,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_A_minor%2C_G.187_(Boccherini%2C_Luigi)",
                 "mvmts": [
                     "Allegro con molto",
                     "Minuetto Amoroso"
                 ],
-                "category": "quartettino ... opera piccola"
+                "tracks": [
+                    "",
+                    ""
+                ],
+                "category": "opera piccola",
+                "hasRecording": false
             },
             {
                 "number": 6,
                 "gerard": 188,
                 "key": "C",
                 "major": true,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_C_major%2C_G.188_(Boccherini%2C_Luigi)",
                 "mvmts": [
                     "Andantino",
                     "Non troppo presto"
                 ],
-                "category": "quartettino ... opera piccola"
+                "tracks": [
+                    "",
+                    ""
+                ],
+                "category": "opera piccola",
+                "hasRecording": false
             }
         ]
     },
@@ -417,72 +596,114 @@
                 "gerard": 189,
                 "key": "D",
                 "major": true,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_D_major%2C_G.189_(Boccherini%2C_Luigi)",
                 "mvmts": [
                     "Moderato",
                     "Grave",
                     "Allegro assai"
                 ],
-                "category": "opera grande"
+                "tracks": [
+                    "https://open.spotify.com/track/5s0tfxVrapiuBN2lSFxoI0",
+                    "https://open.spotify.com/track/5zj9H0RPOCETHEchiGi4uX",
+                    "https://open.spotify.com/track/25LIneSMu8n3Od1Ak1Xiwz"
+                ],
+                "category": "opera grande",
+                "hasRecording": true
             },
             {
                 "number": 2,
                 "gerard": 190,
                 "key": "A",
                 "major": true,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_A_major%2C_G.190_(Boccherini%2C_Luigi)",
                 "mvmts": [
                     "Larghetto",
                     "Allegro spiritoso",
                     "Minuetto Amoroso"
                 ],
-                "category": "opera grande"
+                "tracks": [
+                    "",
+                    "",
+                    ""
+                ],
+                "category": "opera grande",
+                "hasRecording": false
             },
             {
                 "number": 3,
                 "gerard": 191,
                 "key": "E-flat",
                 "major": true,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_E-flat_major%2C_G.191_(Boccherini%2C_Luigi)",
                 "mvmts": [
                     "Allegro moderato",
                     "Adagio non tanto",
                     "Minuetto"
                 ],
-                "category": "opera grande"
+                "tracks": [
+                    "",
+                    "",
+                    ""
+                ],
+                "category": "opera grande",
+                "hasRecording": false
             },
             {
                 "number": 4,
                 "gerard": 192,
                 "key": "C",
                 "major": true,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_C_major%2C_G.192_(Boccherini%2C_Luigi)",
                 "mvmts": [
                     "Moderato",
                     "Larghetto",
                     "Minuetto"
                 ],
-                "category": "opera grande"
+                "tracks": [
+                    "",
+                    "",
+                    ""
+                ],
+                "category": "opera grande",
+                "hasRecording": false
             },
             {
                 "number": 5,
                 "gerard": 193,
                 "key": "C",
                 "major": false,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_C_minor%2C_G.193_(Boccherini%2C_Luigi)",
                 "mvmts": [
                     "Allegro moderato",
                     "Larghetto",
                     "Allegro molto"
                 ],
-                "category": "opera grande"
+                "tracks": [
+                    "",
+                    "",
+                    ""
+                ],
+                "category": "opera grande",
+                "hasRecording": false
             },
             {
                 "number": 6,
                 "gerard": 194,
                 "key": "G",
                 "major": false,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_G_minor%2C_G.194_(Boccherini%2C_Luigi)",
                 "mvmts": [
                     "Allegro vivo assai",
                     "Adagio",
                     "Minuetto"
                 ],
-                "category": "opera grande"
+                "tracks": [
+                    "https://open.spotify.com/track/5Z9Nf5wsHMscxy5hNrzKc6",
+                    "https://open.spotify.com/track/42xg9hyYZHcxSWkzHDjBXP",
+                    "https://open.spotify.com/track/5B3J14MeHyEjgp87sr5jRb"
+                ],
+                "category": "opera grande",
+                "hasRecording": true
             }
         ]
     },
@@ -497,66 +718,102 @@
                 "gerard": 195,
                 "key": "B-flat",
                 "major": true,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_B-flat_major%2C_G.195_(Boccherini%2C_Luigi)",
                 "mvmts": [
                     "Allegro moderato",
                     "Minuetto con moto"
                 ],
-                "category": "quartettino ... opera piccola"
+                "tracks": [
+                    "https://open.spotify.com/track/7hRuGxhdfDtE7nOzKDTB7y",
+                    "https://open.spotify.com/track/0hcSXLovDaXrz2aQaSMsIi"
+                ],
+                "category": "opera piccola",
+                "hasRecording": true
             },
             {
                 "number": 2,
                 "gerard": 196,
                 "key": "G",
                 "major": false,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_G_minor%2C_G.196_(Boccherini%2C_Luigi)",
                 "mvmts": [
                     "Larghetto",
                     "Minuetto"
                 ],
-                "category": "quartettino ... opera piccola"
+                "tracks": [
+                    "https://open.spotify.com/track/44zcOaa7UG8xzJZfTUkXQj",
+                    "https://open.spotify.com/track/77bdMuWtxlEQldiLE1l3xf"
+                ],
+                "category": "opera piccola",
+                "hasRecording": true
             },
             {
                 "number": 3,
                 "gerard": 197,
                 "key": "E-flat",
                 "major": true,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_E-flat_major%2C_G.197_(Boccherini%2C_Luigi)",
                 "mvmts": [
                     "Allegro vivace",
                     "Minuetto"
                 ],
-                "category": "quartettino ... opera piccola"
+                "tracks": [
+                    "https://open.spotify.com/track/3YDj1dEDzh3dfxqZN1HAnC",
+                    "https://open.spotify.com/track/5pKUVTpf2aUgWUB9ymOamR"
+                ],
+                "category": "opera piccola",
+                "hasRecording": true
             },
             {
                 "number": 4,
                 "gerard": 198,
                 "key": "A",
                 "major": true,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_A_major%2C_G.198_(Boccherini%2C_Luigi)",
                 "mvmts": [
                     "Larghetto",
                     "Minuetto con moto"
                 ],
-                "category": "quartettino ... opera piccola"
+                "tracks": [
+                    "https://open.spotify.com/track/2Q84N45B7c7GqyHyUNVZcK",
+                    "https://open.spotify.com/track/0pef2LP1yMKVa2jwDwOEUp"
+                ],
+                "category": "opera piccola",
+                "hasRecording": true
             },
             {
                 "number": 5,
                 "gerard": 199,
                 "key": "F",
                 "major": true,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_F_major%2C_G.199_(Boccherini%2C_Luigi)",
                 "mvmts": [
                     "Allegretto",
                     "Minuetto Allegro"
                 ],
-                "category": "quartettino ... opera piccola"
+                "tracks": [
+                    "https://open.spotify.com/track/6gZIWuG2ka7X9wTuepIwtM",
+                    "https://open.spotify.com/track/29Hk55eRGg3pWHnibPZvrq"
+                ],
+                "category": "opera piccola",
+                "hasRecording": true
             },
             {
                 "number": 6,
                 "gerard": 200,
                 "key": "F",
                 "major": false,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_F_minor%2C_G.200_(Boccherini%2C_Luigi)",
                 "mvmts": [
                     "Andante appassionato ma con lento",
                     "Minuetto"
                 ],
-                "category": "quartettino ... opera piccola"
+                "tracks": [
+                    "https://open.spotify.com/track/60P1nft9QSpQO5QREzYyBz",
+                    "https://open.spotify.com/track/5nkMB9KGEmH8ddGLBeVY2Z"
+                ],
+                "category": "opera piccola",
+                "hasRecording": true
             }
         ]
     },
@@ -570,19 +827,28 @@
                 "gerard": 201,
                 "key": "E-flat",
                 "major": true,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_E-flat_major%2C_G.201_(Boccherini%2C_Luigi)",
                 "mvmts": [
                     "Allegretto lentarello e affettuoso",
                     "Minuetto",
                     "Grave",
                     "Allegro vivace assai"
                 ],
-                "category": "opera grande"
+                "tracks": [
+                    "https://open.spotify.com/track/0rK2iCOspja60T83qrgr2K",
+                    "https://open.spotify.com/track/68SVfc7PLZ0pTlPYUXqwtj",
+                    "https://open.spotify.com/track/3hgQ3kC0Hun8IOWNkRChx6",
+                    "https://open.spotify.com/track/3TGrFKWfDEcPMB0s3x9OwF"
+                ],
+                "category": "opera grande",
+                "hasRecording": true
             },
             {
                 "number": 2,
                 "gerard": 202,
                 "key": "E",
                 "major": false,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_E_minor%2C_G.202_(Boccherini%2C_Luigi)",
                 "mvmts": [
                     "Largo sostenuto",
                     "Minuetto",
@@ -590,57 +856,95 @@
                     "Minuetto (same!)",
                     "Rondeau comodo assai"
                 ],
-                "category": "opera grande"
+                "tracks": [
+                    "https://open.spotify.com/track/1nNYaCvJRKmy4psKJQj4qf",
+                    "https://open.spotify.com/track/7Kqy0tlegmMRo9Tj2SuMy8",
+                    "https://open.spotify.com/track/7Kqy0tlegmMRo9Tj2SuMy8",
+                    "https://open.spotify.com/track/7Kqy0tlegmMRo9Tj2SuMy8",
+                    "https://open.spotify.com/track/7obIBNEF6nxiDsqVTI3i4F"
+                ],
+                "category": "opera grande",
+                "hasRecording": true
             },
             {
                 "number": 3,
                 "gerard": 203,
                 "key": "D",
                 "major": true,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_D_major%2C_G.203_(Boccherini%2C_Luigi)",
                 "mvmts": [
                     "Allegro vivo",
                     "Adagio",
                     "Allegro vivo ma non presto"
                 ],
-                "category": "opera grande"
+                "tracks": [
+                    "https://open.spotify.com/track/4lVWYeGMFZvKAi8hJMl8IQ",
+                    "https://open.spotify.com/track/1N52Aj0BXb8Yel2jYXe3yE",
+                    "https://open.spotify.com/track/42PQ5l6GgE85u6JckhEisn"
+                ],
+                "category": "opera grande",
+                "hasRecording": true
             },
             {
                 "number": 4,
                 "gerard": 204,
                 "key": "C",
                 "major": true,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_C_major%2C_G.204_(Boccherini%2C_Luigi)",
                 "mvmts": [
                     "Allegro bizarro",
                     "Larghetto",
                     "Allegro con brio"
                 ],
-                "category": "opera grande"
+                "tracks": [
+                    "https://open.spotify.com/track/3AX5zekM8yRUkp8mwZ5TJB",
+                    "https://open.spotify.com/track/68SY89t3W5QTQxmotSjewe",
+                    "https://open.spotify.com/track/4BHyDE50fT6crgeWg8mZNB"
+                ],
+                "category": "opera grande",
+                "hasRecording": true
             },
             {
                 "number": 5,
                 "gerard": 205,
                 "key": "G",
                 "major": false,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_G_minor%2C_G.205_(Boccherini%2C_Luigi)",
                 "mvmts": [
                     "Allegro comodo",
                     "Andantino",
                     "Minuetto con moto",
                     "Allegro giusto"
                 ],
-                "category": "opera grande"
+                "tracks": [
+                    "https://open.spotify.com/track/5yiHrcn16iNouOipb4e3R6",
+                    "https://open.spotify.com/track/4B9zSfzudclp07HEEmBXyS",
+                    "https://open.spotify.com/track/3Gu4u7xNYdu2B60wwxVeJw",
+                    "https://open.spotify.com/track/1JeT9ELoHivDXvkZ3kTQ8R"
+                ],
+                "category": "opera grande",
+                "hasRecording": true
             },
             {
                 "number": 6,
                 "gerard": 206,
                 "key": "A",
                 "major": true,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_A_major%2C_G.206_(Boccherini%2C_Luigi)",
                 "mvmts": [
                     "Allegro",
                     "Andante lentarello",
                     "Minuetto con moto",
                     "Presto assai"
                 ],
-                "category": "opera grande"
+                "tracks": [
+                    "https://open.spotify.com/track/3LkzdHpYreYVo9Za64UB8d",
+                    "https://open.spotify.com/track/6Y3RnvlyDGTsrfwKYvY1qw",
+                    "https://open.spotify.com/track/3atoJPNtKKFMUNiKQ8f63b",
+                    "https://open.spotify.com/track/0b7i1XetsVnNGTxBD7Omgf"
+                ],
+                "category": "opera grande",
+                "hasRecording": true
             }
         ]
     },
@@ -653,66 +957,102 @@
                 "gerard": 207,
                 "key": "E",
                 "major": true,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_E_major,_G207_(Boccherini,_Luigi)",
                 "mvmts": [
                     "Allegro spiritoso",
                     "Rondeau. Allegretto ma con moto"
                 ],
-                "category": "quartettino ... opera piccola"
+                "tracks": [
+                    "https://open.spotify.com/track/5cp4ThF3pcmFI6VgPxonbE",
+                    "https://open.spotify.com/track/6KUs2qTlkAIvRGKiBI7OqL"
+                ],
+                "category": "opera piccola",
+                "hasRecording": true
             },
             {
                 "number": 2,
                 "gerard": 208,
                 "key": "C",
                 "major": true,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_C_major%2C_G208_(Boccherini%2C_Luigi)",
                 "mvmts": [
                     "Allegretto",
                     "Minuetto"
                 ],
-                "category": "quartettino ... opera piccola"
+                "tracks": [
+                    "https://open.spotify.com/track/3zI3H2mVUT65jvjwxTxwrX",
+                    "https://open.spotify.com/track/423jy45uWjAuk4U9KtYooD"
+                ],
+                "category": "opera piccola",
+                "hasRecording": true
             },
             {
                 "number": 3,
                 "gerard": 209,
                 "key": "G",
                 "major": true,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_G_major%2C_G209_(Boccherini%2C_Luigi)",
                 "mvmts": [
                     "Andante con moto",
                     "Presto assai"
                 ],
-                "category": "quartettino ... opera piccola"
+                "tracks": [
+                    "https://open.spotify.com/track/2bto4sOjXh4qGvrCSdzFKK",
+                    "https://open.spotify.com/track/56nwTRPctdnFyRH7l5Yxaf"
+                ],
+                "category": "opera piccola",
+                "hasRecording": true
             },
             {
                 "number": 4,
                 "gerard": 210,
                 "key": "B-flat",
                 "major": true,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_B-flat_major%2C_G210_(Boccherini%2C_Luigi)",
                 "mvmts": [
                     "Andante lentarello",
                     "Minuetto"
                 ],
-                "category": "quartettino ... opera piccola"
+                "tracks": [
+                    "https://open.spotify.com/track/05ipyUfHvFq8PAI3IJ3qfK",
+                    "https://open.spotify.com/track/28WpTcflZh85temRr7JaDd"
+                ],
+                "category": "opera piccola",
+                "hasRecording": true
             },
             {
                 "number": 5,
                 "gerard": 211,
                 "key": "E",
                 "major": false,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_E_minor%2C_G211_(Boccherini%2C_Luigi)",
                 "mvmts": [
                     "Allegro brillante",
                     "Allegro vivo assai"
                 ],
-                "category": "quartettino ... opera piccola"
+                "tracks": [
+                    "https://open.spotify.com/track/21zCFNagcew2UF9akmlWod",
+                    "https://open.spotify.com/track/3t3Hhy8x8aHOik65XkKyxq"
+                ],
+                "category": "opera piccola",
+                "hasRecording": true
             },
             {
                 "number": 6,
                 "gerard": 212,
                 "key": "E-flat",
                 "major": true,
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_E-flat_major%2C_G212_(Boccherini%2C_Luigi)",
                 "mvmts": [
                     "Adagio",
                     "Minuetto. Affetuoso"
                 ],
-                "category": "quartettino ... opera piccola"
+                "tracks": [
+                    "https://open.spotify.com/track/14sCG1gHk2FCkR6DoPntVU",
+                    "https://open.spotify.com/track/4Ruuv8GzBx3OcltONDhwOq"
+                ],
+                "category": "opera piccola",
+                "hasRecording": true
             }
         ]
     },
@@ -725,14 +1065,21 @@
                 "gerard": 213,
                 "key": "A",
                 "major": true,
-                "imslp": "https://imslp.org/wiki/String_Quartet_in_A_major%2C_G.213_(Boccherini%2C_Luigi)",
+                "imslp": "https://imslp.org/wiki/String_Quartet_in_A_major,_G.213_(Boccherini,_Luigi)",
                 "mvmts": [
                     "Allegro moderato",
                     "Minuetto",
                     "Grave",
                     "Allegro giusto"
                 ],
-                "category": "opera grande"
+                "tracks": [
+                    "https://open.spotify.com/track/6nykOZpiC3EbSSEmYsuxVA",
+                    "https://open.spotify.com/track/7ki4faV95mudMQOVkQlEqS",
+                    "https://open.spotify.com/track/3gJcjML5BjyhDaVn2cTocb",
+                    "https://open.spotify.com/track/7bZkKOy3FSILd2HqjCsDLv"
+                ],
+                "category": "opera grande",
+                "hasRecording": true
             }
         ]
     },
@@ -752,7 +1099,14 @@
                     "Andante Flebile",
                     "Prestissimo (repeat of second half of 1)"
                 ],
-                "category": "opera grande"
+                "tracks": [
+                    "https://open.spotify.com/track/5DRJ36PQDYOBgJkczMqnMx",
+                    "https://open.spotify.com/track/4N9A9378q9AhjtZVSz5Pks",
+                    "https://open.spotify.com/track/08oRXiA4nCO1w3eAUqRSMg",
+                    "https://open.spotify.com/track/3sFLDh9RkUprrqRyzQH3nB"
+                ],
+                "category": "opera grande",
+                "hasRecording": true
             },
             {
                 "number": 2,
@@ -765,7 +1119,14 @@
                     "Larghetto affettuoso",
                     "Rondeau. Allegro moderato"
                 ],
-                "category": "opera grande"
+                "tracks": [
+                    "https://open.spotify.com/track/7coCgBjLBypZTuyKJivcK7",
+                    "https://open.spotify.com/track/4zmqwmaC4MEKAhGlJNfQ5D",
+                    "https://open.spotify.com/track/6gazbdEYEdtCGt42jG3ogf",
+                    "https://open.spotify.com/track/05bZ9g6k2xW7VhjJl5rNqZ"
+                ],
+                "category": "opera grande",
+                "hasRecording": true
             }
         ]
     },
@@ -782,7 +1143,12 @@
                     "Allegretto moderato",
                     "Minuetto. Allegro"
                 ],
-                "category": "quartettino ... opera piccola"
+                "tracks": [
+                    "",
+                    ""
+                ],
+                "category": "opera piccola",
+                "hasRecording": false
             },
             {
                 "number": 2,
@@ -793,7 +1159,12 @@
                     "Andante",
                     "Minuetto"
                 ],
-                "category": "quartettino ... opera piccola"
+                "tracks": [
+                    "",
+                    ""
+                ],
+                "category": "opera piccola",
+                "hasRecording": false
             }
         ]
     },
@@ -810,7 +1181,12 @@
                     "Allegretto moderato",
                     "Tempo di Minuetto"
                 ],
-                "category": "quartettino ... opera piccola"
+                "tracks": [
+                    "",
+                    ""
+                ],
+                "category": "opera piccola",
+                "hasRecording": false
             },
             {
                 "number": 2,
@@ -821,7 +1197,12 @@
                     "Allegretto con moto",
                     "Minuetto"
                 ],
-                "category": "quartettino ... opera piccola"
+                "tracks": [
+                    "",
+                    ""
+                ],
+                "category": "opera piccola",
+                "hasRecording": false
             }
         ]
     },
@@ -838,7 +1219,12 @@
                     "Maestoso assai",
                     "Tempo di Minuetto"
                 ],
-                "category": "quartettino ... opera piccola"
+                "tracks": [
+                    "",
+                    ""
+                ],
+                "category": "opera piccola",
+                "hasRecording": false
             },
             {
                 "number": 2,
@@ -850,7 +1236,13 @@
                     "Minuetto amoroso",
                     "Andante allegretto"
                 ],
-                "category": "quartettino ... opera piccola"
+                "tracks": [
+                    "",
+                    "",
+                    ""
+                ],
+                "category": "opera piccola",
+                "hasRecording": false
             },
             {
                 "number": 3,
@@ -862,7 +1254,13 @@
                     "Allegretto con moto",
                     "Tempo di Minuetto"
                 ],
-                "category": "quartettino ... opera piccola"
+                "tracks": [
+                    "",
+                    "",
+                    ""
+                ],
+                "category": "opera piccola",
+                "hasRecording": false
             },
             {
                 "number": 4,
@@ -875,7 +1273,12 @@
                     "Presto",
                     "Tempo di Minuetto"
                 ],
-                "category": "quartettino ... opera piccola"
+                "tracks": [
+                    "https://open.spotify.com/track/5slLJyxyDGVIp14Kzne6TQ",
+                    "https://open.spotify.com/track/2R08rg6arTMET191gEwb0i"
+                ],
+                "category": "opera piccola",
+                "hasRecording": true
             },
             {
                 "number": 5,
@@ -887,7 +1290,12 @@
                     "Andantino lento",
                     "Allegro non tanto"
                 ],
-                "category": "quartettino ... opera piccola"
+                "tracks": [
+                    "",
+                    ""
+                ],
+                "category": "opera piccola",
+                "hasRecording": false
             },
             {
                 "number": 6,
@@ -898,7 +1306,12 @@
                     "Andantino",
                     "Minuetto on moto"
                 ],
-                "category": "quartettino ... opera piccola"
+                "tracks": [
+                    "",
+                    ""
+                ],
+                "category": "opera piccola",
+                "hasRecording": false
             }
         ]
     },
@@ -915,7 +1328,12 @@
                     "Andante moderato",
                     "Moderato con moto"
                 ],
-                "category": "quartettino ... opera piccola"
+                "tracks": [
+                    "",
+                    ""
+                ],
+                "category": "opera piccola",
+                "hasRecording": false
             },
             {
                 "number": 2,
@@ -926,7 +1344,12 @@
                     "Andante lento",
                     "Tempo di Minuetto"
                 ],
-                "category": "quartettino ... opera piccola"
+                "tracks": [
+                    "",
+                    ""
+                ],
+                "category": "opera piccola",
+                "hasRecording": false
             },
             {
                 "number": 3,
@@ -937,7 +1360,12 @@
                     "Allegretto moderato",
                     "Minuetto con moto"
                 ],
-                "category": "quartettino ... opera piccola"
+                "tracks": [
+                    "",
+                    ""
+                ],
+                "category": "opera piccola",
+                "hasRecording": false
             },
             {
                 "number": 4,
@@ -948,7 +1376,12 @@
                     "Andantino lento",
                     "Minuetto con un poco di moto"
                 ],
-                "category": "quartettino ... opera piccola"
+                "tracks": [
+                    "",
+                    ""
+                ],
+                "category": "opera piccola",
+                "hasRecording": false
             },
             {
                 "number": 5,
@@ -959,7 +1392,12 @@
                     "Larghetto",
                     "Minuetto con un poco di moto"
                 ],
-                "category": "quartettino ... opera piccola"
+                "tracks": [
+                    "",
+                    ""
+                ],
+                "category": "opera piccola",
+                "hasRecording": false
             },
             {
                 "number": 6,
@@ -970,7 +1408,12 @@
                     "Allegro vivace",
                     "Tempo di Minuetto affettuoso"
                 ],
-                "category": "quartettino ... opera piccola"
+                "tracks": [
+                    "",
+                    ""
+                ],
+                "category": "opera piccola",
+                "hasRecording": false
             }
         ]
     },
@@ -990,7 +1433,14 @@
                     "Adagio",
                     "Finale. Allegro giusto"
                 ],
-                "category": "opera grande"
+                "tracks": [
+                    "https://open.spotify.com/track/1fDJDCNtVqFce1QGeQM1y1",
+                    "https://open.spotify.com/track/23AO8cG3V167iX2vul2f4s",
+                    "https://open.spotify.com/track/1uFttI0PI3koNqFaL4uKgM",
+                    "https://open.spotify.com/track/3R6b3hdaHObQldPqGeRZPl"
+                ],
+                "category": "opera grande",
+                "hasRecording": true
             },
             {
                 "number": 2,
@@ -1003,7 +1453,14 @@
                     "Minuetto",
                     "Rondeau. Allegretto"
                 ],
-                "category": "opera grande"
+                "tracks": [
+                    "https://open.spotify.com/track/5DK1robsPo9BPgmbVgM5H7",
+                    "https://open.spotify.com/track/7tetbJbHcuJFrJUvF5x09b",
+                    "https://open.spotify.com/track/5GeTDWjU5b04sztBd9On5G",
+                    "https://open.spotify.com/track/0cu9r2kNBvDWcYBHQnzNPl"
+                ],
+                "category": "opera grande",
+                "hasRecording": true
             },
             {
                 "number": 3,
@@ -1016,7 +1473,14 @@
                     "Adagio",
                     "Rondeau. Allegro giusto"
                 ],
-                "category": "opera grande"
+                "tracks": [
+                    "https://open.spotify.com/track/3wXbCeOs3AofC4m2LRR5Hv",
+                    "https://open.spotify.com/track/6vAJ1Xj3haBjJdAN9RHVT8",
+                    "https://open.spotify.com/track/7IxNhJCcDigzTTpLQtEyQL",
+                    "https://open.spotify.com/track/5S4v8IqgGz9xQfI7Pnu1Wa"
+                ],
+                "category": "opera grande",
+                "hasRecording": true
             },
             {
                 "number": 4,
@@ -1029,7 +1493,14 @@
                     "Adagio non tanto",
                     "Finale. Allegro assai"
                 ],
-                "category": "opera grande"
+                "tracks": [
+                    "https://open.spotify.com/track/4uz5lwnmsUFM86pu54qJW1",
+                    "https://open.spotify.com/track/3OOEvewotrCrlZV7JpaNqC",
+                    "https://open.spotify.com/track/5akWsORLKWKdemBFDrwyqJ",
+                    "https://open.spotify.com/track/5gzl8eNsAblirwHJ6RL0AK"
+                ],
+                "category": "opera grande",
+                "hasRecording": true
             }
         ]
     },
@@ -1047,7 +1518,12 @@
                     "Allegro (che appena si senta)",
                     "Tempo di Minuetto"
                 ],
-                "category": "quartettino ... opera piccola"
+                "tracks": [
+                    "https://open.spotify.com/track/6uz0yMst7NARnDpBiBBQom",
+                    "https://open.spotify.com/track/3twhaU5FwZAZ0MmP7xVplO"
+                ],
+                "category": "opera piccola",
+                "hasRecording": true
             },
             {
                 "number": 2,
@@ -1059,7 +1535,12 @@
                     "Andantino Pausato",
                     "Minuetto. Allegro"
                 ],
-                "category": "quartettino ... opera piccola"
+                "tracks": [
+                    "",
+                    ""
+                ],
+                "category": "opera piccola",
+                "hasRecording": false
             },
             {
                 "number": 3,
@@ -1071,7 +1552,12 @@
                     "Allegro vivace",
                     "Minuetto. Allegro"
                 ],
-                "category": "quartettino ... opera piccola"
+                "tracks": [
+                    "",
+                    ""
+                ],
+                "category": "opera piccola",
+                "hasRecording": false
             },
             {
                 "number": 4,
@@ -1083,7 +1569,12 @@
                     "Allegro vivace",
                     "Rondeau. Allegro"
                 ],
-                "category": "quartettino ... opera piccola"
+                "tracks": [
+                    "",
+                    ""
+                ],
+                "category": "opera piccola",
+                "hasRecording": false
             },
             {
                 "number": 5,
@@ -1095,7 +1586,12 @@
                     "Andantino lento",
                     "Tempo di Minuetto"
                 ],
-                "category": "quartettino ... opera piccola"
+                "tracks": [
+                    "",
+                    ""
+                ],
+                "category": "opera piccola",
+                "hasRecording": false
             },
             {
                 "number": 6,
@@ -1107,7 +1603,12 @@
                     "Andantino amoroso",
                     "Minuetto. Allegro"
                 ],
-                "category": "quartettino ... opera piccola"
+                "tracks": [
+                    "",
+                    ""
+                ],
+                "category": "opera piccola",
+                "hasRecording": false
             }
         ]
     },
@@ -1126,7 +1627,13 @@
                     "Larghetto",
                     "Allegro vivo assai"
                 ],
-                "category": "opera grande"
+                "tracks": [
+                    "https://open.spotify.com/track/5VKhRoFlyCusVPiQMHBMaV",
+                    "https://open.spotify.com/track/0RreG6KI8XxCrpQzKDcMqZ",
+                    "https://open.spotify.com/track/0HgQihOS2BNNhT8HEZDmQO"
+                ],
+                "category": "opera grande",
+                "hasRecording": true
             },
             {
                 "number": 2,
@@ -1139,7 +1646,14 @@
                     "Larghetto Malincolico",
                     "Finale. Allegro vivo assai"
                 ],
-                "category": "opera grande"
+                "tracks": [
+                    "https://open.spotify.com/track/5Q15bvl8amdjgx69D9uSjM",
+                    "https://open.spotify.com/track/79SYjATCuQANEaAQcYFsuS",
+                    "https://open.spotify.com/track/69HPLi3We5BqjX2ymscw9i",
+                    "https://open.spotify.com/track/50IuCul5ZnhnaIHi44RZUM"
+                ],
+                "category": "opera grande",
+                "hasRecording": true
             },
             {
                 "number": 3,
@@ -1151,7 +1665,13 @@
                     "Allegro vivo assai",
                     "Rondeau. Allegro giusto"
                 ],
-                "category": "opera grande"
+                "tracks": [
+                    "https://open.spotify.com/track/6KCVfQFnHFhPSpjmrpTaPa",
+                    "https://open.spotify.com/track/21VHWPz0hqiWm1ARBHN3dk",
+                    "https://open.spotify.com/track/1OjuZBXwWmgjXPgHph6EHL"
+                ],
+                "category": "opera grande",
+                "hasRecording": true
             },
             {
                 "number": 4,
@@ -1163,21 +1683,34 @@
                     "Andantino lento",
                     "Rondeau. Allegro"
                 ],
-                "category": "opera grande"
+                "tracks": [
+                    "https://open.spotify.com/track/01ZMPmzPLLjk18fmqMIOex",
+                    "https://open.spotify.com/track/2LrYwBo0hzLZe0KIdbpPfk",
+                    "https://open.spotify.com/track/6TrVVuSsEPnRXRm8WL7MFJ"
+                ],
+                "category": "opera grande",
+                "hasRecording": true
             },
             {
                 "number": 5,
                 "gerard": 246,
                 "key": "D",
                 "major": true,
-                "nickname": "Le Cornamuse",
+                "nickname": "Les Cornamuse",
                 "mvmts": [
                     "Andante sostenuto",
                     "Allegretto Gajo",
                     "Andante sostenuto como primo",
                     "Presto"
                 ],
-                "category": "opera grande"
+                "tracks": [
+                    "https://open.spotify.com/track/39hM6wHDY8VriQGFv4chYd",
+                    "https://open.spotify.com/track/2kA6HQwwr1iXwGkmT6pxkL",
+                    "https://open.spotify.com/track/1c4ZlgymuuEN8bqXHnUwOO",
+                    "https://open.spotify.com/track/5Ar9zd8U861tMfEo2Wp11N"
+                ],
+                "category": "opera grande",
+                "hasRecording": true
             },
             {
                 "number": 6,
@@ -1189,7 +1722,13 @@
                     "Larghetto",
                     "Allegro giusto e sostenuto"
                 ],
-                "category": "opera grande"
+                "tracks": [
+                    "https://open.spotify.com/track/0PAkt62ia7jx4HPrTtUT9P",
+                    "https://open.spotify.com/track/6RsgZEBKZ8ssc97885CLsV",
+                    "https://open.spotify.com/track/0UcRcOQ0W65byqXtWcuDv3"
+                ],
+                "category": "opera grande",
+                "hasRecording": true
             }
         ]
     },
@@ -1208,17 +1747,28 @@
                     "Adagio non tanto",
                     "Allegro vivo ma non presto"
                 ],
-                "category": "opera grande"
+                "tracks": [
+                    "https://open.spotify.com/track/3FvbFPcuE3VaK5uEJF7dFU",
+                    "https://open.spotify.com/track/38LqHGjEQA0299454Cx6uA",
+                    "https://open.spotify.com/track/15NVHZo1kk8m4w725o9Y7E"
+                ],
+                "category": "opera grande",
+                "hasRecording": true
             },
             {
                 "number": 2,
                 "gerard": 249,
                 "key": "D",
                 "major": true,
+                "nickname": "Unfinished",
                 "mvmts": [
                     "Allegro con brio"
                 ],
-                "category": "opera grande"
+                "tracks": [
+                    "https://open.spotify.com/track/47ZGtIVx4jnNVf4K93SkmW"
+                ],
+                "category": "opera grande",
+                "hasRecording": true
             }
         ]
     }

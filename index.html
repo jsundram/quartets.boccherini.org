@@ -1126,9 +1126,6 @@
                 // Check if quartet has any minuets
                 const hasMinuet = quartet.mvmts.some(m => m.includes('Minuetto'));
 
-                // TODO: remove this once the data is updated
-                quartet.hasRecording = d3.randomUniform()(1) < .5;
-
                 const card = parent.append('div')
                     .attr('class', hasMinuet ? 'quartet-card' : 'quartet-card no-minuet');
 
