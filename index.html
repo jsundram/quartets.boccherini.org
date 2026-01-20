@@ -905,6 +905,82 @@
             }
         }
 
+        /* === POSTER (36×24" @ 300dpi) === */
+        /* Two-column layout for 19 opus rows on landscape poster */
+
+        /* Scale all dimensions by 3x for 300dpi */
+        .poster {
+            --card-height: 420px;        /* 140px × 3 */
+            --card-gap: 30px;            /* 10px × 3 */
+            --opus-label-width: 285px;   /* 95px × 3 */
+            --top-section-height: 60px;  /* 20px × 3 */
+            --nickname-height: 45px;     /* 15px × 3 */
+            --bottom-section-height: 60px; /* 20px × 3 */
+            --top-font-size: 48px;       /* 16px × 3 */
+            --middle-font-size: 69px;    /* 23px × 3 */
+            --bottom-font-size: 48px;    /* 16px × 3 */
+        }
+
+        .poster body {
+            font-size: 27pt;  /* 9pt × 3 */
+            background: var(--bg-body);
+            margin: 0;
+        }
+
+        /* Two-column layout */
+        .poster .container {
+            display: flex;
+            flex-direction: column;
+            flex-wrap: wrap;
+            align-content: flex-start;
+            /* Height for 10 rows in first column (10 × 420px + 9 × 30px gap) */
+            height: 4470px;  /* (10 rows × 420px) + (9 gaps × 30px) */
+            width: auto;
+            column-gap: 90px;  /* 30px × 3 gap between columns */
+        }
+
+        /* Scale header */
+        .poster h1 {
+            font-size: 10.5em !important;  /* 3.5em × 3 */
+            max-width: 100%;
+        }
+
+        .poster .subtitle {
+            font-size: 4.5em !important;  /* 1.5em × 3 */
+        }
+
+        /* Page break controls */
+        .poster .opus-row {
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+
+        /* Clean aesthetics for print */
+        .poster .opus-label {
+            width: 285px;  /* Fixed width for print, 3x scale */
+            box-shadow: none !important;
+        }
+
+        .poster .opus-spacer {
+            width: 537px;  /* 179px × 3 */
+        }
+
+        .poster .quartet-card {
+            box-shadow: none !important;
+            border: 3px solid #999;  /* 1px × 3 */
+        }
+
+        /* Hide interactive elements */
+        .poster .tooltip {
+            display: none !important;
+        }
+
+        /* Ensure print colors are exact */
+        .poster * {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
         /* === MOBILE RESPONSIVE (iPhone) === */
         /* Small touch devices */
         /* hover:none = no mouse, pointer:coarse = touch screen */

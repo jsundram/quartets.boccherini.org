@@ -18,7 +18,7 @@ Usage:
     python visual-diff.py compare A B         Compare two HTML files directly
 
 Options:
-    --format FORMAT     Only test specific format: pdf|desktop|ipad|iphone
+    --format FORMAT     Only test specific format: pdf|poster|desktop|ipad|iphone
     --threshold FLOAT   Pixel diff threshold (default: 0.01 = 1%)
     --open              Open HTML report in browser after completion
     --dark              Enable dark mode (adds .dark-mode CSS class)
@@ -41,6 +41,7 @@ from playwright.sync_api import sync_playwright
 # Viewport configurations for each format
 FORMATS = {
     'pdf': {'width': 850, 'height': 2000, 'print': True, 'full_page': False, 'browser': 'chromium'},  # letter width, tall enough for all content
+    'poster': {'width': 10800, 'height': 7200, 'print': True, 'full_page': False, 'browser': 'chromium', 'css_class': 'poster'},  # 36×24" @ 300dpi landscape
     'desktop': {'width': 1400, 'height': 900, 'print': False, 'full_page': True, 'browser': 'chromium'},
     'ipad': {'width': 1024, 'height': 768, 'print': False, 'full_page': True, 'browser': 'webkit', 'touch': True},
     'iphone': {'width': 375, 'height': 1150, 'print': False, 'full_page': False, 'browser': 'webkit', 'device_scale_factor': 3, 'touch': True},  # 375px @ 3x retina
@@ -143,6 +144,10 @@ def capture_all_formats(html_file, output_dir, formats=None, dark_mode=False):
                 # Enable dark mode by adding CSS class
                 if dark_mode:
                     page.evaluate("document.documentElement.classList.add('dark-mode')")
+
+                # Add format-specific CSS class if specified
+                if config.get('css_class'):
+                    page.evaluate(f"document.documentElement.classList.add('{config['css_class']}')")
 
                 capture_screenshot(page, format_name, config, output_path, dark_mode=dark_mode)
                 results[format_name] = output_path
