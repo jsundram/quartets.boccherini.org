@@ -1,0 +1,75 @@
+REQUEST TO UPDATE PROXY ALLOWLIST FOR PLAYWRIGHT BROWSER DOWNLOADS
+======================================================================
+
+Date: 2026-01-20
+Project: Boccherini Quartets (quartets.boccherini.org)
+Environment: Claude Code Web/Remote Sessions
+
+
+SUMMARY
+-------
+Please add the following domains to the GLOBAL_AGENT_HTTP_PROXY allowed_hosts
+list to enable Playwright browser downloads for automated visual regression testing.
+
+
+DOMAINS TO ADD (Option 1 - Recommended with wildcards)
+-------------------------------------------------------
+*.playwright.dev
+playwright.download.prss.microsoft.com
+*.azureedge.net
+
+
+DOMAINS TO ADD (Option 2 - Minimal without wildcards)
+------------------------------------------------------
+cdn.playwright.dev
+playwright.download.prss.microsoft.com
+playwright.azureedge.net
+playwright-akamai.azureedge.net
+playwright-verizon.azureedge.net
+
+
+JUSTIFICATION
+-------------
+1. Playwright is Microsoft's official browser automation framework
+2. These domains host browser binaries (Chromium, Firefox, WebKit)
+3. Required for visual regression testing in development environment
+4. Consistent with existing allowlist patterns (*.amazonaws.com, *.googleapis.com)
+5. Microsoft-owned infrastructure (playwright.download.prss.microsoft.com)
+
+
+CURRENT BEHAVIOR
+----------------
+Browser downloads fail with:
+  Error: Download failed: server returned code 403 body 'Host not allowed'
+  URL: https://cdn.playwright.dev/dbazure/download/playwright/builds/...
+
+
+EXPECTED BEHAVIOR AFTER UPDATE
+-------------------------------
+Playwright browsers (Chromium, WebKit) download successfully during environment
+setup, enabling automated visual regression testing across multiple browsers.
+
+
+SECURITY NOTES
+--------------
+- playwright.dev is owned by Microsoft (Playwright project)
+- azureedge.net is Microsoft's Azure CDN service
+- These are official distribution channels for open-source browser builds
+- Downloads are checksummed and verified by Playwright installer
+
+
+TECHNICAL CONTACT
+-----------------
+Repository: https://github.com/jsundram/quartets.boccherini.org
+Tool: Claude Code remote development environment
+Framework: Playwright (https://playwright.dev)
+
+
+ADDITIONAL CONTEXT
+------------------
+The proxy currently allows 188 domains including:
+- Package registries: npmjs.org, pypi.org, rubygems.org
+- Cloud providers: *.amazonaws.com, *.googleapis.com
+- Developer tools: github.com, gitlab.com, docker.io
+
+Adding Playwright CDN domains follows the same pattern for development tooling.
