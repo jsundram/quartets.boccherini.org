@@ -89,11 +89,11 @@ fi
 echo "Installing Playwright browsers for Python tools..."
 echo "  (This ensures browsers match the playwright version used by visual-diff.py)"
 
-# Install browsers using Python's playwright module via uv
-# This may re-download browsers if Python playwright version differs from Node.js version
-uv run --with playwright python -m playwright install chromium webkit 2>&1 | grep -E "(Downloading|downloaded)" || true
+# Install browsers using the SAME playwright version that visual-diff.py uses
+# We use a helper script with identical dependencies to ensure version match
+uv run "$PROJECT_ROOT/tools/install-playwright-browsers.py" 2>&1 | grep -E "(Downloading|downloaded|already installed)" || true
 
-INSTALLED+=("Playwright browsers (Python)")
+INSTALLED+=("Playwright browsers (matching visual-diff.py version)")
 
 # -----------------------------------------------------------------------------
 # 5. Start HTTP server if not running
