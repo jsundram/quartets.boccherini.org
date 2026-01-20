@@ -293,9 +293,9 @@ def create_self_contained_report(dark_mode=False):
 
 def get_githack_url(username, gist_id, dark_mode=False):
     """Generate the GitHack URL for viewing the HTML."""
-    # GitHack CDN URL format for gists
+    # GitHack URL format for gists (no CDN caching)
     filename = GIST_FILENAME_DARK if dark_mode else GIST_FILENAME
-    return f"https://gistcdn.githack.com/{username}/{gist_id}/raw/{filename}"
+    return f"https://gist.githack.com/{username}/{gist_id}/raw/{filename}"
 
 
 def main():
