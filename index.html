@@ -28,6 +28,14 @@
             --nickname-height: clamp(10px, 1.3vw, 15px);
             --bottom-section-height: clamp(14px, 1.7vw, 20px);
 
+            /* Movement lines configuration */
+            --mvmt-line-height: 10px;  /* Height of each movement bar */
+            --mvmt-line-width: 20px;   /* Width of each movement bar */
+            --mvmt-line-spacing: 4px;  /* Gap between movement bars */
+            --mvmt-bar-color: #444444;   /* Color for regular movement bars */
+            --mvmt-bar-minuet: #EEEEEE;  /* Highlight color for minuet movements */
+            --mvmt-bar-spotify: #1DB954;  /* Spotify green for hover when track exists */
+
             /* Calculated middle section height - same for both sides */
             --middle-section-height: calc(
                 var(--card-height)
@@ -658,18 +666,10 @@
             margin-left: auto;
         }
 
-        /* Movement text container - stacks text and lines */
-        .movements-count .mvmt-text {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 2px;
-        }
-
-        /* SVG movement lines */
+        /* SVG movement lines - centered within movements-count */
         .movements-count .mvmt-lines-svg {
             display: block;
+            height: var(--mvmt-line-height);
         }
 
         /* Diverging color scheme: Purple (short) -> Gray (standard) -> Green (long) */
@@ -1275,18 +1275,11 @@
                         .text('𝄆');//.text('x');
                 }
 
-                // Create movement text container
-                const mvmtText = movementsDiv.append('div')
-                    .attr('class', 'mvmt-text');
-
-                // Add movement count text
-                mvmtText.append('span')
-                    .attr('class', 'mvmt-count-text')
-                    .text(`${mvmtCount} movement${mvmtCount === 1 ? '' : 's'}`);
-
-                // Create SVG for movement lines
-                const lineWidth = 12;
-                const lineSpacing = 4;
+                // Get movement line dimensions from CSS variables
+                const styles = getComputedStyle(document.documentElement);
+                const lineHeight = parseFloat(styles.getPropertyValue('--mvmt-line-height')) || 10;
+                const lineWidth = parseFloat(styles.getPropertyValue('--mvmt-line-width')) || 14;
+                const lineSpacing = parseFloat(styles.getPropertyValue('--mvmt-line-spacing')) || 4;
                 const lineGap = lineWidth + lineSpacing;
 
                 // Find all minuet positions (handles multiple minuets like G.202)
@@ -1295,22 +1288,47 @@
                         .filter(i => i >= 0)
                 );
 
-                const svg = mvmtText.append('svg')
+                // Create SVG for movement lines (directly in movementsDiv)
+                const svgWidth = mvmtCount * lineGap - lineSpacing;
+                const svg = movementsDiv.append('svg')
                     .attr('class', 'mvmt-lines-svg')
-                    .attr('width', mvmtCount * lineGap - lineSpacing)
-                    .attr('height', 3);
+                    .attr('width', svgWidth)
+                    .attr('height', lineHeight)
+                    .attr('viewBox', `0 0 ${svgWidth} ${lineHeight}`);
 
-                // Draw lines: white for minuets, black for others
-                svg.selectAll('line')
+                // Draw rectangles: minuet highlight for minuets, bar color for others
+                const cornerRadius = lineHeight / 4;
+                const barColor = styles.getPropertyValue('--mvmt-bar-color').trim() || '#444444';
+                const minuetColor = styles.getPropertyValue('--mvmt-bar-minuet').trim() || '#EEEEEE';
+                const spotifyColor = styles.getPropertyValue('--mvmt-bar-spotify').trim() || '#1DB954';
+                const tracks = quartet.tracks || [];
+
+                svg.selectAll('rect')
                     .data(d3.range(mvmtCount))
                     .enter()
-                    .append('line')
-                    .attr('x1', d => d * lineGap)
-                    .attr('y1', 1.5)
-                    .attr('x2', d => d * lineGap + lineWidth)
-                    .attr('y2', 1.5)
-                    .attr('stroke', d => minuetIndices.has(d) ? 'white' : 'black')
-                    .attr('stroke-width', 1);
+                    .append('rect')
+                    .attr('x', d => d * lineGap)
+                    .attr('y', 0)
+                    .attr('width', lineWidth)
+                    .attr('height', lineHeight)
+                    .attr('rx', cornerRadius)
+                    .attr('ry', cornerRadius)
+                    .attr('fill', d => minuetIndices.has(d) ? minuetColor : barColor)
+                    .style('cursor', d => tracks[d] ? 'pointer' : 'default')
+                    .on('mouseover', function(event, d) {
+                        if (tracks[d]) {
+                            d3.select(this).attr('fill', spotifyColor);
+                        }
+                    })
+                    .on('mouseout', function(event, d) {
+                        d3.select(this).attr('fill', minuetIndices.has(d) ? minuetColor : barColor);
+                    })
+                    .on('click', function(event, d) {
+                        if (tracks[d]) {
+                            event.stopPropagation();
+                            window.open(tracks[d], '_blank');
+                        }
+                    });
 
                 if (quartet.edition) {
                     movementsDiv.append('span')
