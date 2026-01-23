@@ -599,11 +599,19 @@
 
         .recording-indicator {
             justify-self: end;  /* Right-aligned in its grid cell */
-            cursor: default;  /* Not clickable */
+        }
+
+        a.recording-indicator {
+            cursor: pointer;  /* Clickable when it's a link */
+        }
+
+        span.recording-indicator {
+            cursor: default;  /* Not clickable when no track available */
         }
 
         .imslp-link:hover,
-        .qr-link:hover {
+        .qr-link:hover,
+        a.recording-indicator:hover {
             text-decoration: underline;
             color: var(--text-link-hover);
         }
@@ -717,6 +725,15 @@
             z-index: 1000;
             max-width: 300px;
             line-height: 1.4;
+        }
+
+        .tooltip .mvmt-link {
+            color: var(--text-link); /* color: #1DB954;  Spotify green */
+            text-decoration: none;
+        }
+
+        .tooltip .mvmt-link:hover {
+            text-decoration: underline;
         }
 
         .dedication {
@@ -1088,7 +1105,14 @@
                     activeCard = this;
                     d3.select(this).style('border-color', getActiveBorderColor());
 
-                    const movements = quartet.mvmts.map((m, i) => `${i + 1}. ${m}`).join('<br>');
+                    const movements = quartet.mvmts.map((m, i) => {
+                        const trackUrl = quartet.tracks && quartet.tracks[i] && quartet.tracks[i] !== ''
+                            ? quartet.tracks[i] : null;
+                        const mvmtText = `${i + 1}. ${m}`;
+                        return trackUrl
+                            ? `<a href="${trackUrl}" target="_blank" rel="noopener noreferrer" class="mvmt-link">${mvmtText}</a>`
+                            : mvmtText;
+                    }).join('<br>');
                     const keyFull = `${quartet.key} ${quartet.major ? 'major' : 'minor'}`;
 
                     let tooltipText = `<strong>Opus ${opus.opus} #${quartet.number || '—'} \
@@ -1220,7 +1244,17 @@
                     });
 
                 // Recording indicator (right-aligned in grid column 3)
-                if (quartet.hasRecording) {
+                if (quartet.hasRecording && quartet.tracks && quartet.tracks[0]) {
+                    linksContainer.append('a')
+                        .attr('class', 'recording-indicator')
+                        .attr('href', quartet.tracks[0])
+                        .attr('target', '_blank')
+                        .attr('rel', 'noopener noreferrer')
+                        .text('♩')
+                        .on('click', function(event) {
+                            event.stopPropagation(); // Prevent card click
+                        });
+                } else if (quartet.hasRecording) {
                     linksContainer.append('span')
                         .attr('class', 'recording-indicator')
                         .text('♩');
