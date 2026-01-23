@@ -115,6 +115,11 @@
             /* Opus label gradient backgrounds */
             --gradient-grande: rgba(129, 199, 132, 0.12);
             --gradient-piccola: rgba(206, 147, 216, 0.12);
+
+            /* Missing data indicator backgrounds */
+            --bg-links-no-imslp: #e0e0e0;      /* Gray - IMSLP only missing */
+            --bg-links-no-music: #bbdefb;      /* Light blue - music only missing */
+            --bg-links-no-data: #90a4ae;       /* Blue-gray - both missing */
         }
 
         /* === DARK MODE COLORS === */
@@ -176,6 +181,11 @@
                 /* Opus label gradient backgrounds - reduced opacity */
                 --gradient-grande: rgba(129, 199, 132, 0.08);
                 --gradient-piccola: rgba(206, 147, 216, 0.08);
+
+                /* Missing data indicator backgrounds */
+                --bg-links-no-imslp: #6e6e6e;      /* Lighter gray - IMSLP only missing */
+                --bg-links-no-music: #1565c0;      /* Darker blue - music only missing */
+                --bg-links-no-data: #1e3a5f;       /* Deep navy - both missing */
             }
         }
 
@@ -238,6 +248,11 @@
             /* Opus label gradient backgrounds */
             --gradient-grande: rgba(129, 199, 132, 0.08);
             --gradient-piccola: rgba(206, 147, 216, 0.08);
+
+            /* Missing data indicator backgrounds */
+            --bg-links-no-imslp: #6e6e6e;      /* Lighter gray - IMSLP only missing */
+            --bg-links-no-music: #1565c0;      /* Darker blue - music only missing */
+            --bg-links-no-data: #1e3a5f;       /* Deep navy - both missing */
         }
 
         /* Debug bounding boxes - controlled by --debug-mode */
@@ -622,6 +637,19 @@
         a.recording-indicator:hover {
             text-decoration: underline;
             color: var(--text-link-hover);
+        }
+
+        /* Missing data indicator backgrounds */
+        .card-links.no-imslp {
+            background-color: var(--bg-links-no-imslp);
+        }
+
+        .card-links.no-music {
+            background-color: var(--bg-links-no-music);
+        }
+
+        .card-links.no-data {
+            background-color: var(--bg-links-no-data);
         }
 
         /* IMSLP link in opus label - positioned absolutely to not affect layout */
@@ -1217,11 +1245,23 @@
                     .text(quartet.major ? 'major' : 'minor');
 
                 // Links container (IMSLP, QR, and Recording) - appended to card, positioned above movement bar
+                const imslpLink = quartet.imslp || opus.imslp;
+                const hasMusic = quartet.hasRecording;
+
+                // Determine missing data class
+                let linksClass = 'card-links';
+                if (!imslpLink && !hasMusic) {
+                    linksClass += ' no-data';
+                } else if (!imslpLink) {
+                    linksClass += ' no-imslp';
+                } else if (!hasMusic) {
+                    linksClass += ' no-music';
+                }
+
                 const linksContainer = card.append('div')
-                    .attr('class', 'card-links');
+                    .attr('class', linksClass);
 
                 // IMSLP link (left-aligned in grid column 1)
-                const imslpLink = quartet.imslp || opus.imslp;
                 if (imslpLink) {
                     linksContainer.append('a')
                         .attr('class', 'imslp-link')
