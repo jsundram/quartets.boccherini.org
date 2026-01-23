@@ -818,6 +818,11 @@
                 display: none !important;
             }
 
+            /* Hide QR link in print (not useful on paper) - use visibility to preserve grid layout */
+            .qr-link {
+                visibility: hidden;
+            }
+
             /* Ensure links and recording indicator are visible in print (already using variables) */
 
             /*
