@@ -50,23 +50,26 @@ The script is idempotent - safe to run multiple times. It will skip already-inst
 - Assume server is running: prompt user to start server if it isn't.
 
 ### Visual Regression Testing
-Use `tools/visual-diff.py` for automated regression testing across all output formats:
+Use `tools/visual-diff.py` for automated regression testing across all output formats.
 
+**IMPORTANT**: Do NOT run visual diffs automatically after every change. Only run diffs when:
+1. The user explicitly asks for visual diffs
+2. You are about to check in code (to verify changes before commit)
+
+**When running diffs, always test BOTH light and dark modes** (don't use `--open`):
 ```bash
-# Test current index.html against baselines
 uv run tools/visual-diff.py test index.html
+uv run tools/visual-diff.py test index.html --dark
+```
 
-# Test and open HTML report in browser
-uv run tools/visual-diff.py test index.html --open
-
-# Update baselines after intentional changes
+Other commands:
+```bash
+# Update baselines after user approval
 uv run tools/visual-diff.py baseline
+uv run tools/visual-diff.py baseline --dark
 
-# Dark mode testing (uses --dark flag)
-uv run tools/visual-diff.py baseline --dark      # Generate dark mode baselines
-uv run tools/visual-diff.py test index.html --dark --open  # Test dark mode
-
-# Test specific format in dark mode
+# Test specific format
+uv run tools/visual-diff.py test index.html --format pdf
 uv run tools/visual-diff.py test index.html --dark --format pdf
 ```
 
@@ -170,30 +173,43 @@ When making CSS changes that should only affect specific formats:
    - **PDF only**: `@media print`
    - **Dark mode colors**: `@media (prefers-color-scheme: dark)` or `.dark-mode` class
    - **Light mode colors**: `:root` defaults
-4. **Run regression tests** for both color modes:
-   - Light mode: `uv run tools/visual-diff.py test index.html`
-   - Dark mode: `uv run tools/visual-diff.py test index.html --dark`
-   - **For color changes**: Always test BOTH modes to ensure no unintended changes
-5. **Verify results**:
+4. **Wait for user to request diffs** or run them before commit
+5. **When running diffs**, always test both modes:
+   ```bash
+   uv run tools/visual-diff.py test index.html
+   uv run tools/visual-diff.py test index.html --dark
+   ```
+6. **Verify results**:
    - Only target format(s) and mode(s) should show FAIL (expected change)
    - Non-target formats/modes should show PASS
-6. **Iterate if needed**: If non-target formats/modes changed, revise CSS to isolate
-7. **WAIT for user approval**: Do NOT update baselines until user explicitly accepts the change
-8. **Update baselines** (only after user approval):
-   - Light mode: `uv run tools/visual-diff.py baseline --format <format>`
-   - Dark mode: `uv run tools/visual-diff.py baseline --dark --format <format>`
+7. **Iterate if needed**: If non-target formats/modes changed, revise CSS to isolate
+8. **WAIT for user approval**: Do NOT update baselines until user explicitly accepts the change
+9. **Update baselines** (only after user approval):
+   ```bash
+   uv run tools/visual-diff.py baseline --format <format>
+   uv run tools/visual-diff.py baseline --dark --format <format>
+   ```
 
 ### Important: Baseline Update Policy
 
 **Do NOT automatically update baselines after making changes.** The user needs to inspect the diff report to verify the change is correct before baselines are updated. If baselines are updated prematurely, the diff tool shows nothing useful.
 
 Workflow:
-1. Make the CSS change
-2. Run `uv run tools/visual-diff.py test index.html` (add `--dark` for dark mode)
-3. Share the report for review: `uv run tools/share-diff.py` (add `--dark` for dark mode)
-4. Tell user the results and provide the GitHack URL for inspection
-5. **Wait for explicit user approval** (e.g., "looks good", "accept", "update baselines")
-6. Only then run `uv run tools/visual-diff.py baseline` (add `--dark` for dark mode)
+1. Make the CSS/JS change
+2. **Wait for user to request visual diffs** (or run before commit)
+3. When requested, run both light and dark mode tests:
+   ```bash
+   uv run tools/visual-diff.py test index.html
+   uv run tools/visual-diff.py test index.html --dark
+   ```
+4. Share the report for review (if in sandbox): `uv run tools/share-diff.py` and `uv run tools/share-diff.py --dark`
+5. Tell user the results and provide URLs for inspection
+6. **Wait for explicit user approval** (e.g., "looks good", "accept", "update baselines")
+7. Only then update baselines:
+   ```bash
+   uv run tools/visual-diff.py baseline
+   uv run tools/visual-diff.py baseline --dark
+   ```
 
 ### Sharing Diff Reports (Claude Code Web/Mobile)
 
@@ -229,7 +245,7 @@ If a CSS change produces unexpected results:
 1. Analyze the diff report to understand what changed
 2. Check if the change leaked to other media queries or color modes
 3. Revise CSS to isolate the change properly
-4. Re-run tests for both light and dark modes
+4. When user requests, re-run tests for both light and dark modes
 5. Repeat until only intended format(s) and mode(s) change
 
 ### Threshold
