@@ -117,9 +117,11 @@
             --gradient-piccola: rgba(206, 147, 216, 0.12);
 
             /* Missing data indicator backgrounds */
+            /* preview here: https://color.adobe.com/boccherini-data-light-color-theme-64a52cd9-23c4-491c-af91-a4540f74fd3c/ */
             --bg-links-no-imslp: #e0e0e0;      /* Gray - IMSLP only missing */
             --bg-links-no-music: #bbdefb;      /* Light blue - music only missing */
             --bg-links-no-data: #90a4ae;       /* Blue-gray - both missing */
+            --bg-links-peters: #A0DFD0;        /* Minty green - Peters edition available */
         }
 
         /* === DARK MODE COLORS === */
@@ -183,9 +185,11 @@
                 --gradient-piccola: rgba(206, 147, 216, 0.08);
 
                 /* Missing data indicator backgrounds */
+                /* preview here: https://color.adobe.com/boccherini-data-dark-color-theme-b46a805a-1154-41d7-a917-b99c9e2053ec/ */
                 --bg-links-no-imslp: #6e6e6e;      /* Lighter gray - IMSLP only missing */
                 --bg-links-no-music: #1565c0;      /* Darker blue - music only missing */
                 --bg-links-no-data: #1e3a5f;       /* Deep navy - both missing */
+                --bg-links-peters: #00796b;        /* Deep teal - Peters edition available */
             }
         }
 
@@ -253,6 +257,7 @@
             --bg-links-no-imslp: #6e6e6e;      /* Lighter gray - IMSLP only missing */
             --bg-links-no-music: #1565c0;      /* Darker blue - music only missing */
             --bg-links-no-data: #1e3a5f;       /* Deep navy - both missing */
+            --bg-links-peters: #00796b;        /* Deep teal - Peters edition available */
         }
 
         /* Debug bounding boxes - controlled by --debug-mode */
@@ -650,6 +655,10 @@
 
         .card-links.no-data {
             background-color: var(--bg-links-no-data);
+        }
+
+        .card-links.peters {
+            background-color: var(--bg-links-peters);
         }
 
         /* IMSLP link in opus label - positioned absolutely to not affect layout */
@@ -1248,9 +1257,11 @@
                 const imslpLink = quartet.imslp || opus.imslp;
                 const hasMusic = quartet.hasRecording;
 
-                // Determine missing data class
+                // Determine missing data class (or Peters edition indicator)
                 let linksClass = 'card-links';
-                if (!imslpLink && !hasMusic) {
+                if (quartet.edition === 'Peters') {
+                    linksClass += ' peters';
+                } else if (!imslpLink && !hasMusic) {
                     linksClass += ' no-data';
                 } else if (!imslpLink) {
                     linksClass += ' no-imslp';
