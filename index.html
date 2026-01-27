@@ -1007,6 +1007,9 @@
                     if (partsMap.has(quartet.gerard)) {
                         quartet.edition = partsMap.get(quartet.gerard);
                     }
+                    // Add key signature info from circle of fifths
+                    let keyName = quartet.key + " " + (quartet.major ? "major" : "minor");
+                    quartet.key_signature = c5.get(keyName);
                     quartets.push(quartet);
                 });
             });
@@ -1014,6 +1017,14 @@
             const key  = q => (q.key + " " + (q.major ? "major" : "minor"));
             const key_counts = count(quartets.map(key))
             window.key_counts = key_counts;
+            // Assign position within each key signature [index, total]
+            const keyIndex = {};
+            quartets.forEach(q => {
+                const k = key(q);
+                keyIndex[k] = (keyIndex[k] || 0);
+                q.key_count = [keyIndex[k], key_counts[k]];
+                keyIndex[k]++;
+            });
             // can use for UI as follows:
             console.log(Object.entries(key_counts).map(([k, v]) =>
                 ({key: k, count: v, sign: c5.get(k).sign.repeat(c5.get(k).count)})
