@@ -7,7 +7,11 @@
 # ///
 
 """
-Generate PDF of Boccherini String Quartets visualization
+Generate light and dark mode PDFs of Boccherini String Quartets visualization
+
+Outputs:
+    print.pdf      - light mode
+    print-dark.pdf - dark mode
 
 Usage:
     uv run generate-pdf.py
@@ -27,9 +31,35 @@ import os
 from playwright.sync_api import sync_playwright
 
 
+def linearize_pdf(temp_path, final_path):
+    """Linearize a PDF using qpdf to avoid AirPrint issues."""
+    print(f"🔄 Linearizing {final_path} with qpdf...")
+    try:
+        subprocess.run(
+            ['qpdf', '--linearize', temp_path, final_path],
+            check=True,
+            capture_output=True,
+            text=True
+        )
+        print(f"✓ Linearized PDF saved to: {final_path}")
+        os.remove(temp_path)
+        print(f"✓ Cleaned up temporary file: {temp_path}")
+    except FileNotFoundError:
+        print("\n⚠️  qpdf not found.")
+        print("\nPlease install qpdf:")
+        print("  brew install qpdf  (macOS)")
+        print(f"\nTemporary PDF available at: {temp_path}")
+        print(f"Run manually: qpdf --linearize {temp_path} {final_path}")
+        sys.exit(1)
+    except subprocess.CalledProcessError as e:
+        print(f"\n⚠️  qpdf failed: {e.stderr}")
+        print(f"Temporary PDF available at: {temp_path}")
+        sys.exit(1)
+
+
 def generate_pdf():
-    """Generate the PDF"""
-    print("📄 Generating Boccherini Quartets PDF...")
+    """Generate light and dark mode PDFs"""
+    print("📄 Generating Boccherini Quartets PDFs...")
     print("   Loading http://localhost:8000/index.html")
 
     with sync_playwright() as p:
@@ -49,10 +79,7 @@ def generate_pdf():
             'left': '0in',
             'right': '0in'
         }
-        outfile = 'boccherini-quartets-temp.pdf'
-        # Generate PDF with exact settings
-        page.pdf(
-            path=outfile,
+        pdf_options = dict(
             format='Letter',
             print_background=True,  # Enable background graphics
             tagged=False,           # Generate tagged PDF for accessibility?
@@ -60,38 +87,23 @@ def generate_pdf():
             prefer_css_page_size=True  # Use CSS @page size settings
         )
 
+        # Generate light mode PDF
+        light_temp = 'boccherini-quartets-temp.pdf'
+        page.pdf(path=light_temp, **pdf_options)
+        print(f"✓ Light mode PDF captured: {light_temp}")
+
+        # Enable dark mode and generate dark mode PDF
+        page.emulate_media(color_scheme='dark')
+        page.evaluate("document.documentElement.classList.add('dark-mode')")
+        dark_temp = 'boccherini-quartets-dark-temp.pdf'
+        page.pdf(path=dark_temp, **pdf_options)
+        print(f"✓ Dark mode PDF captured: {dark_temp}")
+
         browser.close()
 
-    print(f"✓ Temporary PDF generated: {outfile}")
-
-    # Linearize the PDF using qpdf to avoid AirPrint issues.
-    final_pdf = 'print.pdf'
-    print(f"🔄 Linearizing PDF with qpdf...")
-
-    try:
-        subprocess.run(
-            ['qpdf', '--linearize', outfile, final_pdf],
-            check=True,
-            capture_output=True,
-            text=True
-        )
-        print(f"✓ Linearized PDF saved to: {final_pdf}")
-
-        # Clean up temporary file
-        os.remove(outfile)
-        print(f"✓ Cleaned up temporary file: {outfile}")
-
-    except FileNotFoundError:
-        print("\n⚠️  qpdf not found.")
-        print("\nPlease install qpdf:")
-        print("  brew install qpdf  (macOS)")
-        print(f"\nTemporary PDF available at: {outfile}")
-        print(f"Run manually: qpdf --linearize {outfile} {final_pdf}")
-        sys.exit(1)
-    except subprocess.CalledProcessError as e:
-        print(f"\n⚠️  qpdf failed: {e.stderr}")
-        print(f"Temporary PDF available at: {outfile}")
-        sys.exit(1)
+    # Linearize both PDFs
+    linearize_pdf(light_temp, 'print.pdf')
+    linearize_pdf(dark_temp, 'print-dark.pdf')
 
 
 if __name__ == "__main__":
