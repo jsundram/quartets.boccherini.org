@@ -811,6 +811,7 @@
                 --top-section-height: 20px;
                 --nickname-height: 15px;
                 --bottom-section-height: 20px;
+                --bg-body: white;  /* Print should use white, not #f5f5f5 */
             }
 
             body {
@@ -871,6 +872,16 @@
             * {
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
+            }
+        }
+
+        /* Dark mode print: restore dark background when both print and dark mode are active.
+           Needed because @media print :root (above) overrides --bg-body to white,
+           and it comes after @media (prefers-color-scheme: dark) in source order.
+           .dark-mode class already has higher specificity than :root, so it doesn't need this. */
+        @media print and (prefers-color-scheme: dark) {
+            :root {
+                --bg-body: #1a1a1a;
             }
         }
 
