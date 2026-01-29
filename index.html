@@ -590,6 +590,26 @@
             margin-top: 2px;               /* Small space above, not below key-signature */
         }
 
+        /* Key signature accidentals - vertical bar on right side of card */
+        .key-accidentals {
+            position: absolute;
+            left: 3px;
+            top: var(--top-section-height);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            /* Size to fit 4 glyphs comfortably in middle section */
+            font-size: calc(var(--middle-section-height) / 5);
+            line-height: 1.1;
+            color: var(--text-lightest);
+            opacity: 0.8;
+            pointer-events: none;
+        }
+
+        .key-accidentals span {
+            display: block;
+        }
+
         .category-badge.grande {
             background-color: var(--badge-grande-bg);
             color: var(--badge-grande-text);
@@ -1275,6 +1295,16 @@
                 keySection.append('div')
                     .attr('class', 'key-mode')
                     .text(quartet.major ? 'major' : 'minor');
+
+                // Key signature accidentals (vertical bar on right side)
+                if (quartet.key_signature && quartet.key_signature.count > 0) {
+                    const accidentals = card.append('div')
+                        .attr('class', 'key-accidentals');
+                    for (let i = 0; i < quartet.key_signature.count; i++) {
+                        accidentals.append('span')
+                            .text(quartet.key_signature.sign);
+                    }
+                }
 
                 // Links container (IMSLP, QR, and Recording) - appended to card, positioned above movement bar
                 const imslpLink = quartet.imslp || opus.imslp;
