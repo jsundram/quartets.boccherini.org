@@ -493,11 +493,11 @@
                     "Tempo di Minuetto"
                 ],
                 "tracks": [
-                    "",
-                    ""
+                    "https://open.spotify.com/track/6qNEgV3wPq2uU8yPUleG4c",
+                    "https://open.spotify.com/track/7hmdxhRtWPHgkjdckIuy4V"
                 ],
                 "category": "opera piccola",
-                "hasRecording": false
+                "hasRecording": true
             },
             {
                 "number": 2,
@@ -510,11 +510,11 @@
                     "Minuetto"
                 ],
                 "tracks": [
-                    "",
-                    ""
+                    "https://open.spotify.com/track/1Za9HgerZ2eAkPpLLtra0P",
+                    "https://open.spotify.com/track/6OCXt4uFFIh3RSq9QHwfTn"
                 ],
                 "category": "opera piccola",
-                "hasRecording": false
+                "hasRecording": true
             },
             {
                 "number": 3,
@@ -527,11 +527,11 @@
                     "Rondeau Allegro"
                 ],
                 "tracks": [
-                    "",
-                    ""
+                    "https://open.spotify.com/track/5N5NCH7coK3sdPfiXZgPnw",
+                    "https://open.spotify.com/track/1J9vxdlobA5D6JkK6bICgR"
                 ],
                 "category": "opera piccola",
-                "hasRecording": false
+                "hasRecording": true
             },
             {
                 "number": 4,
@@ -544,11 +544,11 @@
                     "Allegro vivace"
                 ],
                 "tracks": [
-                    "",
-                    ""
+                    "https://open.spotify.com/track/1tbJT5eyiOlxih58ODZNFd",
+                    "https://open.spotify.com/track/2pAKyVetH56l5SF620om4B"
                 ],
                 "category": "opera piccola",
-                "hasRecording": false
+                "hasRecording": true
             },
             {
                 "number": 5,
@@ -561,11 +561,11 @@
                     "Minuetto Amoroso"
                 ],
                 "tracks": [
-                    "",
-                    ""
+                    "https://open.spotify.com/track/04yp0OwYV3WtXedEpuv48Z",
+                    "https://open.spotify.com/track/5Il3d3jzXKiV3Qg6GQrJj8"
                 ],
                 "category": "opera piccola",
-                "hasRecording": false
+                "hasRecording": true
             },
             {
                 "number": 6,
@@ -578,11 +578,11 @@
                     "Non troppo presto"
                 ],
                 "tracks": [
-                    "",
-                    ""
+                    "https://open.spotify.com/track/1WXrrNfs5BUPeDbNI1srVc",
+                    "https://open.spotify.com/track/3iqvPrrEMPkHWj6t4yt7rW"
                 ],
                 "category": "opera piccola",
-                "hasRecording": false
+                "hasRecording": true
             }
         ]
     },
