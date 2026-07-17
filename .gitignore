@@ -17,6 +17,14 @@ test-*.py
 *.png
 *.webp
 !baselines/*.png
+# PWA assets (must ship): app icons + the Open Graph share card
+!favicon-16.png
+!favicon-32.png
+!apple-touch-icon.png
+!icon-192.png
+!icon-512.png
+!icon-maskable-512.png
+!index-preview.png
 
 # Personal/reference (not needed for app)
 TODO.md

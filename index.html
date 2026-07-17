@@ -12,9 +12,46 @@
 -->
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Periodic Table of Boccherini String Quartets</title>
+    <meta name="description" content="An interactive periodic table of Luigi Boccherini's 91 string quartets (1761–1804) — key, Gerard catalog number, mode, movement count, and nickname, arranged by opus.">
+
+    <!-- Install / PWA + mobile chrome -->
+    <meta name="color-scheme" content="light dark">
+    <meta name="theme-color" content="#f5f5f5" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#1a1a1a" media="(prefers-color-scheme: dark)">
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Boccherini Quartets">
+
+    <!-- Favicons -->
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
+    <link rel="icon" href="favicon-16.png" sizes="16x16" type="image/png">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+    <!-- Link-preview / share-sheet metadata (Open Graph + Twitter Card) -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Periodic Table of Boccherini String Quartets">
+    <meta property="og:title" content="Periodic Table of Boccherini String Quartets">
+    <meta property="og:description" content="An interactive periodic table of Luigi Boccherini's 91 string quartets (1761–1804) — key, Gerard catalog number, mode, movement count, and nickname, arranged by opus.">
+    <meta property="og:url" content="https://quartets.boccherini.org/">
+    <meta property="og:image" content="https://quartets.boccherini.org/index-preview.png">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:width" content="2400">
+    <meta property="og:image:height" content="1260">
+    <meta property="og:image:alt" content="Periodic table of Boccherini's 91 string quartets: one card per quartet with key, Gerard number, and movement bars, grouped by opus.">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Periodic Table of Boccherini String Quartets">
+    <meta name="twitter:description" content="An interactive periodic table of Luigi Boccherini's 91 string quartets (1761–1804), by opus.">
+    <meta name="twitter:image" content="https://quartets.boccherini.org/index-preview.png">
+    <meta name="twitter:image:alt" content="Periodic table of Boccherini's 91 string quartets: one card per quartet with key, Gerard number, and movement bars, grouped by opus.">
+    <link rel="canonical" href="https://quartets.boccherini.org/">
+
     <script src="d3.v7.min.js"></script>
+    <script defer src="app.js"></script>
 
 
     <style>

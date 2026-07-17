@@ -7,7 +7,10 @@
 
 set -e
 
-# Only run if index.html or opera.json is being committed
+# Warn (don't block) if a precached service-worker SHELL file changed without a V bump.
+python3 tools/sw_lint.py || echo "  (warning only — bump V in sw.js if this was a real shell change)"
+
+# Only run PDF regen if index.html or opera.json is being committed
 if ! git diff --cached --name-only | grep -qE '^(index\.html|opera\.json)$'; then
     exit 0
 fi

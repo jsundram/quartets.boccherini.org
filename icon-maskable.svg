@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" role="img" aria-label="Periodic Table of Boccherini String Quartets">
+  <!-- Maskable source: FULL-BLEED square (no rounded corners) so Android's mask never
+       reveals a transparent edge, with the glyph kept inside the center-80% safe zone.
+       Distinct from favicon.svg (rounded tile) on purpose. -->
+  <rect width="180" height="180" fill="#E91E63"/>
+  <text x="90" y="52" font-family="Helvetica, Arial, sans-serif" font-size="26" fill="#2d0a13" fill-opacity="0.75" text-anchor="middle">91</text>
+  <text x="90" y="140" font-family="Helvetica, Arial, sans-serif" font-weight="bold" font-size="76" fill="#2d0a13" text-anchor="middle">Bc</text>
+</svg>
