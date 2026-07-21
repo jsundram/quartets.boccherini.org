@@ -17,6 +17,7 @@ test-*.py
 *.png
 *.webp
 !baselines/*.png
+!assets/*.png
 
 # Personal/reference (not needed for app)
 TODO.md
