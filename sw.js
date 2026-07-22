@@ -13,7 +13,7 @@
 //   images/SVG and everything else → cache-first for speed; a V bump is what refreshes them
 //   cross-origin (IMSLP, quartetroulette, Wikipedia links) → straight through, never cached here
 
-const V = "boccherini-v5";   // <-- BUMP ON EVERY SHELL CHANGE
+const V = "boccherini-v6";   // <-- BUMP ON EVERY SHELL CHANGE
 const SHELL = [
   "./", "./index.html",
   "./peters.json", "./parts.json", "./opera.json", "./d3.v7.min.js", "./app.js", "./manifest.json",

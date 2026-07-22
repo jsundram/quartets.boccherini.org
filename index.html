@@ -1584,12 +1584,9 @@
     <!-- GoatCounter analytics (see pwa-starter CLAUDE.md §Analytics): free, cookieless,
          one async script tag; fails silently offline (sw.js passes cross-origin
          requests straight through, so it is never cached). count.js skips localhost
-         and automated browsers, so local preview and visual-diff runs are not counted. -->
-    <script>
-        // Host-prefixed paths let one GoatCounter account serve multiple apps.
-        window.goatcounter = { path: p => location.host + p };
-    </script>
-    <script data-goatcounter="https://jsundram.goatcounter.com/count"
+         and automated browsers, so local preview and visual-diff runs are not counted.
+         Per-site dashboard (same convention as haydn-periodic-table). -->
+    <script data-goatcounter="https://boccherini-periodic-table.goatcounter.com/count"
             async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>
