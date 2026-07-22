@@ -1,13 +1,23 @@
 #!/bin/bash
 #
-# Pre-commit hook: Regenerate PDF before committing
+# Pre-commit hook: PWA lints + regenerate PDF before committing.
 #
-# This hook ensures boccherini-quartets.pdf is always up-to-date with index.html
+# Requires this repo's hooks dir to be active:  git config core.hooksPath hooks
+#
+# 1. sw_lint  — warn (don't block) if a precached service-worker SHELL file changed without a V bump.
+# 2. og-lint  — block if the OG share card exceeds the scraper size budget (else previews silently fail).
+# 3. Regenerate print.pdf when index.html or opera.json changed.
 #
 
 set -e
 
-# Only run if index.html or opera.json is being committed
+# 1. Service-worker shell/version guard (warn only — a stale V won't reach installed home-screen copies).
+python3 tools/sw_lint.py || echo "  (warning only — bump V in sw.js if this was a real shell change)"
+
+# 2. OG share-card size guard (blocking — an oversized card previews as a grey box on WhatsApp/iMessage).
+python3 scripts/og-lint.py
+
+# Only run PDF regen if index.html or opera.json is being committed
 if ! git diff --cached --name-only | grep -qE '^(index\.html|opera\.json)$'; then
     exit 0
 fi

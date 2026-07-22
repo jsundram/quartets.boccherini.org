@@ -13,10 +13,13 @@ diffs/
 broken.html
 debug-*.py
 test-*.py
+# committed PWA end-to-end test (not a throwaway) — keep tracked despite test-*.py above
+!tools/test-pwa-offline.py
 *-history.txt
 *.png
 *.webp
 !baselines/*.png
+!assets/*.png
 
 # Personal/reference (not needed for app)
 TODO.md

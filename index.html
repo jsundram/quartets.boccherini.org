@@ -14,7 +14,45 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Periodic Table of Boccherini String Quartets</title>
+    <meta name="description" content="An interactive periodic table of all 91 of Boccherini's string quartets (1761–1804) — key, Gerard number, mode, and movement count, arranged by opus.">
+    <meta name="color-scheme" content="light dark">
+
+    <!-- Browser-UI tint, one per scheme (matches --bg-body light/dark). -->
+    <meta name="theme-color" content="#f5f5f5" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#1a1a1a" media="(prefers-color-scheme: dark)">
+
+    <!-- Home-screen / install polish. iOS reads these + apple-touch-icon; Android reads the manifest. -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Boccherini">
+    <link rel="manifest" href="./manifest.json">
+
+    <!-- Icons. Regenerate the PNGs from assets/icon.svg via scripts/make-icons.sh. -->
+    <link rel="icon" type="image/svg+xml" href="./assets/icon.svg">
+    <link rel="icon" type="image/png" href="./assets/icon-192.png">
+    <link rel="apple-touch-icon" href="./assets/icon-180.png">
+
+    <!-- Link previews. og:image is an absolute https URL to a 1200x630 raster (assets/og.png). -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Periodic Table of Boccherini String Quartets">
+    <meta property="og:title" content="Periodic Table of Boccherini String Quartets">
+    <meta property="og:description" content="An interactive periodic table of all 91 of Boccherini's string quartets (1761–1804) — key, Gerard number, mode, and movement count, arranged by opus.">
+    <meta property="og:url" content="https://quartets.boccherini.org/">
+    <meta property="og:image" content="https://quartets.boccherini.org/assets/og.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Portrait of Boccherini's 91 string quartets as a periodic table, cells colored by opera grande / piccola with minor keys marked, split into early (Op. 2–33) and late (Op. 39–64) periods.">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Periodic Table of Boccherini String Quartets">
+    <meta name="twitter:description" content="An interactive periodic table of all 91 of Boccherini's string quartets (1761–1804).">
+    <meta name="twitter:image" content="https://quartets.boccherini.org/assets/og.png">
+    <link rel="canonical" href="https://quartets.boccherini.org/">
+
     <script src="d3.v7.min.js"></script>
+
+    <!-- PWA boot: registers sw.js (offline shell) + a one-tap "update available" pill. Self-contained. -->
+    <script defer src="app.js"></script>
 
 
     <style>

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Boccherini periodic table">
+  <!-- App icon: a periodic-table "element" cell. 91 = number of quartets; B = Boccherini (Georgia serif).
+       SQUARE + OPAQUE on purpose so the apple-touch-icon isn't double-masked and iOS/Android supply the
+       corner rounding. Single source of truth: edit here, then run scripts/make-icons.sh to rebuild PNGs. -->
+  <rect width="512" height="512" fill="#CE93D8"/>
+  <text x="46" y="132" font-family="Helvetica, Arial, sans-serif" font-size="84" font-weight="600"
+        fill="#3a1d42" fill-opacity="0.72">91</text>
+  <text x="270" y="358" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif"
+        font-size="300" font-weight="700" fill="#3a1d42">B</text>
+  <!-- Movement-count palette dots (purple->green). The 2-movement swatch (#CE93D8) is omitted
+       because it equals the lilac tile; the remaining four read cleanly with no outline. -->
+  <g>
+    <circle cx="196" cy="442" r="14" fill="#9C27B0"/>
+    <circle cx="236" cy="442" r="14" fill="#B0BEC5"/>
+    <circle cx="276" cy="442" r="14" fill="#81C784"/>
+    <circle cx="316" cy="442" r="14" fill="#2E7D32"/>
+  </g>
+</svg>
