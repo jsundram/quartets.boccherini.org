@@ -1,4 +1,4 @@
-// pwa-starter: sw.js @ e88a743
+// pwa-starter: sw.js @ 8d54c48
 // Service worker: offline shell + cache-busting.  (Pattern from pwa-starter / haydn-info-card.)
 //
 // THE ONE RULE: bump V whenever you change a precached SHELL file. A new V is what evicts the
