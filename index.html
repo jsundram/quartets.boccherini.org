@@ -1443,11 +1443,11 @@
                     .attr('height', lineHeight)
                     .attr('viewBox', `0 0 ${svgWidth} ${lineHeight}`);
 
-                // Draw rectangles: minuet highlight for minuets, bar color for others
+                // Draw rectangles: minuet highlight for minuets, bar color for others.
+                // Fills reference CSS variables (not snapshotted values) so they
+                // track dark/light theme flips without a re-render.
                 const cornerRadius = lineHeight / 4;
-                const barColor = styles.getPropertyValue('--mvmt-bar-color').trim() || '#444444';
-                const minuetColor = styles.getPropertyValue('--mvmt-bar-minuet').trim() || '#EEEEEE';
-                const spotifyColor = styles.getPropertyValue('--mvmt-bar-spotify').trim() || '#1DB954';
+                const barFill = d => minuetIndices.has(d) ? 'var(--mvmt-bar-minuet)' : 'var(--mvmt-bar-color)';
                 const tracks = quartet.tracks || [];
 
                 svg.selectAll('rect')
@@ -1460,15 +1460,15 @@
                     .attr('height', lineHeight)
                     .attr('rx', cornerRadius)
                     .attr('ry', cornerRadius)
-                    .attr('fill', d => minuetIndices.has(d) ? minuetColor : barColor)
+                    .attr('fill', barFill)
                     .style('cursor', d => tracks[d] ? 'pointer' : 'default')
                     .on('mouseover', function(event, d) {
                         if (tracks[d]) {
-                            d3.select(this).attr('fill', spotifyColor);
+                            d3.select(this).attr('fill', 'var(--mvmt-bar-spotify)');
                         }
                     })
                     .on('mouseout', function(event, d) {
-                        d3.select(this).attr('fill', minuetIndices.has(d) ? minuetColor : barColor);
+                        d3.select(this).attr('fill', barFill(d));
                     })
                     .on('click', function(event, d) {
                         if (tracks[d]) {
