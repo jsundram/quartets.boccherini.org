@@ -799,9 +799,9 @@
             top: calc(var(--top-section-height) + 2px);  /* Match dedication positioning */
             left: 0;
             right: 0;
-            max-height: 13px;                /* Constrain to allocated space (22px to 35px) */
+            max-height: 15px;                /* Constrain to allocated space (22px to 35px) */
             overflow: hidden;                /* Clip overflow to prevent overlapping key section */
-            font-size: 0.55em;               /* Slightly smaller for tighter fit in limited space */
+            font-size: 0.75em;               /* Readable size; longest nickname still fits smallest card */
             font-style: italic;              /* Same as dedication */
             color: var(--text-lightest);     /* Same as dedication */
             text-align: center;              /* Center align */
@@ -1316,7 +1316,7 @@
                 if (quartet.nickname) {
                     content.append('div')
                         .attr('class', 'nickname')
-                        .text(`"${quartet.nickname}"`);
+                        .text(quartet.nickname);
                 }
 
                 // Key section (aligns with opus number in row header)

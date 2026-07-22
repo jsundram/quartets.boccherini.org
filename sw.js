@@ -1,3 +1,4 @@
+// pwa-starter: sw.js @ 2ed87e9
 // Service worker: offline shell + cache-busting.  (Pattern from pwa-starter / haydn-info-card.)
 //
 // THE ONE RULE: bump V whenever you change a precached SHELL file. A new V is what evicts the
@@ -9,7 +10,7 @@
 // waiting for a SW swap; falls back to cache offline); images/SVG stay cache-first for speed — a
 // V bump refreshes them. Cross-origin (IMSLP, quartetroulette, Wikipedia links) passes through.
 
-const V = "boccherini-v2";   // <-- BUMP ON EVERY SHELL CHANGE
+const V = "boccherini-v3";   // <-- BUMP ON EVERY SHELL CHANGE
 const SHELL = [
   "./", "./index.html",
   "./peters.json", "./parts.json", "./opera.json", "./d3.v7.min.js", "./app.js", "./manifest.json",
