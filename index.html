@@ -812,6 +812,13 @@
 
         .tooltip {
             position: absolute;
+            /* Anchor at 0,0 until shown (JS sets left/top inline). With auto
+               offsets the hidden tooltip would sit at its static position —
+               BELOW the container's full pre-scale layout box on mobile —
+               and, escaping body's clipping (body isn't positioned), stretch
+               the page's scroll extent way past the visible content. */
+            top: 0;
+            left: 0;
             background: var(--bg-tooltip);
             color: var(--text-on-tooltip);
             padding: 10px;
@@ -957,17 +964,32 @@
                 --bottom-section-height: 20px;
             }
 
+            /* The card table is far wider than a phone, so scale it down to fit.
+               Use transform instead of zoom for Safari compatibility. The
+               transform lives on .container (NOT body) so body can clip the
+               leftover: a scaled element still reserves its FULL pre-scale box
+               for scrolling, and that phantom height is what let the page
+               scroll past the content bottom. body{overflow:hidden} clips it,
+               and fitMobileHeight() (in the script below) pins body's height to
+               the container's on-screen (scaled) height so the page ends
+               exactly at the content.
+               html gets an EXPLICIT overflow so body's hidden is not propagated
+               to the viewport (the CSS default when html is visible) — that
+               propagation would leave body unclipped and kill user scrolling
+               entirely; with it, the viewport stays scrollable and body itself
+               does the clipping. */
+            html {
+                overflow: auto;
+            }
             body {
                 margin: 0;
-                /* Scale to fit ~1000px content into 375px viewport with margins */
-                /* Use transform instead of zoom for Safari compatibility */
-                transform: scale(0.35);
-                transform-origin: 0 0;
-                width: calc(100% / 0.35);  /* Compensate: content laid out at ~286% then scaled down */
+                overflow: hidden;
             }
 
             .container {
-                width: auto;  /* Override fit-content for scaled view */
+                width: calc(100% / 0.35);  /* Compensate: content laid out at ~286% then scaled down */
+                transform: scale(0.35);
+                transform-origin: 0 0;
                 align-items: center;      /* Keep centered */
             }
 
@@ -1009,6 +1031,23 @@
     </div>
 
     <script>
+        // On phones the card table is scaled down (see the mobile @media rule). A
+        // CSS-transformed element still reserves its full PRE-scale size for
+        // scrolling, so without this the page scrolls well past the visible
+        // content. Pin <body>'s height to the container's actual on-screen
+        // (scaled) height; body{overflow:hidden} then clips the phantom box.
+        // No-op on desktop, where nothing is scaled (height cleared to auto).
+        const MOBILE_MQ = window.matchMedia('(hover: none) and (pointer: coarse) and (max-width: 800px)');
+        function fitMobileHeight() {
+            const c = document.querySelector('.container');
+            if (!c) return;
+            document.body.style.height = MOBILE_MQ.matches
+                ? Math.ceil(c.getBoundingClientRect().height) + 'px'
+                : '';
+        }
+        window.addEventListener('resize', fitMobileHeight);
+        window.addEventListener('orientationchange', () => setTimeout(fitMobileHeight, 200));
+
         // Load all JSON files: peters.json, parts.json, then opera.json
         Promise.all([
             d3.json('peters.json'),
@@ -1108,8 +1147,25 @@
                 .attr('class', 'tooltip')
                 .style('opacity', 0);
 
-            // Detect touch device
-            const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+            // Match the CSS's idea of a touch device (see the mobile @media rule):
+            // hover:none + pointer:coarse. Plain maxTouchPoints would put
+            // touch-capable laptops on the tap-only path and lose hover tooltips.
+            const isTouchDevice = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+
+            // In the installed (home-screen) app, window.open / target=_blank
+            // spawns an in-app browser sheet that iOS leaves hanging open after
+            // it hands the Spotify URL off to the Spotify app. Navigate the
+            // current page instead: the universal link opens the app and the
+            // PWA itself stays put — no leftover window to dismiss.
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches
+                || window.navigator.standalone === true;
+            function openTrack(url) {
+                if (isStandalone) {
+                    window.location.href = url;
+                } else {
+                    window.open(url, '_blank');
+                }
+            }
 
             // Track currently active tooltip card (for touch devices)
             let activeCard = null;
@@ -1228,12 +1284,16 @@
                     activeCard = this;
                     d3.select(this).style('border-color', getActiveBorderColor());
 
+                    // In standalone, omit target=_blank so the tap navigates in
+                    // place (universal link → Spotify app, no in-app browser
+                    // left hanging — same reasoning as openTrack above).
+                    const linkAttrs = isStandalone ? '' : ' target="_blank" rel="noopener noreferrer"';
                     const movements = quartet.mvmts.map((m, i) => {
                         const trackUrl = quartet.tracks && quartet.tracks[i] && quartet.tracks[i] !== ''
                             ? quartet.tracks[i] : null;
                         const mvmtText = `${i + 1}. ${m}`;
                         return trackUrl
-                            ? `<a href="${trackUrl}" target="_blank" rel="noopener noreferrer" class="mvmt-link">${mvmtText}</a>`
+                            ? `<a href="${trackUrl}"${linkAttrs} class="mvmt-link">${mvmtText}</a>`
                             : mvmtText;
                     }).join('<br>');
                     const keyFull = `${quartet.key} ${quartet.major ? 'major' : 'minor'}`;
@@ -1249,18 +1309,13 @@
                     const x = event.pageX || (event.touches && event.touches[0].pageX) || 0;
                     const y = event.pageY || (event.touches && event.touches[0].pageY) || 0;
 
-                    // Account for body transform scale on mobile
-                    const bodyTransform = window.getComputedStyle(document.body).transform;
-                    let scale = 1;
-                    if (bodyTransform && bodyTransform !== 'none') {
-                        // transform matrix(a, b, c, d, tx, ty) - 'a' is the scale factor
-                        const match = bodyTransform.match(/matrix\(([^,]+)/);
-                        if (match) scale = parseFloat(match[1]);
-                    }
-
+                    // The tooltip is a child of <body>, OUTSIDE the scaled
+                    // .container (see the mobile @media rule), so page
+                    // coordinates apply directly — and the tooltip renders
+                    // full-size (readable) on phones instead of at 0.35 scale.
                     tooltip.html(tooltipText)
-                        .style('left', (x / scale + 10) + 'px')
-                        .style('top', (y / scale - 10) + 'px')
+                        .style('left', (x + 10) + 'px')
+                        .style('top', (y - 10) + 'px')
                         .style('opacity', 1);
                 };
 
@@ -1450,7 +1505,7 @@
                 const barFill = d => minuetIndices.has(d) ? 'var(--mvmt-bar-minuet)' : 'var(--mvmt-bar-color)';
                 const tracks = quartet.tracks || [];
 
-                svg.selectAll('rect')
+                const rects = svg.selectAll('rect')
                     .data(d3.range(mvmtCount))
                     .enter()
                     .append('rect')
@@ -1462,20 +1517,25 @@
                     .attr('ry', cornerRadius)
                     .attr('fill', barFill)
                     .style('cursor', d => tracks[d] ? 'pointer' : 'default')
-                    .on('mouseover', function(event, d) {
+                    .on('click', function(event, d) {
+                        if (tracks[d]) {
+                            event.stopPropagation();
+                            openTrack(tracks[d]);
+                        }
+                    });
+                // Hover recolor is pointer-only: on touch a tap fires mouseover
+                // AND click together, and mouseout never comes, so the bar would
+                // stick Spotify-green after the track opens.
+                if (!isTouchDevice) {
+                    rects.on('mouseover', function(event, d) {
                         if (tracks[d]) {
                             d3.select(this).attr('fill', 'var(--mvmt-bar-spotify)');
                         }
                     })
                     .on('mouseout', function(event, d) {
                         d3.select(this).attr('fill', barFill(d));
-                    })
-                    .on('click', function(event, d) {
-                        if (tracks[d]) {
-                            event.stopPropagation();
-                            window.open(tracks[d], '_blank');
-                        }
                     });
+                }
 
                 if (quartet.edition) {
                     movementsDiv.append('span')
@@ -1573,6 +1633,11 @@
             if (currentRowOpuses.length > 0) {
                 renderCombinedRow(container, ...currentRowOpuses);
             }
+
+            // Content is now laid out — size the mobile viewport to it (and again
+            // after a beat, in case web-font/reflow nudges the height).
+            requestAnimationFrame(fitMobileHeight);
+            setTimeout(fitMobileHeight, 300);
         }).catch(error => {
             console.error('Error loading JSON data:', error);
             d3.select('#visualization')
