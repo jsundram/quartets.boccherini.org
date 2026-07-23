@@ -8,11 +8,13 @@
   <text x="270" y="358" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif"
         font-size="300" font-weight="700" fill="#3a1d42">B</text>
   <!-- Movement-count palette dots (purple->green). The 2-movement swatch (#CE93D8) is omitted
-       because it equals the lilac tile; the remaining four read cleanly with no outline. -->
+       because it equals the lilac tile; the remaining four read cleanly with no outline.
+       Pitch 52 (wider gaps read as distinct swatches when scaled to home-screen size) and the
+       row is centered under the B's optical center (x=270), not the tile center. -->
   <g>
-    <circle cx="196" cy="442" r="14" fill="#9C27B0"/>
-    <circle cx="236" cy="442" r="14" fill="#B0BEC5"/>
-    <circle cx="276" cy="442" r="14" fill="#81C784"/>
-    <circle cx="316" cy="442" r="14" fill="#2E7D32"/>
+    <circle cx="192" cy="446" r="14" fill="#9C27B0"/>
+    <circle cx="244" cy="446" r="14" fill="#B0BEC5"/>
+    <circle cx="296" cy="446" r="14" fill="#81C784"/>
+    <circle cx="348" cy="446" r="14" fill="#2E7D32"/>
   </g>
 </svg>

@@ -8,10 +8,10 @@
     <text x="270" y="358" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif"
           font-size="300" font-weight="700" fill="#3a1d42">B</text>
     <g>
-      <circle cx="196" cy="442" r="14" fill="#9C27B0"/>
-      <circle cx="236" cy="442" r="14" fill="#B0BEC5"/>
-      <circle cx="276" cy="442" r="14" fill="#81C784"/>
-      <circle cx="316" cy="442" r="14" fill="#2E7D32"/>
+      <circle cx="192" cy="446" r="14" fill="#9C27B0"/>
+      <circle cx="244" cy="446" r="14" fill="#B0BEC5"/>
+      <circle cx="296" cy="446" r="14" fill="#81C784"/>
+      <circle cx="348" cy="446" r="14" fill="#2E7D32"/>
     </g>
   </g>
 </svg>
