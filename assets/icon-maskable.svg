@@ -5,13 +5,13 @@
   <g transform="translate(256,256) scale(0.78) translate(-256,-256)">
     <text x="46" y="132" font-family="Helvetica, Arial, sans-serif" font-size="84" font-weight="600"
           fill="#3a1d42" fill-opacity="0.72">91</text>
-    <text x="270" y="358" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif"
-          font-size="300" font-weight="700" fill="#3a1d42">B</text>
+    <text x="256" y="360" text-anchor="middle" font-family="Helvetica, Arial, sans-serif"
+          font-size="300" font-weight="bold" fill="#3a1d42">B</text>
     <g>
-      <circle cx="192" cy="446" r="14" fill="#9C27B0"/>
-      <circle cx="244" cy="446" r="14" fill="#B0BEC5"/>
-      <circle cx="296" cy="446" r="14" fill="#81C784"/>
-      <circle cx="348" cy="446" r="14" fill="#2E7D32"/>
+      <circle cx="178" cy="446" r="14" fill="#9C27B0"/>
+      <circle cx="230" cy="446" r="14" fill="#B0BEC5"/>
+      <circle cx="282" cy="446" r="14" fill="#81C784"/>
+      <circle cx="334" cy="446" r="14" fill="#2E7D32"/>
     </g>
   </g>
 </svg>
