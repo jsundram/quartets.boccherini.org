@@ -4,7 +4,7 @@
        SQUARE + OPAQUE on purpose so the apple-touch-icon isn't double-masked and iOS/Android supply the
        corner rounding. Single source of truth: edit here, then run scripts/make-icons.sh to rebuild PNGs. -->
   <rect width="512" height="512" fill="#CE93D8"/>
-  <text x="46" y="132" font-family="Helvetica, Arial, sans-serif" font-size="84" font-weight="600"
+  <text x="46" y="113" font-family="Helvetica, Arial, sans-serif" font-size="84" font-weight="600"
         fill="#26122b" fill-opacity="0.72">91</text>
   <text x="256" y="360" text-anchor="middle" font-family="Helvetica, Arial, sans-serif"
         font-size="300" font-weight="bold" fill="#26122b">B</text>
