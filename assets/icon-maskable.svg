@@ -4,9 +4,9 @@
   <rect width="512" height="512" fill="#CE93D8"/>
   <g transform="translate(256,256) scale(0.78) translate(-256,-256)">
     <text x="46" y="132" font-family="Helvetica, Arial, sans-serif" font-size="84" font-weight="600"
-          fill="#3a1d42" fill-opacity="0.72">91</text>
+          fill="#26122b" fill-opacity="0.72">91</text>
     <text x="256" y="360" text-anchor="middle" font-family="Helvetica, Arial, sans-serif"
-          font-size="300" font-weight="bold" fill="#3a1d42">B</text>
+          font-size="300" font-weight="bold" fill="#26122b">B</text>
     <g>
       <circle cx="178" cy="446" r="14" fill="#9C27B0"/>
       <circle cx="230" cy="446" r="14" fill="#B0BEC5"/>
