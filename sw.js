@@ -31,29 +31,56 @@ const SHELL = [
 // under pressure and after ~7 idle days, and it can leave the cache NAME behind while
 // dropping the contents. install only runs on a V bump, so without this top-up a
 // once-evicted cache stays empty forever and the app is permanently blank offline.
-async function ensureShell() {
+// Returns the number of SHELL entries STILL missing when it's done — 0 means the precache is
+// complete. activate() keys the old-cache purge off that, so the count has to mean "not cached",
+// not "attempted".
+async function ensureShellOnce() {
   const c = await caches.open(V);
   const missing = [];
   for (const url of SHELL) {
     if (!(await c.match(url))) missing.push(url);
   }
-  await Promise.all(missing.map(url =>
+  const failed = await Promise.all(missing.map(url =>
     fetch(url, { cache: "reload" })
-      .then(resp => { if (resp.ok || resp.type === "opaque") return c.put(url, resp); })
-      .catch(() => {})            // offline / 404: leave it for the next attempt
+      // A redirected response can't satisfy a navigation (the SW spec rejects it), so caching
+      // one would be another route to a blank screen. Skip it rather than poison the entry.
+      .then(resp => {
+        if (!resp.ok || resp.redirected) return 1;
+        return c.put(url, resp).then(() => 0, () => 1);
+      })
+      .catch(() => 1)             // offline / 404: leave it for the next attempt
   ));
-  return missing.length;
+  return failed.reduce((a, b) => a + b, 0);
+}
+
+// install, activate, and the "ensure-shell" message can all fire close together; without this a
+// V bump would fetch the whole shell 2-3x on a cellular connection. Callers that arrive mid-run
+// join it instead of starting their own.
+let shellRun = null;
+function ensureShell() {
+  return shellRun ??= ensureShellOnce().finally(() => { shellRun = null; });
 }
 
 self.addEventListener("install", e => {
   e.waitUntil(ensureShell().then(() => self.skipWaiting()));
 });
 
+// REPAIR BEFORE PURGE, and only purge once the new cache is actually complete.
+//
+// addAll's atomicity was a liability (one 404 lost the whole precache) but it was also a guard:
+// a failed install meant this SW never activated, so the previous complete cache kept serving.
+// Per-file puts removed that guard — install now always resolves — so purging first would let a
+// V bump on a dead connection trade a complete stale offline copy for an empty new one. Note
+// caches.match() searches every cache, so an unpurged old version still answers reads meanwhile;
+// it gets collected on the first activation that manages a complete shell.
 self.addEventListener("activate", e => {
-  e.waitUntil(caches.keys()
-    .then(ks => Promise.all(ks.filter(k => k !== V).map(k => caches.delete(k))))
-    .then(() => self.clients.claim())
-    .then(() => ensureShell()));   // repair anything install couldn't get
+  e.waitUntil(ensureShell()
+    .then(stillMissing => {
+      if (stillMissing > 0) return;      // keep the old cache as a net
+      return caches.keys()
+        .then(ks => Promise.all(ks.filter(k => k !== V).map(k => caches.delete(k))));
+    })
+    .then(() => self.clients.claim()));
 });
 
 // app.js pings this on every online load, so an evicted precache heals on the next launch
@@ -69,7 +96,10 @@ self.addEventListener("message", e => {
 // Opaque responses (cross-origin no-cors: webfonts, CDN scripts) always report
 // ok:false/status:0 no matter how they went, so they're exempt — gating them would
 // silently disable font caching and break offline type.
+// A redirected response can't be used to satisfy a navigation, so caching one is another way to
+// end up with a blank screen. Cheap insurance: if "./" ever grows a redirect, don't store it.
 function cachePut(req, resp) {
+  if (resp.redirected) return;
   if (!resp.ok && resp.type !== "opaque") return;
   const copy = resp.clone();
   caches.open(V).then(c => c.put(req, copy));
@@ -111,9 +141,13 @@ self.addEventListener("fetch", e => {
         // Resolving respondWith() to undefined is what produced the original bug:
         // WebKit fails the navigation with "Returned response is null" and iOS paints
         // a blank white screen — no text, no error, nothing to act on.
-        return (await caches.match(e.request))
-            || (await caches.match("./index.html"))
-            || offlineFallback(e.request);
+        //
+        // The shell is a NAVIGATION fallback only: `live` also matches .js, and handing
+        // index.html to an uncached app.js / d3.v7.min.js request would make the script
+        // fail to parse instead of failing cleanly.
+        const shell = e.request.mode === "navigate"
+          ? await caches.match("./index.html") : null;
+        return (await caches.match(e.request)) || shell || offlineFallback(e.request);
       })
     );
   } else {

@@ -20,12 +20,15 @@ Requirements:
 Run:
     uv run tools/test-pwa-offline.py
 """
+import re
 import socket
 import sys
+from pathlib import Path
 
 from playwright.sync_api import sync_playwright
 
 URL = "http://localhost:8000/"
+SW = Path(__file__).resolve().parent.parent / "sw.js"
 
 
 def server_up(port=8000):
@@ -34,12 +37,25 @@ def server_up(port=8000):
         return s.connect_ex(("localhost", port)) == 0
 
 
+def shell_size():
+    """How many entries sw.js's SHELL declares — the precache is complete at this count.
+
+    Derived, not hardcoded: the heal poll and the heal assertion must agree with each other AND
+    with sw.js, or adding a shell file silently weakens the test.
+    """
+    m = re.search(r"const SHELL\s*=\s*\[(.*?)\]", SW.read_text(), re.S)
+    if not m:
+        raise SystemExit(f"could not parse SHELL out of {SW}")
+    return len(re.findall(r'"[^"]+"', m.group(1)))
+
+
 def main():
     if not server_up():
         print("ERROR: local server not running. Start it with:  python3 -m http.server 8000")
         return 2
 
     failures = []
+    shell_n = shell_size()
     with sync_playwright() as p:
         browser = p.chromium.launch()
         ctx = browser.new_context()
@@ -149,24 +165,31 @@ def main():
             failures.append(
                 "BLANK SCREEN: offline nav with an empty precache served no document"
                 + (f" ({nav_err})" if nav_err else ""))
+        # Pin the fallback path specifically: a non-empty body would also pass above if a stale
+        # index.html were still being served from somewhere.
+        elif "nothing cached yet" not in blanked["text"]:
+            failures.append(
+                f"expected the offline fallback page, got: {blanked['text']!r}")
         ctx.set_offline(False)
 
         # Back online: app.js pings the SW, ensureShell() refills what's missing.
         page.reload()
         page.wait_for_selector(".quartet-card", timeout=15000)
         healed = page.evaluate(
-            "async () => {"
-            "  for (let i = 0; i < 40; i++) {"
+            "async (want) => {"
+            "  const count = async () => {"
             "    const k = (await caches.keys()).find(k => k.startsWith('boccherini-v'));"
-            "    const n = (await (await caches.open(k)).keys()).length;"
-            "    if (n >= 13) return n;"
+            "    return k ? (await (await caches.open(k)).keys()).length : 0; };"
+            "  for (let i = 0; i < 40; i++) {"
+            "    if (await count() >= want) break;"
             "    await new Promise(r => setTimeout(r, 250)); }"
-            "  const k = (await caches.keys()).find(k => k.startsWith('boccherini-v'));"
-            "  return (await (await caches.open(k)).keys()).length; }"
+            "  return count(); }",
+            shell_n,
         )
-        print(f"heal:     precache refilled to {healed} entries after one online load")
-        if healed < len(need):
-            failures.append(f"precache did not self-heal: {healed} entries after an online load")
+        print(f"heal:     precache refilled to {healed}/{shell_n} entries after one online load")
+        if healed < shell_n:
+            failures.append(
+                f"precache did not self-heal: {healed}/{shell_n} entries after an online load")
 
         # And offline works again without a V bump.
         ctx.set_offline(True)

@@ -13,8 +13,9 @@ diffs/
 broken.html
 debug-*.py
 test-*.py
-# committed PWA end-to-end test (not a throwaway) — keep tracked despite test-*.py above
+# committed PWA end-to-end tests (not throwaways) — keep tracked despite test-*.py above
 !tools/test-pwa-offline.py
+!tools/test-sw-update-offline.py
 *-history.txt
 *.png
 *.webp
