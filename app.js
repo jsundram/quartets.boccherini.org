@@ -33,11 +33,23 @@ async function checkVer() {
   // keeps the old one as a net until the new precache is complete), and caches.keys() is in
   // creation order — so find() would report the OLD version as installed and show a permanent
   // "update available" pill on an already-current device.
+  //
+  // But only among caches that actually HOLD something. sw.js's ensureShellOnce() calls
+  // caches.open(V) before it fetches anything, so a bumped version exists as an EMPTY cache the
+  // moment an install starts — and per-file precaching means that worker activates even if every
+  // shell fetch failed. Ranking on names alone then reads the empty placeholder as "installed",
+  // concludes the device is current, and hides the pill on a device that is still serving the
+  // PREVIOUS release out of the old cache — killing the one affordance that unsticks it by hand.
+  // A partly-filled new cache still reads as installed; that state repairs itself on the next
+  // top-up, whereas the empty one can persist.
   let installed = "";
   try {
-    installed = (await caches.keys())
-      .filter(k => k.startsWith(VER_PREFIX))
-      .map(k => [parseInt(k.slice(VER_PREFIX.length), 10) || 0, k])
+    const keys = (await caches.keys()).filter(k => k.startsWith(VER_PREFIX));
+    const sized = await Promise.all(
+      keys.map(async k => [(await (await caches.open(k)).keys()).length, k]));
+    installed = sized
+      .filter(([n]) => n > 0)
+      .map(([, k]) => [parseInt(k.slice(VER_PREFIX.length), 10) || 0, k])
       .sort((a, b) => a[0] - b[0])
       .map(([, k]) => k)
       .pop() || "";

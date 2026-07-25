@@ -19,16 +19,24 @@ restart under Playwright's persistent-context, so a quit-and-relaunch harness ca
 which cache NAMES survived, not whether they still serve):
 
   1. normal server                -> boccherini-vN installs complete
+  1b. a shell file redeployed with NO V bump
+     -> must not be rewritten inside the current cache (that mixes deploys within one shell)
   2. V bumped, every shell file 500s except /, /index.html, /sw.js, then reload
      -> the new version's install fails; the old cache must survive
   3. server killed outright
      -> the app must still render, from the surviving old cache
+  4/5. network restored -> the new precache completes, the stale cache is collected, and an older
+     cache cannot outrank the current one on a read
+  6. a V bump whose SHELL lists a file that 404s forever
+     -> the collect must still run. A permanent failure is not a reason to keep both generations
+     on the device indefinitely, whereas a 5xx (phase 2) still is.
 
 Unlike test-pwa-offline.py this spins up its own server (it needs one that can fail selected
 paths), so it takes no setup:
 
     uv run tools/test-sw-update-offline.py
 """
+import json
 import re
 import shutil
 import socket
@@ -36,6 +44,7 @@ import subprocess
 import sys
 import tempfile
 import time
+import urllib.request
 from pathlib import Path
 
 from playwright.sync_api import sync_playwright
@@ -52,13 +61,23 @@ APP_FILES = ["index.html", "app.js", "sw.js", "manifest.json",
 # A server that can 500 on demand. Everything except the SW script and the shell document fails,
 # which is what an install on a dead/flaky connection looks like.
 SERVER_SRC = '''
-import sys
+import json, sys
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 BREAK = len(sys.argv) > 2 and sys.argv[2] == "break"
 ALLOW = ("/", "/index.html", "/sw.js")
+# Per-path GET counter, read over /__hits by the test process directly (not through the browser,
+# which would route the read through the SW and cache it). Proves what actually left the device.
+HITS = {}
 class H(SimpleHTTPRequestHandler):
     def _special(self):
         p = self.path.split("?")[0]
+        if p == "/__hits":
+            body = json.dumps(HITS).encode()
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers(); self.wfile.write(body)
+            return True
         # A real 206. SimpleHTTPRequestHandler ignores Range, so the cache-write gate can only be
         # tested against a partial the server actually produces.
         if p == "/range-probe":
@@ -77,6 +96,9 @@ class H(SimpleHTTPRequestHandler):
             return True
         return False
     def do_GET(self):
+        p = self.path.split("?")[0]
+        if p != "/__hits":
+            HITS[p] = HITS.get(p, 0) + 1
         if self._special(): return
         if BREAK and self.path.split("?")[0] not in ALLOW:
             self.send_error(500, "broken on purpose"); return
@@ -93,6 +115,15 @@ PROBE = """async () => {
   for (const n of names) counts[n] = (await (await caches.open(n)).keys()).length;
   return { names, counts };
 }"""
+
+
+def hits():
+    """Per-path GET counts from the test server. Read out-of-band, never through the browser."""
+    try:
+        with urllib.request.urlopen(BASE + "/__hits", timeout=5) as r:
+            return json.load(r)
+    except Exception:
+        return {}
 
 
 def serve(root, mode=""):
@@ -169,15 +200,79 @@ def main():
                 return 2
             old = before["names"][0]
 
+            # --- 1b. SHELL entries belong to the install, not to request traffic ---
+            # cachePut() refuses to write SHELL urls, so redeploying a shell file WITHOUT bumping V
+            # must not rewrite it inside the current cache. Otherwise shell files get replaced one
+            # at a time as they happen to be requested, and the cache ends up complete by entry
+            # count while spanning two deploys. THE ONE RULE (bump V) is what refreshes them; this
+            # asserts the code enforces that instead of merely documenting it.
+            idx = root / "index.html"
+            pristine = idx.read_text()
+            idx.write_text(pristine.replace("<head>", "<head><meta name=deploy-marker>", 1))
+            page.reload(wait_until="load")
+            page.wait_for_selector(".quartet-card", timeout=20000)
+            skew = page.evaluate(
+                "async () => { const n = (await caches.keys())"
+                "    .find(k => k.startsWith('boccherini-v'));"
+                "  const hit = await (await caches.open(n)).match('/');"
+                "  return hit ? (await hit.text()).includes('deploy-marker') : null; }")
+            print(f"skew:     redeployed index.html, no V bump -> cached '/' rewritten={skew}")
+            if skew is None:
+                failures.append("skew probe: '/' is not in the cache — the probe itself is broken")
+            elif skew:
+                failures.append(
+                    "cachePut() overwrote a SHELL entry: a no-bump redeploy rewrote '/' inside the "
+                    "current cache, mixing deploys within one shell that reports itself complete")
+            idx.write_text(pristine)
+            page.reload(wait_until="load")
+            page.wait_for_selector(".quartet-card", timeout=20000)
+
+            # --- 1c. precached JSON must not be revalidated ---
+            # The datasets are in SHELL, and cachePut() refuses to write SHELL urls -- so a
+            # stale-while-revalidate on them would fetch ~65 KB per launch and throw the response
+            # away, unable to update the cache it just re-read. Measured before the fix: a
+            # redeployed opera.json was re-fetched on the next load and the cached bytes were
+            # unchanged. They belong to ensureShellOnce(); a V bump is what refreshes them.
+            # Counted at the SERVER, because that is where the cellular cost actually lands.
+            before_hits = hits()
+            page.reload(wait_until="load")
+            page.wait_for_selector(".quartet-card", timeout=20000)
+            after_hits = hits()
+            data = ("/opera.json", "/parts.json", "/peters.json")
+            refetched = {p: after_hits.get(p, 0) - before_hits.get(p, 0) for p in data}
+            print(f"revalid:  warm reload -> precached JSON server hits {refetched}")
+            if not before_hits:
+                failures.append("hit counter unreachable — the revalidate probe cannot run")
+            elif any(n > 0 for n in refetched.values()):
+                failures.append(
+                    f"precached JSON re-fetched on a warm reload: {refetched} — cachePut() skips "
+                    "SHELL urls, so the response is discarded and the bandwidth is pure waste")
+
             # --- 2. V bump that cannot fetch its shell ---
             srv.terminate(); srv.wait()
             sw = root / "sw.js"
-            cur = re.search(r'const V = "([^"]+)"', sw.read_text()).group(1)
+            # Same expression as app.js's checkVer() and tools/sw_lint.py's ver() -- \s*, not
+            # literal single spaces. A stricter third parser would crash this whole suite with an
+            # AttributeError on a reformatted `const V="..."` while those two kept working, turning
+            # a regression run into a traceback. Both parses are checked rather than dereferenced
+            # blind, so a shape this can't handle reports itself instead of dying mid-scenario.
+            src = sw.read_text()
+            m = re.search(r'const V\s*=\s*"([^"]*)"', src)
+            if not m:
+                print(f"ERROR: could not parse V out of {sw} — test setup broken")
+                return 2
+            cur = m.group(1)
             # A real numeric bump, not a "-test" suffix: app.js's checkVer() ranks versions by
             # their numeric tail, so a synthetic name would exercise a shape that never ships.
-            stem, n = re.match(r"(.*?)(\d+)$", cur).groups()
+            tail = re.match(r"(.*?)(\d+)$", cur)
+            if not tail:
+                print(f'ERROR: V is "{cur}", which has no numeric tail to bump — test setup broken')
+                return 2
+            stem, n = tail.groups()
             new = f"{stem}{int(n) + 1}"
-            sw.write_text(sw.read_text().replace(f'const V = "{cur}"', f'const V = "{new}"'))
+            # Splice the captured span rather than replacing a reconstructed literal, which would
+            # silently no-op on any spacing this regex tolerates but the f-string doesn't.
+            sw.write_text(src[:m.start(1)] + new + src[m.end(1):])
             srv = serve(root, "break")
             print(f"bump:     {cur} -> {new}, every shell file 500s except /, /index.html, /sw.js")
             # Force the update check explicitly instead of relying on a navigation to trigger one.
@@ -310,6 +405,89 @@ def main():
                         "a shadowing older cache outranked the current version: offline nav served "
                         f"{'the sentinel' if res['sentinel'] else str(res['cards']) + ' cards'} "
                         "— cacheLookup() is not reading V first")
+
+            # --- 6. a PERMANENTLY unfetchable SHELL entry must not wedge the collect ---
+            # The collect only runs once the precache is complete, so an entry that can NEVER be
+            # fetched -- a file renamed without updating SHELL, a typo'd path -- used to hold it
+            # off forever: both generations stayed on the device permanently and the stale one
+            # kept answering (creation-order match) for anything the new one lacked. sw.js now
+            # splits retryable failures from permanent ones and collects despite the latter.
+            # Phase 2 above is the other half of this invariant: a 5xx is still transient, so a
+            # mid-deploy blip must NOT trigger the collect. Both have to hold at once.
+            if srv is None:
+                srv = serve(root)
+            page.goto(BASE + "/", wait_until="load")
+            page.evaluate(
+                "async () => { for (const n of await caches.keys()) await caches.delete(n); }")
+            page.reload(wait_until="load")
+            page.wait_for_selector(".quartet-card", timeout=20000)
+            try:    # let the current version rebuild a COMPLETE cache to act as the stale one
+                page.wait_for_function(
+                    "async (n) => (await (await caches.open(n)).keys()).length >= 13",
+                    arg=new, timeout=25000)
+            except Exception:
+                pass
+            print(f"ghost:    baseline {page.evaluate(PROBE)['counts']}")
+
+            src = sw.read_text()
+            m = re.search(r'const V\s*=\s*"([^"]*)"', src)
+            tail = re.match(r"(.*?)(\d+)$", m.group(1)) if m else None
+            if not tail:
+                print(f"ERROR: could not re-parse V out of {sw} — test setup broken")
+                return 2
+            stem, digits = tail.groups()
+            newer = f"{stem}{int(digits) + 1}"
+            src = src[:m.start(1)] + newer + src[m.end(1):]
+            # A path that is not in the deploy at all: the server 404s it forever, so no retry and
+            # no amount of waiting completes this precache.
+            src = src.replace('"./assets/icon.svg",',
+                              '"./assets/icon.svg", "./assets/ghost.png",', 1)
+            sw.write_text(src)
+            print(f"ghost:    {m.group(1)} -> {newer}, SHELL gains ./assets/ghost.png (404s forever)")
+            page.reload(wait_until="load")
+            page.evaluate(
+                "async () => { const r = await navigator.serviceWorker.getRegistration();"
+                "  if (r) { try { await r.update(); } catch {} } }")
+            # Wait for the new precache to fill BEFORE expecting a collect. The icons land last and
+            # activate's own attempt runs while they're still in flight, so it bails on a genuinely
+            # incomplete shell -- correctly. The collect is retried from the "ensure-shell" message,
+            # which app.js posts on load, so the reload below is what a real second launch supplies.
+            try:
+                page.wait_for_function(
+                    "async (n) => (await (await caches.open(n)).keys()).length >= 13",
+                    arg=newer, timeout=30000)
+            except Exception:
+                pass
+            # Guarded like the other navigations here: reloading right as the new worker takes
+            # over intermittently raises "Service Worker context closed" in WebKit. The assertions
+            # below read the cache set, so a bounced navigation costs nothing as long as it doesn't
+            # abort the run.
+            try:
+                page.reload(wait_until="load")
+                page.wait_for_selector(".quartet-card", timeout=20000)
+            except Exception as exc:
+                print(f"          post-bump reload bounced: {str(exc).splitlines()[0]}")
+            try:
+                page.wait_for_function(
+                    "async (n) => { const ks = (await caches.keys())"
+                    "    .filter(k => k.startsWith('boccherini-v'));"
+                    "  return ks.length === 1 && ks[0] === n; }", arg=newer, timeout=30000)
+            except Exception:
+                pass
+            ghosted = page.evaluate(PROBE)
+            gv = sorted(x for x in ghosted["names"] if x.startswith("boccherini-v"))
+            gcards = page.eval_on_selector_all(".quartet-card", "e => e.length")
+            print(f"ghost:    {ghosted['counts']} -> {gv}, {gcards} cards")
+            if newer not in ghosted["names"]:
+                failures.append(f"ghost phase: {newer} never installed — the scenario never ran")
+            elif gv != [newer]:
+                failures.append(
+                    f"a permanently unfetchable SHELL entry wedged the collect: {gv} remain, "
+                    f"expected only [{newer}] — both generations would persist forever")
+            if gcards != cards:
+                failures.append(
+                    f"app stopped rendering after a bump with one dead SHELL entry: "
+                    f"{gcards} vs {cards} cards")
             browser.close()
     finally:
         if srv and srv.poll() is None:
