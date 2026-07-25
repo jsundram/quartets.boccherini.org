@@ -31,21 +31,35 @@ const SHELL = [
 // under pressure and after ~7 idle days, and it can leave the cache NAME behind while
 // dropping the contents. install only runs on a V bump, so without this top-up a
 // once-evicted cache stays empty forever and the app is permanently blank offline.
-// Returns the number of SHELL entries STILL missing when it's done — 0 means the precache is
-// complete. activate() keys the old-cache purge off that, so the count has to mean "not cached",
-// not "attempted".
-async function ensureShellOnce() {
+
+// Which SHELL entries this version's cache is missing. No network — pure cache reads.
+async function missingFromShell() {
   const c = await caches.open(V);
   const missing = [];
   for (const url of SHELL) {
     if (!(await c.match(url))) missing.push(url);
   }
+  return missing;
+}
+
+// Returns the number of SHELL entries STILL missing when it's done — 0 means the precache is
+// complete. topUpThenCollect() keys the old-cache collect off that, so the count has to mean
+// "not cached", not "attempted".
+//
+// KNOWN LIMITATION: a put() that fails for QUOTA is counted the same as a 404, which keeps the
+// old cache and so keeps consuming the quota that just ran out. Harmless at this shell's size
+// (~350 KB) and it self-clears once a bump completes, but a larger shell should treat quota
+// failure differently — evict the old version to make room rather than holding both.
+async function ensureShellOnce() {
+  const c = await caches.open(V);
+  const missing = await missingFromShell();
   const failed = await Promise.all(missing.map(url =>
     fetch(url, { cache: "reload" })
-      // A redirected response can't satisfy a navigation (the SW spec rejects it), so caching
-      // one would be another route to a blank screen. Skip it rather than poison the entry.
+      // A redirected response can't satisfy a navigation (the SW spec rejects it), so caching one
+      // would be another route to a blank screen. 206 is here because resp.ok is true for a
+      // partial and put() then throws. Skip both rather than poison the entry.
       .then(resp => {
-        if (!resp.ok || resp.redirected) return 1;
+        if (!resp.ok || resp.redirected || resp.status === 206) return 1;
         return c.put(url, resp).then(() => 0, () => 1);
       })
       .catch(() => 1)             // offline / 404: leave it for the next attempt
@@ -84,6 +98,12 @@ async function topUpThenCollect() {
   const stillMissing = await ensureShell();
   if (stillMissing > 0) return stillMissing;        // keep the old cache as a net, try again later
 
+  // Re-verify rather than trusting that count. ensureShell() dedupes concurrent callers, so a
+  // joiner receives a completeness reading taken BEFORE it joined — if eviction landed mid-run,
+  // "complete" is already false and we'd collect the net out from under a broken shell. Cheap
+  // (cache reads only) and it makes the collect depend on current state, not a stale promise.
+  if ((await missingFromShell()).length > 0) return 1;
+
   // Don't collect while another version is mid-install. From this worker's perspective the
   // incoming release's cache is merely "not V", so deleting it would throw away a precache that
   // is being built right now — and app.js pings us on load, which is exactly when an update
@@ -119,17 +139,47 @@ self.addEventListener("message", e => {
 // silently disable font caching and break offline type.
 // A redirected response can't be used to satisfy a navigation, so caching one is another way to
 // end up with a blank screen. Cheap insurance: if "./" ever grows a redirect, don't store it.
+//
+// 206 needs its own clause because resp.ok is TRUE for a partial (verified in both engines), so
+// the gate above lets it through and cache.put() then throws "Partial response is unsupported".
+// Irrelevant to this app's JSON and icons; immediately relevant to any sibling caching audio or
+// video, where range requests are normal.
 function cachePut(req, resp) {
-  if (resp.redirected) return;
+  if (resp.redirected || resp.status === 206) return;
   if (!resp.ok && resp.type !== "opaque") return;
   const copy = resp.clone();
-  caches.open(V).then(c => c.put(req, copy));
+  // The one unguarded promise in the file until now. Non-GET requests, 206s, and quota
+  // exhaustion all surface here, and an uncaught rejection in a SW is just noise in a log
+  // nobody reads — the caller's response has already been returned either way.
+  caches.open(V).then(c => c.put(req, copy)).catch(() => {});
+}
+
+// Read the CURRENT version first, then fall back to the whole store.
+//
+// CacheStorage.match() scans caches in CREATION order, so a lingering old version outranks the
+// current one — that's the shadowing bug from the previous round, and collecting promptly only
+// closes it by timing. Scoping the first lookup to V closes it by construction: the old cache can
+// still fill a gap (it's the net that makes a failed V bump survivable) but it can no longer
+// outrank a complete current shell. Verified in both engines:
+//   bare caches.match -> STALE-v8 | scoped-first -> FRESH-v9 | old-only entry -> still reachable
+async function cacheLookup(req) {
+  const c = await caches.open(V);
+  return (await c.match(req)) || (await caches.match(req));
 }
 
 self.addEventListener("fetch", e => {
   const u = new URL(e.request.url);
+  // cache.put() rejects for anything but GET ("Request method is not GET"), and a form POST is
+  // mode === "navigate" — so without this it would walk straight into the live branch and
+  // cachePut(). This app has no POSTs; a template inevitably meets one.
+  if (e.request.method !== "GET") return;
   if (u.origin !== location.origin) return;
   if (u.pathname.endsWith("/sw.js")) return;
+
+  // Navigations are decided FIRST, ahead of the .json test below. A document request must always
+  // end at a real page — including a direct navigation to a .json URL, which the SWR branch would
+  // otherwise answer with a rejected respondWith (a bare network error) instead of the fallback.
+  const live = e.request.mode === "navigate" || u.pathname.endsWith("/") || /\.(html|js)$/.test(u.pathname);
 
   // Same-origin JSON → stale-while-revalidate: serve the cached copy IMMEDIATELY,
   // refresh behind it. JSON here is DATA (peters.json, parts.json, opera.json — all
@@ -137,9 +187,9 @@ self.addEventListener("fetch", e => {
   // first paint on three round trips even with perfectly good cached copies. The
   // tradeoff is real but small: a JSON change lands one load later than an HTML/JS
   // change. If some .json becomes genuinely code-like and must be live, move it
-  // into the `live` test below.
-  if (/\.json$/.test(u.pathname)) {
-    e.respondWith(caches.match(e.request).then(cached => {
+  // into the `live` test above.
+  if (!live && /\.json$/.test(u.pathname)) {
+    e.respondWith(cacheLookup(e.request).then(cached => {
       const net = fetch(e.request).then(resp => { cachePut(e.request, resp); return resp; });
       e.waitUntil(net.catch(() => {}));   // keep the SW alive for the refresh; offline is fine
       return cached || net;               // no cached copy (first run) → wait for the network
@@ -148,14 +198,13 @@ self.addEventListener("fetch", e => {
   }
 
   // Same-origin: HTML/JS + navigations → network-first; other assets (images) → cache-first.
-  const live = e.request.mode === "navigate" || u.pathname.endsWith("/") || /\.(html|js)$/.test(u.pathname);
   if (live) {
     e.respondWith(
       fetch(e.request).then(resp => {
         cachePut(e.request, resp);
         // A 4xx/5xx is a resolved fetch, so .catch() below never sees it — serve
         // the good cached copy instead of handing the app an error page.
-        if (!resp.ok) return caches.match(e.request).then(r => r || resp);
+        if (!resp.ok) return cacheLookup(e.request).then(r => r || resp);
         return resp;
       }).catch(async () => {
         // Offline. Try the exact request, then the shell, then give up VISIBLY.
@@ -167,13 +216,13 @@ self.addEventListener("fetch", e => {
         // index.html to an uncached app.js / d3.v7.min.js request would make the script
         // fail to parse instead of failing cleanly.
         const shell = e.request.mode === "navigate"
-          ? await caches.match("./index.html") : null;
-        return (await caches.match(e.request)) || shell || offlineFallback(e.request);
+          ? await cacheLookup("./index.html") : null;
+        return (await cacheLookup(e.request)) || shell || offlineFallback(e.request);
       })
     );
   } else {
     e.respondWith(
-      caches.match(e.request).then(r => r || fetch(e.request).then(resp => {
+      cacheLookup(e.request).then(r => r || fetch(e.request).then(resp => {
         cachePut(e.request, resp);
         return resp;
       }).catch(() => offlineFallback(e.request)))

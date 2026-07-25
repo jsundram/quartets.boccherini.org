@@ -20,6 +20,7 @@ Requirements:
 Run:
     uv run tools/test-pwa-offline.py
 """
+import os
 import re
 import socket
 import sys
@@ -29,6 +30,17 @@ from playwright.sync_api import sync_playwright
 
 URL = "http://localhost:8000/"
 SW = Path(__file__).resolve().parent.parent / "sw.js"
+
+
+# Highest-numbered versioned cache, not the first key. caches.keys() is in CREATION order, so a
+# find() picks the OLDEST when two versions coexist — the same idiom just fixed in checkVer().
+# This suite never holds two, but it's what a sibling suite that does bump would copy.
+CURRENT_CACHE_JS = """
+  const currentCache = async () => (await caches.keys())
+    .filter(k => k.startsWith(PREFIX))
+    .map(k => [parseInt(k.slice(PREFIX.length), 10) || 0, k])
+    .sort((a, b) => a[0] - b[0]).map(([, k]) => k).pop();
+""".replace("PREFIX", '"boccherini-v"')
 
 
 def server_up(port=8000):
@@ -78,8 +90,8 @@ def main():
 
         # Precache assertion: the shell files must actually be in the cache.
         cached = page.evaluate(
-            "async () => {"
-            "  const k = (await caches.keys()).find(k => k.startsWith('boccherini-v'));"
+            "async () => {" + CURRENT_CACHE_JS +
+            "  const k = await currentCache();"
             "  const c = await caches.open(k);"
             "  const reqs = await c.keys();"
             "  return reqs.map(r => new URL(r.url).pathname); }"
@@ -134,10 +146,10 @@ def main():
 
         ctx.route("**/opera.json", kill)
         poison = page.evaluate(
-            "async () => {"
+            "async () => {" + CURRENT_CACHE_JS +
             "  let live = null, cache = null;"
             "  try { live = (await (await fetch('./opera.json')).json()).length; } catch (e) { live = 'throw'; }"
-            "  const k = (await caches.keys()).find(k => k.startsWith('boccherini-v'));"
+            "  const k = await currentCache();"
             "  const c = await caches.open(k);"
             "  const cr = await c.match('./opera.json');"
             "  try { cache = (await cr.json()).length; } catch (e) { cache = 'throw'; }"
@@ -147,6 +159,12 @@ def main():
         if hits["n"] == 0:
             # Some Playwright versions don't route service-worker fetches. Don't claim a pass we didn't earn.
             print("poison:   route never fired — Playwright didn't intercept the SW fetch; gate check INCONCLUSIVE (skipped)")
+            # Locally that's honest reporting. In CI it's silent coverage loss: the run goes green
+            # having never exercised the gate, which is indistinguishable from having verified it.
+            if os.environ.get("CI"):
+                failures.append(
+                    "cache-poison gate INCONCLUSIVE (Playwright did not intercept the SW fetch) "
+                    "— failing because CI is set; a green run must not mean 'never checked'")
         else:
             print(f"poison:   500 injected ({hits['n']}x); live fetch len={poison['live']}, cached len={poison['cache']} (both should be the real data length)")
             if not isinstance(poison["cache"], int) or poison["cache"] <= 0:
@@ -160,14 +178,14 @@ def main():
         # used to be terminal: caches.match() missed, respondWith() got undefined, and WebKit
         # failed the navigation with "Returned response is null" -> blank white screen.
         page.evaluate(
-            "async () => {"
-            "  const k = (await caches.keys()).find(k => k.startsWith('boccherini-v'));"
+            "async () => {" + CURRENT_CACHE_JS +
+            "  const k = await currentCache();"
             "  const c = await caches.open(k);"
             "  for (const r of await c.keys()) await c.delete(r); }"
         )
         emptied = page.evaluate(
-            "async () => {"
-            "  const k = (await caches.keys()).find(k => k.startsWith('boccherini-v'));"
+            "async () => {" + CURRENT_CACHE_JS +
+            "  const k = await currentCache();"
             "  return (await (await caches.open(k)).keys()).length; }"
         )
         print(f"evicted:  precache emptied ({emptied} entries left, cache name kept)")
@@ -202,9 +220,9 @@ def main():
         page.reload()
         page.wait_for_selector(".quartet-card", timeout=15000)
         healed = page.evaluate(
-            "async (want) => {"
+            "async (want) => {" + CURRENT_CACHE_JS +
             "  const count = async () => {"
-            "    const k = (await caches.keys()).find(k => k.startsWith('boccherini-v'));"
+            "    const k = await currentCache();"
             "    return k ? (await (await caches.open(k)).keys()).length : 0; };"
             "  for (let i = 0; i < 40; i++) {"
             "    if (await count() >= want) break;"

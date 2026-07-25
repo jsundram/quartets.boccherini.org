@@ -84,6 +84,11 @@ if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("./sw.js").catch(() => {});
   checkVer();
   requestShellTopUp();
+  // A registration can exist with no ACTIVE worker for a moment — first install, or the swap
+  // during an update — and the ping above is fire-and-forget, so it would simply be dropped and
+  // nothing would retry until the next launch. That undercuts the whole "open it once with a
+  // connection and it repairs itself" promise, so retry when a worker actually takes control.
+  navigator.serviceWorker.addEventListener("controllerchange", requestShellTopUp);
   // iOS home-screen apps RESUME rather than reload — re-check on foreground.
   addEventListener("visibilitychange", () => {
     if (!document.hidden) { checkVer(); requestShellTopUp(); }
