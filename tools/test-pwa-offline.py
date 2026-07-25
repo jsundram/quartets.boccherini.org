@@ -112,6 +112,76 @@ def main():
             if not isinstance(poison["live"], int) or poison["live"] <= 0:
                 failures.append(f"5xx not served from cache: live fetch length={poison['live']!r}")
 
+        # --- 4. Evicted precache: must not blank, and must self-heal ---
+        # iOS reclaims Cache API contents (storage pressure, ~7 idle days) and can leave the
+        # cache NAME behind with nothing in it. install only runs on a V bump, so this state
+        # used to be terminal: caches.match() missed, respondWith() got undefined, and WebKit
+        # failed the navigation with "Returned response is null" -> blank white screen.
+        page.evaluate(
+            "async () => {"
+            "  const k = (await caches.keys()).find(k => k.startsWith('boccherini-v'));"
+            "  const c = await caches.open(k);"
+            "  for (const r of await c.keys()) await c.delete(r); }"
+        )
+        emptied = page.evaluate(
+            "async () => {"
+            "  const k = (await caches.keys()).find(k => k.startsWith('boccherini-v'));"
+            "  return (await (await caches.open(k)).keys()).length; }"
+        )
+        print(f"evicted:  precache emptied ({emptied} entries left, cache name kept)")
+
+        ctx.set_offline(True)
+        nav_err = None
+        try:
+            page.reload()
+        except Exception as exc:            # the old bug surfaced exactly here
+            nav_err = str(exc).splitlines()[0]
+        try:
+            blanked = page.evaluate(
+                "() => ({ len: document.body ? document.body.innerHTML.length : -1,"
+                "  text: document.body ? document.body.innerText.slice(0, 80) : '' })"
+            )
+        except Exception as exc:            # context destroyed by the failed navigation
+            blanked = {"len": -1, "text": f"<unreachable: {str(exc).splitlines()[0]}>"}
+        print(f"evicted:  offline nav -> bodyLen={blanked['len']} :: {blanked['text']!r}"
+              + (f"\n          nav error: {nav_err}" if nav_err else ""))
+        if blanked["len"] <= 0:
+            failures.append(
+                "BLANK SCREEN: offline nav with an empty precache served no document"
+                + (f" ({nav_err})" if nav_err else ""))
+        ctx.set_offline(False)
+
+        # Back online: app.js pings the SW, ensureShell() refills what's missing.
+        page.reload()
+        page.wait_for_selector(".quartet-card", timeout=15000)
+        healed = page.evaluate(
+            "async () => {"
+            "  for (let i = 0; i < 40; i++) {"
+            "    const k = (await caches.keys()).find(k => k.startsWith('boccherini-v'));"
+            "    const n = (await (await caches.open(k)).keys()).length;"
+            "    if (n >= 13) return n;"
+            "    await new Promise(r => setTimeout(r, 250)); }"
+            "  const k = (await caches.keys()).find(k => k.startsWith('boccherini-v'));"
+            "  return (await (await caches.open(k)).keys()).length; }"
+        )
+        print(f"heal:     precache refilled to {healed} entries after one online load")
+        if healed < len(need):
+            failures.append(f"precache did not self-heal: {healed} entries after an online load")
+
+        # And offline works again without a V bump.
+        ctx.set_offline(True)
+        again = 0
+        try:
+            page.reload()
+            page.wait_for_selector(".quartet-card", timeout=15000)
+            again = page.eval_on_selector_all(".quartet-card", "els => els.length")
+        except Exception as exc:
+            print(f"heal:     offline reload failed: {str(exc).splitlines()[0]}")
+        print(f"heal:     {again} quartet cards rendered offline after self-heal")
+        if again != online_count:
+            failures.append(f"offline broken after self-heal: {again} vs {online_count} cards")
+        ctx.set_offline(False)
+
         browser.close()
 
     if failures:
@@ -119,7 +189,7 @@ def main():
         for f in failures:
             print("  -", f)
         return 1
-    print("\nPASS: precache + offline render + cache-poison gate")
+    print("\nPASS: precache + offline render + cache-poison gate + evicted-cache self-heal")
     return 0
 
 

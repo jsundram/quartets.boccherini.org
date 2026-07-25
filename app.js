@@ -50,9 +50,24 @@ async function forceUpdate() {   // drop every cache, reload → SW reinstalls t
   location.reload();
 }
 
+// Ask the active SW to top up any missing precache entries. iOS can reclaim Cache API
+// contents (storage pressure, ~7 idle days) while leaving the registration in place, and
+// sw.js only precaches on install — i.e. on a V bump. Without this nudge a device whose
+// cache got evicted stays broken offline indefinitely; with it, one online launch repairs it.
+async function ensureShell() {
+  if (!navigator.onLine) return;
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    if (reg.active) reg.active.postMessage("ensure-shell");
+  } catch {}
+}
+
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("./sw.js").catch(() => {});
   checkVer();
+  ensureShell();
   // iOS home-screen apps RESUME rather than reload — re-check on foreground.
-  addEventListener("visibilitychange", () => { if (!document.hidden) checkVer(); });
+  addEventListener("visibilitychange", () => {
+    if (!document.hidden) { checkVer(); ensureShell(); }
+  });
 }
