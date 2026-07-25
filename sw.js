@@ -33,8 +33,8 @@ const SHELL = [
 // once-evicted cache stays empty forever and the app is permanently blank offline.
 
 // Which SHELL entries this version's cache is missing. No network — pure cache reads.
-async function missingFromShell() {
-  const c = await caches.open(V);
+async function missingFromShell(cache) {
+  const c = cache || await caches.open(V);
   const missing = [];
   for (const url of SHELL) {
     if (!(await c.match(url))) missing.push(url);
@@ -52,7 +52,7 @@ async function missingFromShell() {
 // failure differently — evict the old version to make room rather than holding both.
 async function ensureShellOnce() {
   const c = await caches.open(V);
-  const missing = await missingFromShell();
+  const missing = await missingFromShell(c);
   const failed = await Promise.all(missing.map(url =>
     fetch(url, { cache: "reload" })
       // A redirected response can't satisfy a navigation (the SW spec rejects it), so caching one
@@ -82,9 +82,21 @@ self.addEventListener("install", e => {
 // REPAIR BEFORE COLLECT, and only collect once THIS version's cache is complete.
 //
 // addAll's atomicity was a liability (one 404 lost the whole precache) but it was also a guard:
-// a failed install meant this SW never activated, so the previous complete cache kept serving.
-// Per-file puts removed that guard — install now always resolves — so collecting first would let
-// a V bump on a dead connection trade a complete stale offline copy for an empty new one.
+// a failed install meant this SW never activated, so the previous cache kept serving. Per-file
+// puts removed that guard — install now always resolves — so collecting first would let a V bump
+// on a dead connection trade a working stale offline copy for an empty new one.
+//
+// "Complete" here means ALL 13 SHELL URLS ARE PRESENT — it does NOT mean they came from the same
+// deploy. cachePut() writes network responses into caches.open(V), and V is whatever the current
+// worker declares, so a shell file whose bytes change on the server gets overwritten in the
+// CURRENT cache one file at a time while the rest keep their older entries. Measured, no V bump
+// needed: after redeploying only index.html, boccherini-v8 held '/' from the new deploy alongside
+// '/index.html' and '/app.js' from the old one. So the net this keeps is complete by entry count
+// and may span generations. Harmless in this app — index.html carries the render logic and app.js
+// is only SW plumbing, so skew can't break the page — but see PROPAGATE notes before porting: a
+// document coupled to its scripts skews into confusing bugs. The upstream fix is for cachePut()
+// to skip SHELL urls entirely, leaving each generation's shell to ensureShellOnce(), which is
+// what "a V bump is what refreshes them" already implies.
 //
 // Keeping the old cache is NOT free, which is why this has to be re-runnable rather than a
 // one-shot in activate: CacheStorage.match() iterates caches in CREATION order, so while an old
@@ -102,7 +114,8 @@ async function topUpThenCollect() {
   // joiner receives a completeness reading taken BEFORE it joined — if eviction landed mid-run,
   // "complete" is already false and we'd collect the net out from under a broken shell. Cheap
   // (cache reads only) and it makes the collect depend on current state, not a stale promise.
-  if ((await missingFromShell()).length > 0) return 1;
+  const recheck = (await missingFromShell()).length;
+  if (recheck > 0) return recheck;
 
   // Don't collect while another version is mid-install. From this worker's perspective the
   // incoming release's cache is merely "not V", so deleting it would throw away a precache that

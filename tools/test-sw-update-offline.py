@@ -57,10 +57,32 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 BREAK = len(sys.argv) > 2 and sys.argv[2] == "break"
 ALLOW = ("/", "/index.html", "/sw.js")
 class H(SimpleHTTPRequestHandler):
+    def _special(self):
+        p = self.path.split("?")[0]
+        # A real 206. SimpleHTTPRequestHandler ignores Range, so the cache-write gate can only be
+        # tested against a partial the server actually produces.
+        if p == "/range-probe":
+            body = b"partial-body"
+            self.send_response(206)
+            self.send_header("Content-Type", "application/octet-stream")
+            self.send_header("Content-Range", "bytes 0-%d/%d" % (len(body) - 1, len(body) + 10))
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers(); self.wfile.write(body)
+            return True
+        if p == "/post-probe":
+            self.send_response(200)
+            self.send_header("Content-Type", "text/plain")
+            self.send_header("Content-Length", "2")
+            self.end_headers(); self.wfile.write(b"ok")
+            return True
+        return False
     def do_GET(self):
+        if self._special(): return
         if BREAK and self.path.split("?")[0] not in ALLOW:
             self.send_error(500, "broken on purpose"); return
         super().do_GET()
+    def do_POST(self):
+        self._special()
     def log_message(self, *a): pass
 ThreadingHTTPServer(("127.0.0.1", int(sys.argv[1])), H).serve_forever()
 '''
@@ -110,6 +132,38 @@ def main():
             before = page.evaluate(PROBE)
             cards = page.eval_on_selector_all(".quartet-card", "e => e.length")
             print(f"install:  {before['counts']}  ({cards} cards)")
+
+            # --- cache-write invariants: a non-GET request and a 206 never enter the cache ---
+            # SCOPE, stated plainly: sw.js's method !== "GET" guard and its 206 gate exist to keep
+            # cache.put() from REJECTING, and that rejection happens in service-worker scope, which
+            # a page-scope 'unhandledrejection' listener cannot observe. So this pins the
+            # user-visible invariant (request succeeds, nothing lands in the cache) and does NOT
+            # discriminate against removing the guards -- confirmed by direct Cache API probe
+            # instead: put() throws "Request method is not GET" / "Response is a 206 partial" in
+            # both engines, and resp.ok is TRUE for a 206 so the ok-gate alone lets it through.
+            guards = page.evaluate(
+                "async () => {"
+                "  const post = await fetch('./post-probe', {method: 'POST', body: 'x'})"
+                "    .then(r => r.status).catch(e => 'threw: ' + e);"
+                "  const range = await fetch('./range-probe').then(r => r.status)"
+                "    .catch(e => 'threw: ' + e);"
+                "  await new Promise(r => setTimeout(r, 600));"   # let any rejection surface
+                "  let cachedPost = false, cachedRange = false;"
+                "  for (const n of await caches.keys()) {"
+                "    const c = await caches.open(n);"
+                "    if (await c.match('./post-probe')) cachedPost = true;"
+                "    if (await c.match('./range-probe')) cachedRange = true; }"
+                "  return { post, range, cachedPost, cachedRange }; }")
+            print(f"guards:   POST->{guards['post']} 206->{guards['range']} "
+                  f"cached={guards['cachedPost']}/{guards['cachedRange']} (invariant only)")
+            if guards["post"] != 200:
+                failures.append(f"non-GET request did not succeed: {guards['post']!r}")
+            if guards["range"] != 206:
+                failures.append(f"206 probe did not return a partial: {guards['range']!r}")
+            if guards["cachedPost"]:
+                failures.append("a non-GET request was written to the cache")
+            if guards["cachedRange"]:
+                failures.append("a 206 partial was written to the cache")
             if not before["names"]:
                 print("ERROR: nothing precached — test setup broken")
                 return 2
@@ -201,6 +255,61 @@ def main():
             print(f"caches:   {versioned} remaining")
             if len(versioned) != 1:
                 failures.append(f"expected exactly one versioned cache after healing, got {versioned}")
+
+            # --- 5. version-scoped reads: an older cache must not outrank the current one ---
+            # CacheStorage.match() scans in CREATION order, so an old cache created FIRST answers
+            # first. cacheLookup() reads V before falling back to the whole store, which is what
+            # makes a lingering old generation harmless. Staged by rebuilding the store in that
+            # order: sentinel cache first, real one second -- so a bare caches.match() would serve
+            # the sentinel and the app would not render.
+            current = versioned[0] if versioned else new
+            staged = page.evaluate(
+                "async (cur) => {"
+                "  const c = await caches.open(cur);"
+                "  const saved = [];"
+                "  for (const r of await c.keys()) saved.push([r.url, await (await c.match(r)).text()]);"
+                "  for (const n of await caches.keys()) await caches.delete(n);"
+                # created FIRST -> wins a bare CacheStorage.match()
+                "  const stale = await caches.open('boccherini-v1');"
+                "  const body = '<!doctype html><title>x</title><body>SENTINEL-STALE-SHELL';"
+                "  for (const [url] of saved) {"
+                "    if (new URL(url).pathname === '/' || new URL(url).pathname === '/index.html')"
+                "      await stale.put(url, new Response(body, "
+                "        {headers: {'Content-Type': 'text/html; charset=utf-8'}})); }"
+                # created SECOND -> loses a bare match, must win a scoped read
+                "  const fresh = await caches.open(cur);"
+                "  for (const [url, text] of saved) {"
+                "    const ct = url.endsWith('.json') ? 'application/json'"
+                "      : url.endsWith('.js') ? 'text/javascript'"
+                "      : (new URL(url).pathname === '/' || url.endsWith('.html')) ? 'text/html; charset=utf-8'"
+                "      : 'application/octet-stream';"
+                "    await fresh.put(url, new Response(text, {headers: {'Content-Type': ct}})); }"
+                "  const bare = await (await caches.match('/')).text();"
+                "  return { order: await caches.keys(),"
+                "           bareServes: bare.includes('SENTINEL') ? 'SENTINEL' : 'real' }; }",
+                current)
+            print(f"scoped:   caches {staged['order']}, bare caches.match('/') -> "
+                  f"{staged['bareServes']}")
+            if staged["bareServes"] != "SENTINEL":
+                print("scoped:   could not stage a shadowing cache; scoped-read check INCONCLUSIVE")
+            else:
+                srv.terminate(); srv.wait(); srv = None
+                time.sleep(0.5)
+                try:
+                    page.reload(wait_until="load", timeout=25000)
+                    page.wait_for_selector(".quartet-card", timeout=10000)
+                except Exception:
+                    pass
+                res = page.evaluate(
+                    "() => ({ cards: document.querySelectorAll('.quartet-card').length,"
+                    "  sentinel: document.body ? document.body.innerText.includes('SENTINEL') : false })")
+                print(f"scoped:   offline nav -> {res['cards']} cards, "
+                      f"sentinel_served={res['sentinel']}")
+                if res["sentinel"] or res["cards"] != cards:
+                    failures.append(
+                        "a shadowing older cache outranked the current version: offline nav served "
+                        f"{'the sentinel' if res['sentinel'] else str(res['cards']) + ' cards'} "
+                        "— cacheLookup() is not reading V first")
             browser.close()
     finally:
         if srv and srv.poll() is None:
