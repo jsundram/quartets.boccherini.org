@@ -47,7 +47,13 @@ async function checkVer() {
   let latest = "";
   try {   // ?_= + no-store dodges both the SW cache and the HTTP cache → the live sw.js
     const src = await (await fetch("./sw.js?_=" + Date.now(), { cache: "no-store" })).text();
-    latest = (src.match(new RegExp(VER_PREFIX + "\\d+")) || [""])[0];
+    // Read the DECLARATION, not the first prefix-shaped string anywhere in the file. An
+    // unanchored /VER_PREFIX\d+/ scan matches whatever comes first, and sw.js's comments now
+    // cite version names as examples — so a comment moved above `const V`, or one more worked
+    // example, would make `latest` a comment and pin a permanent "Update available" pill that
+    // does nothing when tapped (forceUpdate() clears caches, reloads, and re-reads the comment).
+    // Same expression as tools/sw_lint.py's ver(); keep the two in agreement.
+    latest = (src.match(/const V\s*=\s*"([^"]*)"/) || ["", ""])[1];
   } catch {}                                  // offline: leave latest empty → no false "behind"
 
   const pill = ensurePill();

@@ -34,8 +34,12 @@ def shell_paths(src):
     m = re.search(r"const SHELL\s*=\s*\[(.*?)\]", src, re.S)
     if not m:
         return set()
+    # Strip line comments before counting quoted strings: a commented-out or merely mentioned
+    # filename inside the array would otherwise register as a shell entry. Same guard as
+    # tools/test-pwa-offline.py's shell_size(); the two parsers should agree.
+    body = re.sub(r"//[^\n]*", "", m.group(1))
     # "./index.html" -> "index.html"; drop the bare "./" root entry.
-    return {p.lstrip("./") for p in re.findall(r'"([^"]+)"', m.group(1)) if p.strip("./")}
+    return {p.lstrip("./") for p in re.findall(r'"([^"]+)"', body) if p.strip("./")}
 
 
 def main():

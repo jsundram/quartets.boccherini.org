@@ -91,6 +91,30 @@ def main():
         if missing:
             failures.append(f"precache missing expected shell files: {missing}")
 
+        # The "update available" pill must stay hidden on an up-to-date device. checkVer() compares
+        # the installed cache name against the V it parses out of the live sw.js, and both sides
+        # have a way to lie: keys() order (fixed by ranking) and an unanchored version scan that
+        # can match a version name mentioned in a comment. Either one pins a permanent pill that
+        # does nothing when tapped, so assert the observable contract rather than the parsing.
+        # Needs a RELOAD to mean anything: on a first visit caches.keys() is still empty when
+        # checkVer() runs, so it returns before the comparison and never builds the pill. Only a
+        # second load exercises installed-vs-latest at all.
+        page.reload()
+        page.wait_for_selector(".quartet-card", timeout=15000)
+        page.wait_for_timeout(2000)             # let checkVer()'s sw.js fetch land
+        pill = page.evaluate(
+            "() => { const p = document.getElementById('sw-update');"
+            "  return p ? { built: true, shown: !p.hidden } : { built: false }; }")
+        print(f"pill:     {pill} (must be built and not shown on a current device)")
+        if not pill["built"]:
+            failures.append(
+                "checkVer() never reached the comparison on a reload — the pill assertion below "
+                "would be vacuous")
+        elif pill["shown"]:
+            failures.append(
+                "'Update available' pill shown on an up-to-date device — checkVer() read the "
+                "wrong installed or latest version")
+
         # --- 2. Offline reload: every card must still render from cache ---
         ctx.set_offline(True)
         page.reload()
