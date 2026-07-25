@@ -65,28 +65,49 @@ self.addEventListener("install", e => {
   e.waitUntil(ensureShell().then(() => self.skipWaiting()));
 });
 
-// REPAIR BEFORE PURGE, and only purge once the new cache is actually complete.
+// REPAIR BEFORE COLLECT, and only collect once THIS version's cache is complete.
 //
 // addAll's atomicity was a liability (one 404 lost the whole precache) but it was also a guard:
 // a failed install meant this SW never activated, so the previous complete cache kept serving.
-// Per-file puts removed that guard — install now always resolves — so purging first would let a
-// V bump on a dead connection trade a complete stale offline copy for an empty new one. Note
-// caches.match() searches every cache, so an unpurged old version still answers reads meanwhile;
-// it gets collected on the first activation that manages a complete shell.
+// Per-file puts removed that guard — install now always resolves — so collecting first would let
+// a V bump on a dead connection trade a complete stale offline copy for an empty new one.
+//
+// Keeping the old cache is NOT free, which is why this has to be re-runnable rather than a
+// one-shot in activate: CacheStorage.match() iterates caches in CREATION order, so while an old
+// version lingers it ANSWERS FIRST and shadows the current shell. Verified in both engines —
+// caches ['boccherini-v8','boccherini-v9'] both holding a URL resolve to the v8 copy. So a
+// lingering old cache means the device serves the previous release offline, and app.js's
+// checkVer() reads the wrong installed version. Both persist until something collects, and
+// activate fires once per SW version — hence the retry from the message handler below, which is
+// the only hook that runs after activation.
+async function topUpThenCollect() {
+  const stillMissing = await ensureShell();
+  if (stillMissing > 0) return stillMissing;        // keep the old cache as a net, try again later
+
+  // Don't collect while another version is mid-install. From this worker's perspective the
+  // incoming release's cache is merely "not V", so deleting it would throw away a precache that
+  // is being built right now — and app.js pings us on load, which is exactly when an update
+  // installs. Whichever worker activates next runs this same step and collects then.
+  const reg = self.registration;
+  if (reg && (reg.installing || reg.waiting)) return 0;
+
+  const ks = await caches.keys();
+  await Promise.all(ks.filter(k => k !== V).map(k => caches.delete(k)));
+  return 0;
+}
+
 self.addEventListener("activate", e => {
-  e.waitUntil(ensureShell()
-    .then(stillMissing => {
-      if (stillMissing > 0) return;      // keep the old cache as a net
-      return caches.keys()
-        .then(ks => Promise.all(ks.filter(k => k !== V).map(k => caches.delete(k))));
-    })
-    .then(() => self.clients.claim()));
+  e.waitUntil(topUpThenCollect().then(() => self.clients.claim()));
 });
 
-// app.js pings this on every online load, so an evicted precache heals on the next launch
-// with a connection instead of waiting for the next V bump.
+// app.js pings this on every online load, so an evicted precache heals on the next launch with a
+// connection instead of waiting for the next V bump — and a collect deferred at activate time
+// (incomplete shell, or an install in flight) gets retried here.
+//
+// NB: the collect deliberately lives here and not inside ensureShellOnce(), which also runs during
+// install — deleting the old cache then would strand pages still controlled by the previous worker.
 self.addEventListener("message", e => {
-  if (e.data === "ensure-shell") e.waitUntil(ensureShell());
+  if (e.data === "ensure-shell") e.waitUntil(topUpThenCollect());
 });
 
 // Cache-write gate (from pwa-starter, see its CLAUDE.md §Offline). A fetch() only

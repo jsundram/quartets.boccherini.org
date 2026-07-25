@@ -119,17 +119,34 @@ def main():
             srv.terminate(); srv.wait()
             sw = root / "sw.js"
             cur = re.search(r'const V = "([^"]+)"', sw.read_text()).group(1)
-            new = f"{cur}-test"
+            # A real numeric bump, not a "-test" suffix: app.js's checkVer() ranks versions by
+            # their numeric tail, so a synthetic name would exercise a shape that never ships.
+            stem, n = re.match(r"(.*?)(\d+)$", cur).groups()
+            new = f"{stem}{int(n) + 1}"
             sw.write_text(sw.read_text().replace(f'const V = "{cur}"', f'const V = "{new}"'))
             srv = serve(root, "break")
             print(f"bump:     {cur} -> {new}, every shell file 500s except /, /index.html, /sw.js")
+            # Force the update check explicitly instead of relying on a navigation to trigger one.
+            # Waiting on a plain reload is flaky here — WebKit doesn't reliably re-fetch sw.js on
+            # every navigation in this harness, and a fixed sleep plus "the old cache survived"
+            # passes trivially when the bump never happened at all. registration.update() is the
+            # deterministic path, and the assertion below proves the scenario actually ran.
             page.reload(wait_until="load")
-            time.sleep(7)                        # install -> activate
+            page.evaluate(
+                "async () => { const r = await navigator.serviceWorker.getRegistration();"
+                "  if (r) { try { await r.update(); } catch {} } }")
+            try:
+                page.wait_for_function(
+                    "async (n) => (await caches.keys()).includes(n)", arg=new, timeout=25000)
+            except Exception:
+                pass
             after = page.evaluate(PROBE)
             print(f"bumped:   {after['counts']}")
+            if new not in after["names"]:
+                failures.append(f"new version {new} never installed — the bump scenario never ran")
             if old not in after["names"]:
                 failures.append(
-                    f"purged the complete old cache {old} while the new one was incomplete")
+                    f"collected the complete old cache {old} while the new one was incomplete")
             elif after["counts"].get(old, 0) < before["counts"].get(old, 0):
                 failures.append(f"old cache {old} lost entries: "
                                 f"{before['counts'].get(old)} -> {after['counts'].get(old)}")
@@ -149,6 +166,41 @@ def main():
             print(f"offline:  {got} quartet cards rendered with the server down")
             if got != cards:
                 failures.append(f"offline render lost after a bad bump: {got} vs {cards} cards")
+
+            # --- 4. network recovers: the top-up completes AND the stale cache is collected ---
+            # Keeping the old cache is not free. CacheStorage.match() iterates in CREATION order,
+            # so a lingering old version answers first and shadows the current shell -- the device
+            # would serve the previous release offline, and checkVer() would read the old version
+            # and show a permanent "update available" pill. activate() fires once per SW version,
+            # so the collect has to be retried post-activation (sw.js does it from the message
+            # handler, which app.js pings on load and on foreground).
+            srv = serve(root)
+            print(">>> network restored")
+            page.reload(wait_until="load")
+            page.wait_for_selector(".quartet-card", timeout=20000)
+            try:
+                page.wait_for_function(
+                    "async (n) => { const ks = await caches.keys();"
+                    "  return ks.length === 1 && ks[0] === n; }", arg=new, timeout=25000)
+            except Exception:
+                pass
+            healed = page.evaluate(PROBE)
+            print(f"healed:   {healed['counts']}")
+            if healed["counts"].get(new, 0) < before["counts"].get(old, 0):
+                failures.append(f"new precache never completed: {healed['counts']}")
+            elif old in healed["names"]:
+                failures.append(
+                    f"stale cache {old} never collected though {new} is complete — it shadows the "
+                    f"current shell (creation-order match) and skews checkVer()")
+
+            # Exactly one versioned cache must remain. That's the root invariant: while two
+            # coexist, the older one shadows reads AND app.js's checkVer() can report the wrong
+            # installed version. Asserting the cache set rather than re-deriving checkVer()'s
+            # answer here keeps this from testing a copy of the fixed logic instead of the code.
+            versioned = [n for n in healed["names"] if n.startswith("boccherini-v")]
+            print(f"caches:   {versioned} remaining")
+            if len(versioned) != 1:
+                failures.append(f"expected exactly one versioned cache after healing, got {versioned}")
             browser.close()
     finally:
         if srv and srv.poll() is None:

@@ -46,7 +46,9 @@ def shell_size():
     m = re.search(r"const SHELL\s*=\s*\[(.*?)\]", SW.read_text(), re.S)
     if not m:
         raise SystemExit(f"could not parse SHELL out of {SW}")
-    return len(re.findall(r'"[^"]+"', m.group(1)))
+    # Strip line comments first — an apostrophe or a quoted filename inside one would otherwise
+    # be counted as a shell entry and inflate the target.
+    return len(re.findall(r'"[^"]+"', re.sub(r"//[^\n]*", "", m.group(1))))
 
 
 def main():

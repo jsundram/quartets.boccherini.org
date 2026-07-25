@@ -29,8 +29,19 @@ function ensurePill() {
 // server. Show the pill only when the server is ahead (so a fix that shipped but got
 // stuck behind iOS's aggressive SW cache is fixable in one tap).
 async function checkVer() {
+  // HIGHEST version, not the first key: two caches can legitimately coexist for a while (sw.js
+  // keeps the old one as a net until the new precache is complete), and caches.keys() is in
+  // creation order — so find() would report the OLD version as installed and show a permanent
+  // "update available" pill on an already-current device.
   let installed = "";
-  try { installed = (await caches.keys()).find(k => k.startsWith(VER_PREFIX)) || ""; } catch {}
+  try {
+    installed = (await caches.keys())
+      .filter(k => k.startsWith(VER_PREFIX))
+      .map(k => [parseInt(k.slice(VER_PREFIX.length), 10) || 0, k])
+      .sort((a, b) => a[0] - b[0])
+      .map(([, k]) => k)
+      .pop() || "";
+  } catch {}
   if (!installed) return;                     // nothing installed yet — first visit
 
   let latest = "";
