@@ -1,4 +1,4 @@
-// pwa-starter: sw.js @ 9c197b0
+// pwa-starter: sw.js @ 3ec3032
 // Service worker: offline shell + cache-busting.  (Pattern from pwa-starter / haydn-info-card.)
 //
 // THE ONE RULE: bump V whenever you change a precached SHELL file. A new V is what evicts the
@@ -72,6 +72,11 @@ async function missingFromShell(cache) {
   return SHELL.filter((_, i) => !found[i]);
 }
 
+// TRANSIENT = a retry could fix it (5xx mid-deploy blip, 408, 429); any other non-ok status is a
+// definite server answer. Shared by ensureShellOnce()'s classification and the live branch's
+// navigation-error split — one predicate, so the two sites can't drift.
+const isTransientStatus = s => s >= 500 || s === 408 || s === 429;
+
 // Returns { transient, permanent }: HOW MANY entries failed in a way a retry could fix, and WHICH
 // entries failed in a way no retry ever will. topUpThenCollect() keys the old-cache collect off
 // that split, so both have to mean "not cached", not "attempted".
@@ -101,11 +106,6 @@ async function missingFromShell(cache) {
 // and the state costs more than the request it saves. tools/sw_lint.py is the real answer: it stops
 // an unfetchable SHELL entry from shipping at all, which makes this path damage control for a case
 // that should not reach a device.
-// TRANSIENT = a retry could fix it (5xx mid-deploy blip, 408, 429); any other non-ok status is a
-// definite server answer. Shared by ensureShellOnce()'s classification and the live branch's
-// navigation-error split — one predicate, so the two sites can't drift.
-const isTransientStatus = s => s >= 500 || s === 408 || s === 429;
-
 async function ensureShellOnce() {
   try {
     const c = await caches.open(V);
