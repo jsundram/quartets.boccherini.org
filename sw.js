@@ -1,4 +1,4 @@
-// pwa-starter: sw.js @ dd763ca
+// pwa-starter: sw.js @ 77fcb35
 // Service worker: offline shell + cache-busting.  (Pattern from pwa-starter / haydn-info-card.)
 //
 // THE ONE RULE: bump V whenever you change a precached SHELL file. A new V is what evicts the
@@ -7,8 +7,18 @@
 // app.js surfaces a "tap to update" pill so a stuck phone is fixable in one tap.
 //
 // Strategy, by what the file IS rather than where it lives:
-//   HTML/JS + navigations → network-first (a push is visible on the next reload without waiting
-//     for a SW swap; falls back to cache offline)
+//   HTML/JS + navigations → CACHE-FIRST once installed: paint from the precache with NO network on
+//     the critical path, so a load is instant and identical on a fast link, a slow one, or none.
+//     Freshness is handled OFF the critical path, because the shell is owned per-generation
+//     (cachePut won't overwrite it) and a new deploy MUST bump V anyway (THE ONE RULE): a V bump
+//     installs the new shell and lights app.js's update pill. Only an uncached or unbootable
+//     request falls through to a bounded network-first fetch, which ALWAYS ends at a real
+//     Response. NB this rests on every live url being a SHELL file (it is today — "./",
+//     index.html, app.js, d3.v7.min.js): a future NON-shell .html/.js would be served cache-first
+//     with no revalidation until a V bump collects the old generation — add such a file to SHELL
+//     (and bump V), don't lean on opportunistic caching to refresh it. Bonus: d3.v7.min.js
+//     (~280 KB) was fetched network-first on every load only to be DISCARDED by cachePut()'s
+//     SHELL refusal; cache-first stops paying that on every launch.
 //   JSON → paint from cache now. PRECACHED json (the datasets) is owned by the install, so a V
 //     bump is what refreshes it; any other same-origin json is stale-while-revalidate
 //   images/SVG and everything else → cache-first for speed; a V bump is what refreshes them
@@ -310,6 +320,39 @@ async function bootable() {
   return (await Promise.all(NAV_DEPS.map(u => cacheLookup(u)))).every(Boolean);
 }
 
+// The FALLBACK network fetch is BOUNDED by these timers. Cache-first (the live branch) means the
+// common, fully-cached load never reaches them; they run only when the cache can't answer — a
+// first run, or an evicted/partial shell — where a slow-but-alive link ("lie-fi": a weak cell
+// signal, a captive portal that half-answers) would otherwise hang respondWith() on a fetch that
+// never settles: the very blank screen this file fights, now with no end. Bounding turns that into
+// an eventual real Response.
+//
+// TWO bounds, because a timeout costs differently in the two states:
+//   WARM (a cached copy in hand — even a non-bootable one to fall back to): short. There's a real
+//     page one lookup away, so a stale-but-instant paint beats waiting on a dead-slow link.
+//   COLD (NOTHING cached — a first run, or a shell iOS evicted under storage pressure / after ~7
+//     idle days, the routine case ensureShellOnce() documents): longer, because the only fallback
+//     is offlineFallback()'s "try again" page and a working-but-slow link that would have delivered
+//     the real app at 8s shouldn't be cut off at 3s. But NOT unbounded: an evicted shell on a weak
+//     signal is exactly the reported failure, and an eventual honest page beats a permanent blank.
+const NET_TIMEOUT_MS = 3000;
+const NET_TIMEOUT_COLD_MS = 15000;
+
+// Reject `promise` if it hasn't settled within `ms`, so a timeout routes into the offline catch
+// rather than stranding respondWith() on a fetch that never settles. The underlying fetch is
+// untouched — racing a timer against it doesn't abort it — so the caller keeps it alive under
+// waitUntil. clearTimeout on settle so a resolved fetch doesn't hold a pending timer (and the SW)
+// awake for the remainder of the window.
+function withTimeout(promise, ms) {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error("network timeout")), ms);
+    promise.then(
+      v => { clearTimeout(timer); resolve(v); },
+      err => { clearTimeout(timer); reject(err); }
+    );
+  });
+}
+
 self.addEventListener("fetch", e => {
   const u = new URL(e.request.url);
   // cache.put() rejects for anything but GET ("Request method is not GET"), and a form POST is
@@ -352,44 +395,93 @@ self.addEventListener("fetch", e => {
     return;
   }
 
-  // Same-origin: HTML/JS + navigations → network-first; other assets (images) → cache-first.
+  // Same-origin: HTML/JS + navigations → CACHE-FIRST; other assets (images) → cache-first too.
+  //
+  // The old strategy here was network-first, and it hid a mobile-common failure: fetch() only
+  // rejects on a real failure, so a connection that is UP but crawling ("lie-fi" — a weak cell
+  // signal, a captive portal that half-answers) makes the fetch hang rather than reject. The
+  // offline catch never fired, respondWith() stayed pending, and WebKit painted a blank screen —
+  // "internet, but too slow to answer." Cache-first paints straight from the precache; the network
+  // is touched only when the cache CAN'T answer, and that fetch is bounded so even it can't hang.
+  // Freshness is off this path: a V bump installs the new shell and lights the pill.
+  //
+  // This also closes the old KNOWN ASYMMETRY (a nav 5xx serving a cached-but-unbootable document
+  // while online): a navigation's transient error now throws into the catch, which re-checks
+  // bootable() and ends at the honest fallback.
   if (live) {
-    e.respondWith(
-      fetch(e.request).then(resp => {
-        cachePut(e.request, resp);
-        // A 4xx/5xx is a resolved fetch, so .catch() below never sees it — serve
-        // the good cached copy instead of handing the app an error page.
-        //
-        // KNOWN ASYMMETRY: the bootable() gate in the catch below does NOT apply here. Online, a
-        // missing boot dep just comes off the network, so this is almost always moot — but a
-        // server 5xx-ing everything mid-deploy, on a device whose index.html is cached and whose
-        // d3.v7.min.js was evicted, reproduces the header-only page the gate exists to prevent:
-        // the document is served from cache, and d3's own request (also `live`, since it is .js)
-        // gets a RESOLVED 500 that never reaches a catch, so no fallback fires. Left ungated on
-        // purpose — it is transient and a reload fixes it, whereas gating the online path would
-        // trade a working page for a fallback every time a subresource blips.
-        if (!resp.ok) return cacheLookup(e.request).then(r => r || resp);
+    e.respondWith((async () => {
+      const cached = await cacheLookup(e.request);
+
+      // Serve the cached copy immediately. A navigation must also be BOOTABLE — a cached
+      // index.html whose d3.v7.min.js is missing renders a bare <h1> over an empty chart, worse
+      // than the honest fallback — so a non-bootable navigation drops through to the network path.
+      if (cached && (e.request.mode !== "navigate" || await bootable())) {
+        return cached;
+      }
+
+      // No usable cached copy: first run, or an evicted/partial shell. Go to the network, bounded
+      // EITHER WAY (see the try below): short when a fallback page is in hand, longer
+      // (NET_TIMEOUT_COLD_MS) on a true first run where offlineFallback() is the only floor — but
+      // never unbounded, so it always ends at a real Response.
+      const net = fetch(e.request).then(resp => {
+        cachePut(e.request, resp);   // a no-op for SHELL urls; repair is ensureShell()'s job
+        // A navigation's fetch runs with redirect mode "manual", so a server 301/302 arrives as
+        // an OPAQUEREDIRECT — status 0, ok FALSE, but a healthy answer the browser must be handed
+        // back so it can follow it. Treating it as an error would show the offline page while
+        // fully online. Subresources never see one (their redirect mode is "follow").
+        if (resp.type === "opaqueredirect") return resp;
+        if (!resp.ok) {
+          // A 4xx/5xx is a RESOLVED fetch, not a rejection. For a subresource, a good cached copy
+          // beats handing the app an error body. For a NAVIGATION, split by whether a retry could
+          // ever fix it — the same transient/permanent judgment ensureShellOnce() documents:
+          //   TRANSIENT (5xx mid-deploy, 408, 429) → throw into the catch. The only cached copy
+          //     reachable here already FAILED bootable() (cache-first would have served it
+          //     otherwise), so the honest try-again page beats both it and a raw error body.
+          //   PERMANENT (other 4xx — a typo'd link, a deleted page) → serve the server's answer.
+          //     The offline page would LIE to an online user ("open it once with a connection")
+          //     behind a Try Again loop that can never win; the real 404 is actionable.
+          if (e.request.mode === "navigate") {
+            if (resp.status >= 500 || resp.status === 408 || resp.status === 429) {
+              throw new Error("http " + resp.status);
+            }
+            return resp;
+          }
+          return cacheLookup(e.request).then(r => r || resp);
+        }
         return resp;
-      }).catch(async () => {
-        // Offline. Try the exact request, then the shell, then give up VISIBLY.
-        // Resolving respondWith() to undefined is what produced the original bug:
-        // WebKit fails the navigation with "Returned response is null" and iOS paints
-        // a blank white screen — no text, no error, nothing to act on.
-        //
-        // A document we cannot actually boot is worse than an honest fallback, so this is checked
-        // BEFORE the cached copy is handed back — including the exact-request hit below, which for
-        // a navigation IS the document.
+      });
+      try {
+        // Bounded either way (see NET_TIMEOUT_*): WARM has a page to fall back to, COLD has only
+        // offlineFallback — but NEITHER may hang. A timeout, an offline rejection, or a navigation
+        // 5xx (thrown above) all land in the catch.
+        return await withTimeout(net, cached ? NET_TIMEOUT_MS : NET_TIMEOUT_COLD_MS);
+      } catch {
+        // Park the in-flight fetch under waitUntil: a timeout doesn't abort it, so this swallows
+        // its eventual rejection instead of leaking an unhandled one (and lets a late success for
+        // any non-SHELL live url still land in the cache). Resolving respondWith() to undefined
+        // is the original blank-screen bug — WebKit fails the navigation with "Returned response
+        // is null" and iOS paints a blank white page — so every branch below ends at a real
+        // Response.
+        e.waitUntil(net.catch(() => {}));
+
+        // A document we cannot actually boot is worse than an honest fallback. Re-checked LIVE
+        // (not from the pre-network snapshot): an "ensure-shell" repair can land inside the
+        // timeout window and flip this true.
         if (e.request.mode === "navigate" && !(await bootable())) {
           return offlineFallback(e.request);
         }
         // The shell is a NAVIGATION fallback only: `live` also matches .js, and handing
         // index.html to an uncached app.js / d3.v7.min.js request would make the script
-        // fail to parse instead of failing cleanly.
+        // fail to parse instead of failing cleanly. (Single-page app, so unlike the skeleton
+        // there's no root-only gate — any navigation belongs to index.html.)
         const shell = e.request.mode === "navigate"
           ? await cacheLookup("./index.html") : null;
-        return (await cacheLookup(e.request)) || shell || offlineFallback(e.request);
-      })
-    );
+        // Re-read the cache rather than trusting the pre-network snapshot: an "ensure-shell"
+        // repair (app.js pings it on every load) can land during the timeout window, and the
+        // fresh copy should win over the snapshot when it does.
+        return (await cacheLookup(e.request)) || cached || shell || offlineFallback(e.request);
+      }
+    })());
   } else {
     e.respondWith(
       cacheLookup(e.request).then(r => r || fetch(e.request).then(resp => {
