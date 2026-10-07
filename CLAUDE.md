@@ -11,7 +11,7 @@ Boccherini String Quartets Visualization - an interactive periodic table-style g
 
 ## File Structure
 - **Main file**: `index.html` - Single-file architecture: HTML + CSS + JavaScript
-- **Data file**: `opera.json` - quartet metadata (opus, year, keys, movements, etc.)
+- **Data file**: `opera.json` - quartet metadata (opus, year, keys, movements, etc.). **Generated — never hand-edit.** It comes from https://github.com/jsundram/boccherini-quartet-data (sourced from a Google Sheet). Data changes go Sheet → that repo's pipeline → copy `opera.json` here → bump `V` in `sw.js` and `APP_V` in `app.js`. See README "Data (opera.json)".
 - **Tools**: `tools/` - PDF generation and visual regression testing scripts
 - **Baselines**: `baselines/` - Reference screenshots for visual regression testing
 - **Documentation**: `README.md` - detailed technical documentation

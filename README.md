@@ -18,6 +18,9 @@ Click any card to open the score on IMSLP. Hover for movement details.
 
 ## Data (opera.json)
 
+*`opera.json` is generated — don't edit it by hand.* It comes from
+[boccherini-quartet-data](https://github.com/jsundram/boccherini-quartet-data)
+
 The visualization is driven by `opera.json`, an array of opus groups:
 
 ```json
