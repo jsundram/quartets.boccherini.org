@@ -39,8 +39,9 @@ SW = Path(__file__).resolve().parent.parent / "sw.js"
 
 
 # Highest-numbered versioned cache, not the first key. caches.keys() is in CREATION order, so a
-# find() picks the OLDEST when two versions coexist — the same idiom just fixed in checkVer().
-# This suite never holds two, but it's what a sibling suite that does bump would copy.
+# find() picks the OLDEST when two versions coexist. checkVer() used to carry the same idiom; it
+# no longer ranks at all (pwa-starter#17), so this is now the harness's own business — it needs a
+# definite answer about what is STORED, which is exactly the question a key can answer.
 CURRENT_CACHE_JS = """
   const currentCache = async () => (await caches.keys())
     .filter(k => k.startsWith(PREFIX))
@@ -68,7 +69,7 @@ def shell_size():
     # inflate the target — via an ALTERNATION rather than a strip pass. Deleting r"//[^\n]*" first
     # also eats the "//" in a URL and every entry after it on that line (sw.js packs six per line),
     # which UNDER-counts instead: shell_n drops, and the `healed < shell_n` assertion below then
-    # passes on a precache that never fully healed. Same guard as tools/sw_lint.py's shell_paths().
+    # passes on a precache that never fully healed. Same guard as tools/sw-lint.py's shell_paths().
     return len([s for s in re.findall(r'"([^"]*)"|//[^\n]*', m.group(1)) if s])
 
 
@@ -113,10 +114,10 @@ def main():
             failures.append(f"precache missing expected shell files: {missing}")
 
         # The "update available" pill must stay hidden on an up-to-date device. checkVer() compares
-        # the installed cache name against the V it parses out of the live sw.js, and both sides
-        # have a way to lie: keys() order (fixed by ranking) and an unanchored version scan that
-        # can match a version name mentioned in a comment. Either one pins a permanent pill that
-        # does nothing when tapped, so assert the observable contract rather than the parsing.
+        # APP_V — the version baked into the running bundle — against the V it parses out of the
+        # live sw.js. The parse can still lie (an unanchored scan matching a version name in a
+        # comment), pinning a permanent pill that does nothing when tapped, so assert the
+        # observable contract rather than the parsing.
         # Needs a RELOAD to mean anything: on a first visit caches.keys() is still empty when
         # checkVer() runs, so it returns before the comparison and never builds the pill. Only a
         # second load exercises installed-vs-latest at all.

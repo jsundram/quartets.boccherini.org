@@ -6,6 +6,10 @@
 // to know about it. Loaded from a plain <script defer src="app.js"></script>.
 
 const VER_PREFIX = "boccherini-v";   // must match the V prefix in sw.js
+// THIS bundle's version — the code the page is actually EXECUTING, baked in at parse time and so
+// the only honest answer to "what is this device running?". Must be kept equal to sw.js's V:
+// app.js is a precached shell file, so the two always ship together on a bump.
+const APP_V = "boccherini-v10";
 
 // Build the little pill, hidden until we know the server is ahead of this device.
 function ensurePill() {
@@ -25,35 +29,31 @@ function ensurePill() {
   return pill;
 }
 
-// Compare the cache version installed on this device against the live sw.js on the
+// Compare the version of the bundle this page is RUNNING against the live sw.js on the
 // server. Show the pill only when the server is ahead (so a fix that shipped but got
 // stuck behind iOS's aggressive SW cache is fixable in one tap).
 async function checkVer() {
-  // HIGHEST version, not the first key: two caches can legitimately coexist for a while (sw.js
-  // keeps the old one as a net until the new precache is complete), and caches.keys() is in
-  // creation order — so find() would report the OLD version as installed and show a permanent
-  // "update available" pill on an already-current device.
+  // Is a worker installed AT ALL? That is the only question a cache key can answer honestly, and
+  // it is asked for one narrow reason: to keep the pill out of a plain browser tab that has never
+  // registered anything. What this device is RUNNING is APP_V — see the comparison below.
   //
-  // But only among caches that actually HOLD something. sw.js's ensureShellOnce() calls
-  // caches.open(V) before it fetches anything, so a bumped version exists as an EMPTY cache the
-  // moment an install starts — and per-file precaching means that worker activates even if every
-  // shell fetch failed. Ranking on names alone then reads the empty placeholder as "installed",
-  // concludes the device is current, and hides the pill on a device that is still serving the
-  // PREVIOUS release out of the old cache — killing the one affordance that unsticks it by hand.
-  // A partly-filled new cache still reads as installed; that state repairs itself on the next
-  // top-up, whereas the empty one can persist.
-  let installed = "";
-  try {
-    const keys = (await caches.keys()).filter(k => k.startsWith(VER_PREFIX));
-    const sized = await Promise.all(
-      keys.map(async k => [(await (await caches.open(k)).keys()).length, k]));
-    installed = sized
-      .filter(([n]) => n > 0)
-      .map(([, k]) => [parseInt(k.slice(VER_PREFIX.length), 10) || 0, k])
-      .sort((a, b) => a[0] - b[0])
-      .map(([, k]) => k)
-      .pop() || "";
-  } catch {}
+  // This used to RANK the keys — highest numeric tail, and only among caches that held something
+  // — and treat the winner as "the installed version". A key cannot report that. It describes
+  // what is STORED, not what is executing, and after an activation the two differ permanently:
+  // sw.js calls skipWaiting() + clients.claim() and topUpThenCollect() drops older generations,
+  // so the key set flips to the new version the moment a worker activates while this page keeps
+  // running the bundle it parsed at launch — clients.claim() reloads nothing. The comparison then
+  // read installed === latest on precisely the device that was a release behind, hid the pill,
+  // and removed the one affordance that unsticks it by hand. A home-screen copy that is never
+  // force-quit holds that state indefinitely.
+  //
+  // The non-empty filter went with the ranking, deliberately. Both existed to stop the KEY from
+  // lying about currency, which APP_V now settles at the source — and keeping the filter would
+  // now do active harm: it hides the pill on a device whose new cache is still the empty
+  // placeholder ensureShellOnce() opens before it fetches anything, which is exactly the stranded
+  // device the filter was written to protect.
+  let installed = false;
+  try { installed = (await caches.keys()).some(k => k.startsWith(VER_PREFIX)); } catch {}
   if (!installed) return;                     // nothing installed yet — first visit
 
   let latest = "";
@@ -64,12 +64,14 @@ async function checkVer() {
     // cite version names as examples — so a comment moved above `const V`, or one more worked
     // example, would make `latest` a comment and pin a permanent "Update available" pill that
     // does nothing when tapped (forceUpdate() clears caches, reloads, and re-reads the comment).
-    // Same expression as tools/sw_lint.py's ver(); keep the two in agreement.
+    // Same expression as tools/sw-lint.py's ver(); keep the two in agreement.
     latest = (src.match(/const V\s*=\s*"([^"]*)"/) || ["", ""])[1];
   } catch {}                                  // offline: leave latest empty → no false "behind"
 
+  // Compare what is RUNNING against the server. APP_V is baked into this bundle, so a page still
+  // executing an old app.js reports the old version no matter how current the cache has become.
   const pill = ensurePill();
-  const behind = latest && latest !== installed;
+  const behind = latest && latest !== APP_V;
   pill.hidden = !behind;
   if (behind) pill.onclick = forceUpdate;
 }

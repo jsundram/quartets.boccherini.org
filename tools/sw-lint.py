@@ -9,10 +9,10 @@ So: if this commit stages any SHELL file but leaves V identical to HEAD's, warn.
 
 Paths in sw.js's SHELL are repo-root-relative here ("./index.html" -> index.html,
 "./assets/icon-192.png" -> assets/icon-192.png), unlike the haydn/pwa-starter layout where they
-sit under web/. Adapted from those repos' sw_lint.py.
+sit under web/. Adapted from those repos' sw-lint.py.
 
 The pre-commit hook runs it warn-only; run it in CI with a real exit code. By hand:
-    uv run tools/sw_lint.py     (or: python3 tools/sw_lint.py)
+    uv run tools/sw-lint.py     (or: python3 tools/sw-lint.py)
 """
 import re
 import subprocess
@@ -56,18 +56,38 @@ def main():
         return 0                                  # no sw.js staged / not a repo
     src = idx.stdout
 
-    # V must end in digits. That numeric tail is load-bearing in four places -- sw.js's collect
-    # (which only deletes strictly-older generations), app.js's checkVer() ranking, and the bump
-    # logic in both test harnesses. A non-numeric V doesn't fail anywhere: the collect just stops
-    # happening, silently, until two generations have piled up on the device. Upstream's CLAUDE.md
-    # invites renaming this prefix, so the contract has to be checked rather than assumed.
+    # V must end in digits. That numeric tail is load-bearing in three places -- sw.js's collect
+    # (which only deletes strictly-older generations) and the bump logic in both test harnesses.
+    # It used to order app.js's checkVer() ranking too; that ranking is gone (pwa-starter#17 --
+    # checkVer() compares APP_V, the version baked into the running bundle, not a cache key).
+    # A non-numeric V doesn't fail anywhere: the collect just stops happening, silently, until two
+    # generations have piled up on the device. Upstream's CLAUDE.md invites renaming this prefix,
+    # so the contract has to be checked rather than assumed.
     v = ver(src)
     if v is not None and not re.search(r"\d+$", v):
         print(f'  {SW}: V is "{v}", which does not end in digits.')
-        print("  The numeric tail orders cache generations — sw.js only collects older ones,")
-        print("  and app.js ranks installed versions by it. Rename to e.g. "
+        print("  The numeric tail orders cache generations — sw.js only collects strictly")
+        print("  older ones, so a non-numeric V stops collection silently. Rename to e.g. "
               f'"{v}1" or restore the suffix.')
         return 1
+
+    # app.js's APP_V must EQUAL V. APP_V is the version the running bundle reports about itself,
+    # and it is what checkVer() compares against the deployed sw.js -- a cache key describes what
+    # is stored, not what the page is executing, so after skipWaiting()/clients.claim() the two
+    # diverge permanently and a key-based check goes quiet on exactly the stranded device
+    # (pwa-starter#17). Let the pair drift and the comparison reads the wrong number: the pill
+    # never appears, silently, on the release it exists to rescue. Nothing else guards this, so
+    # without this check the contract is a comment. Read from the INDEX to match the rest of the
+    # lint -- it judges what is being committed, not what is on disk.
+    app = sh("git", "show", ":app.js")
+    if v is not None and app.returncode == 0:
+        m = re.search(r'const APP_V\s*=\s*"([^"]*)"', app.stdout)
+        if m and m.group(1) != v:
+            print(f'  app.js: APP_V is "{m.group(1)}" but {SW}\'s V is "{v}".')
+            print("  checkVer() reports APP_V as the version this device is RUNNING, so a drifted")
+            print("  pair compares the wrong number and the update pill goes quiet on a stale")
+            print("  client. Bump both together.")
+            return 1
 
     shell = shell_paths(src)
 

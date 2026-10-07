@@ -251,7 +251,7 @@ def main():
             # --- 2. V bump that cannot fetch its shell ---
             srv.terminate(); srv.wait()
             sw = root / "sw.js"
-            # Same expression as app.js's checkVer() and tools/sw_lint.py's ver() -- \s*, not
+            # Same expression as app.js's checkVer() and tools/sw-lint.py's ver() -- \s*, not
             # literal single spaces. A stricter third parser would crash this whole suite with an
             # AttributeError on a reformatted `const V="..."` while those two kept working, turning
             # a regression run into a traceback. Both parses are checked rather than dereferenced
@@ -262,7 +262,7 @@ def main():
                 print(f"ERROR: could not parse V out of {sw} — test setup broken")
                 return 2
             cur = m.group(1)
-            # A real numeric bump, not a "-test" suffix: app.js's checkVer() ranks versions by
+            # A real numeric bump, not a "-test" suffix: sw.js's collect orders generations by
             # their numeric tail, so a synthetic name would exercise a shape that never ships.
             tail = re.match(r"(.*?)(\d+)$", cur)
             if not tail:
@@ -319,7 +319,8 @@ def main():
             # --- 4. network recovers: the top-up completes AND the stale cache is collected ---
             # Keeping the old cache is not free. CacheStorage.match() iterates in CREATION order,
             # so a lingering old version answers first and shadows the current shell -- the device
-            # would serve the previous release offline, and checkVer() would read the old version
+            # would serve the previous release offline (checkVer() is no longer affected -- it
+            # reads APP_V, not these keys -- but the stale SERVE is the real cost)
             # and show a permanent "update available" pill. activate() fires once per SW version,
             # so the collect has to be retried post-activation (sw.js does it from the message
             # handler, which app.js pings on load and on foreground).
@@ -340,11 +341,12 @@ def main():
             elif old in healed["names"]:
                 failures.append(
                     f"stale cache {old} never collected though {new} is complete — it shadows the "
-                    f"current shell (creation-order match) and skews checkVer()")
+                    f"current shell (creation-order match)")
 
             # Exactly one versioned cache must remain. That's the root invariant: while two
-            # coexist, the older one shadows reads AND app.js's checkVer() can report the wrong
-            # installed version. Asserting the cache set rather than re-deriving checkVer()'s
+            # coexist, the older one shadows reads. (It used to skew app.js's version check too;
+            # checkVer() reads APP_V now, so that half is closed. pwa-starter#17) Asserting the
+            # cache set rather than re-deriving checkVer()'s
             # answer here keeps this from testing a copy of the fixed logic instead of the code.
             versioned = [n for n in healed["names"] if n.startswith("boccherini-v")]
             print(f"caches:   {versioned} remaining")

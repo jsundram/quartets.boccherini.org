@@ -3,7 +3,7 @@
 //
 // THE ONE RULE: bump V whenever you change a precached SHELL file. A new V is what evicts the
 // stale cache on activate — forget the bump and your fix ships to the repo but never to anyone's
-// installed home-screen copy (iOS caches the SW aggressively). tools/sw_lint.py guards this, and
+// installed home-screen copy (iOS caches the SW aggressively). tools/sw-lint.py guards this, and
 // app.js surfaces a "tap to update" pill so a stuck phone is fixable in one tap.
 //
 // Strategy, by what the file IS rather than where it lives:
@@ -24,7 +24,7 @@
 //   images/SVG and everything else → cache-first for speed; a V bump is what refreshes them
 //   cross-origin (IMSLP, quartetroulette, Wikipedia links) → straight through, never cached here
 
-const V = "boccherini-v9";   // <-- BUMP ON EVERY SHELL CHANGE
+const V = "boccherini-v10";   // <-- BUMP ON EVERY SHELL CHANGE
 
 // "boccherini-v" — the stem shared by every generation. app.js's VER_PREFIX must match.
 const V_STEM = V.replace(/\d+$/, "");
@@ -86,7 +86,7 @@ const isTransientStatus = s => s >= 500 || s === 408 || s === 429;
 // FOREVER. Both cache generations then lived on the device permanently, and the old one kept
 // answering (via cacheLookup's whole-store fallback) for anything absent from the new one. A 404
 // is a bug in the SHELL list that no amount of retrying repairs, so it must not hold the collect
-// hostage; everything genuinely retryable still does. tools/sw_lint.py catches the repo-side
+// hostage; everything genuinely retryable still does. tools/sw-lint.py catches the repo-side
 // version of this at commit time, before it can ship.
 //
 // Deliberately CONSERVATIVE about what counts as permanent, because guessing wrong trades a
@@ -103,7 +103,7 @@ const isTransientStatus = s => s >= 500 || s === 408 || s === 429;
 // is re-requested on the next load, controllerchange and foreground — futile by definition, one 404
 // each time. Deliberate. A module-scope memo would only hold for a single worker lifetime (iOS kills
 // idle workers aggressively), it would have to be invalidated whenever the entry finally appeared,
-// and the state costs more than the request it saves. tools/sw_lint.py is the real answer: it stops
+// and the state costs more than the request it saves. tools/sw-lint.py is the real answer: it stops
 // an unfetchable SHELL entry from shipping at all, which makes this path damage control for a case
 // that should not reach a device.
 async function ensureShellOnce() {
@@ -170,10 +170,11 @@ self.addEventListener("install", e => {
 // one-shot in activate: CacheStorage.match() iterates caches in CREATION order, so while an old
 // version lingers it ANSWERS FIRST and shadows the current shell. Verified in both engines —
 // caches ['boccherini-v8','boccherini-v9'] both holding a URL resolve to the v8 copy. So a
-// lingering old cache means the device serves the previous release offline, and app.js's
-// checkVer() reads the wrong installed version. Both persist until something collects, and
-// activate fires once per SW version — hence the retry from the message handler below, which is
-// the only hook that runs after activation.
+// lingering old cache means the device serves the previous release offline. That persists until
+// something collects, and activate fires once per SW version — hence the retry from the message
+// handler below, which is the only hook that runs after activation. (It used to confuse app.js's
+// version check too; it no longer can — checkVer() reads APP_V, the version baked into the
+// running bundle, not these keys. pwa-starter#17)
 async function topUpThenCollect() {
   const { transient, permanent } = await ensureShell();
   if (transient > 0) return transient;              // keep the old cache as a net, try again later
@@ -208,11 +209,12 @@ async function topUpThenCollect() {
     //
     // Caches that aren't ours (verNum → null) are left alone rather than swept: this worker has no
     // claim on them, and "delete everything unfamiliar" is how a SW eats a sibling app's storage.
-    // V MUST END IN DIGITS. The numeric tail is load-bearing in four places — this collect,
-    // app.js's checkVer() ranking, and both test harnesses' bump logic — and without the guard a
+    // V MUST END IN DIGITS. The numeric tail is load-bearing in three places — this collect and
+    // both test harnesses' bump logic (app.js's checkVer() ranking was the fourth; it is gone,
+    // pwa-starter#17) — and without the guard a
     // rename to a non-numeric V makes verNum(V) null, `n < null` false for every cache, and
     // collection silently stops with no error and no symptom until two generations have piled up.
-    // tools/sw_lint.py rejects that shape at commit time; this is the runtime half of the contract.
+    // tools/sw-lint.py rejects that shape at commit time; this is the runtime half of the contract.
     const mine = verNum(V);
     if (mine === null) return 0;
 
