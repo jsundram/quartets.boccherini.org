@@ -101,10 +101,10 @@ The visualization supports both light and dark color modes with semantic color t
 **Semantic Colors** (adapt to light/dark mode):
 - **Major keys**: No special treatment (uses card background)
 - **Minor keys**: Pink (#E91E63) - consistent across both modes
-- **Movement counts**: Purple→Green diverging palette (consistent backgrounds, text adapts)
-  - 1-2 movements: Purple (rare/piccola)
-  - 3 movements: Blue-gray (standard)
-  - 4-5 movements: Green (substantial/grande)
+- **Bottom strip** (`--strip-*`, chosen by `STRIP_STATES`): purple = piccola, green = grande; darker = longer than usual for that type (consistent backgrounds, text adapts)
+  - Piccola, 2 movements: light purple (#CE93D8) · Piccola, 3+: dark purple (#9C27B0)
+  - Grande, 3 movements: light green (#C8E6C9) · Grande, 4+: green (#81C784)
+  - Counts use movements planned, not written, for unfinished G249 (`PLANNED_MOVEMENTS`)
 
 **Mode-Specific Backgrounds**:
 - **Light mode**: Light gray body (#f5f5f5), white cards (#ffffff)
@@ -122,7 +122,7 @@ Use CSS custom properties for shared values to prevent inconsistencies:
 
 ### Help Guide ("?" button)
 A small blue "?" in the top-right corner (bottom right on phones; web only, hidden in print; also opens with the `?` key) starts a tour of the table, ending in an annotated anatomy sheet with color legends.
-- **Content** lives in `GUIDE_STEPS` in `index.html`, next to the tables the cards are rendered from (`LINK_STATES`, `categoryOf`, `hasMinuet`). **When you change what a card shows, or a color rule, update `GUIDE_STEPS` (or the table) in the same change.**
+- **Content** lives in `GUIDE_STEPS` in `index.html`, next to the tables the cards are rendered from (`LINK_STATES`, `STRIP_STATES`, `categoryOf`, `hasMinuet`). **When you change what a card shows, or a color rule, update `GUIDE_STEPS` (or the table) in the same change.**
 - Legends are drawn with the cards' real CSS classes, and every card the guide shows is a real one (or a copy of one), so color and layout changes need no guide edits.
 - Each step names parts by CSS selector. A part that a card doesn't have is skipped, so removing a card element can't break the guide. Removing it from `GUIDE_STEPS` is still needed to keep the text accurate.
 - The engine (`createGuide`) is generic. It picks example cards itself, preferring ones that show the most parts.

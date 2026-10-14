@@ -9,7 +9,7 @@ const VER_PREFIX = "boccherini-v";   // must match the V prefix in sw.js
 // THIS bundle's version — the code the page is actually EXECUTING, baked in at parse time and so
 // the only honest answer to "what is this device running?". Must be kept equal to sw.js's V:
 // app.js is a precached shell file, so the two always ship together on a bump.
-const APP_V = "boccherini-v13";
+const APP_V = "boccherini-v14";
 
 // Build the little pill, hidden until we know the server is ahead of this device.
 function ensurePill() {

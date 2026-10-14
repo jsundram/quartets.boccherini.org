@@ -24,7 +24,7 @@
 //   images/SVG and everything else → cache-first for speed; a V bump is what refreshes them
 //   cross-origin (IMSLP, quartetroulette, Wikipedia links) → straight through, never cached here
 
-const V = "boccherini-v13";   // <-- BUMP ON EVERY SHELL CHANGE
+const V = "boccherini-v14";   // <-- BUMP ON EVERY SHELL CHANGE
 
 // "boccherini-v" — the stem shared by every generation. app.js's VER_PREFIX must match.
 const V_STEM = V.replace(/\d+$/, "");

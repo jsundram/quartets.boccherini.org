@@ -132,17 +132,15 @@
             --shadow-card: rgba(0, 0, 0, 0.1);
             --shadow-card-hover: rgba(0, 0, 0, 0.2);
 
-            /* Movement count colors (diverging palette) */
-            --mvmt-1-bg: #9C27B0;
-            --mvmt-1-text: white;
-            --mvmt-2-bg: #CE93D8;
-            --mvmt-2-text: #333;
-            --mvmt-3-bg: #B0BEC5;
-            --mvmt-3-text: #333;
-            --mvmt-4-bg: #81C784;
-            --mvmt-4-text: #333;
-            --mvmt-5-bg: #2E7D32;
-            --mvmt-5-text: white;
+            /* Bottom strip colors: purple = piccola, green = grande; darker = longer than usual */
+            --strip-piccola-bg: #CE93D8;        /* usual length (2) */
+            --strip-piccola-text: #333;
+            --strip-piccola-long-bg: #9C27B0;   /* longer (3+) */
+            --strip-piccola-long-text: white;
+            --strip-grande-bg: #C8E6C9;         /* usual length (3) */
+            --strip-grande-text: #333;
+            --strip-grande-long-bg: #81C784;    /* longer (4+) */
+            --strip-grande-long-text: #333;
 
             /* Category badge colors */
             --badge-grande-bg: #81C784;
@@ -200,17 +198,15 @@
                 --shadow-card: rgba(0, 0, 0, 0.3);
                 --shadow-card-hover: rgba(0, 0, 0, 0.5);
 
-                /* Movement count colors - same backgrounds, adjusted text for contrast */
-                --mvmt-1-bg: #9C27B0;
-                --mvmt-1-text: white;
-                --mvmt-2-bg: #CE93D8;
-                --mvmt-2-text: #1a1a1a;
-                --mvmt-3-bg: #B0BEC5;
-                --mvmt-3-text: #1a1a1a;
-                --mvmt-4-bg: #81C784;
-                --mvmt-4-text: #1a1a1a;
-                --mvmt-5-bg: #2E7D32;
-                --mvmt-5-text: white;
+                /* Bottom strip colors - same backgrounds, adjusted text for contrast */
+                --strip-piccola-bg: #CE93D8;        /* usual length (2) */
+                --strip-piccola-text: #1a1a1a;
+                --strip-piccola-long-bg: #9C27B0;   /* longer (3+) */
+                --strip-piccola-long-text: white;
+                --strip-grande-bg: #C8E6C9;         /* usual length (3) */
+                --strip-grande-text: #1a1a1a;
+                --strip-grande-long-bg: #81C784;    /* longer (4+) */
+                --strip-grande-long-text: #1a1a1a;
 
                 /* Category badge colors - same backgrounds, adjusted text */
                 --badge-grande-bg: #81C784;
@@ -269,17 +265,15 @@
             --shadow-card: rgba(0, 0, 0, 0.3);
             --shadow-card-hover: rgba(0, 0, 0, 0.5);
 
-            /* Movement count colors */
-            --mvmt-1-bg: #9C27B0;
-            --mvmt-1-text: white;
-            --mvmt-2-bg: #CE93D8;
-            --mvmt-2-text: #1a1a1a;
-            --mvmt-3-bg: #B0BEC5;
-            --mvmt-3-text: #1a1a1a;
-            --mvmt-4-bg: #81C784;
-            --mvmt-4-text: #1a1a1a;
-            --mvmt-5-bg: #2E7D32;
-            --mvmt-5-text: white;
+            /* Bottom strip colors */
+            --strip-piccola-bg: #CE93D8;        /* usual length (2) */
+            --strip-piccola-text: #1a1a1a;
+            --strip-piccola-long-bg: #9C27B0;   /* longer (3+) */
+            --strip-piccola-long-text: white;
+            --strip-grande-bg: #C8E6C9;         /* usual length (3) */
+            --strip-grande-text: #1a1a1a;
+            --strip-grande-long-bg: #81C784;    /* longer (4+) */
+            --strip-grande-long-text: #1a1a1a;
 
             /* Category badge colors */
             --badge-grande-bg: #81C784;
@@ -768,30 +762,25 @@
             height: var(--mvmt-line-height);
         }
 
-        /* Diverging color scheme: Purple (short) -> Gray (standard) -> Green (long) */
-        .movements-count.mvmt-1 {
-            background-color: var(--mvmt-1-bg);
-            color: var(--mvmt-1-text);
+        /* Bottom strip: opus type and length — see STRIP_STATES in the script */
+        .movements-count.strip-piccola {
+            background-color: var(--strip-piccola-bg);
+            color: var(--strip-piccola-text);
         }
 
-        .movements-count.mvmt-2 {
-            background-color: var(--mvmt-2-bg);
-            color: var(--mvmt-2-text);
+        .movements-count.strip-piccola-long {
+            background-color: var(--strip-piccola-long-bg);
+            color: var(--strip-piccola-long-text);
         }
 
-        .movements-count.mvmt-3 {
-            background-color: var(--mvmt-3-bg);
-            color: var(--mvmt-3-text);
+        .movements-count.strip-grande {
+            background-color: var(--strip-grande-bg);
+            color: var(--strip-grande-text);
         }
 
-        .movements-count.mvmt-4 {
-            background-color: var(--mvmt-4-bg);
-            color: var(--mvmt-4-text);
-        }
-
-        .movements-count.mvmt-5 {
-            background-color: var(--mvmt-5-bg);
-            color: var(--mvmt-5-text);
+        .movements-count.strip-grande-long {
+            background-color: var(--strip-grande-long-bg);
+            color: var(--strip-grande-long-text);
         }
 
         .nickname {
@@ -1029,7 +1018,7 @@
         }
 
         /* Swatches carry the cards' real classes (.card-links.peters,
-           .movements-count.mvmt-3, …); these rules only reset their layout. */
+           .movements-count.strip-grande, …); these rules only reset their layout. */
         .guide .guide-swatch {
             display: inline-flex;
             align-items: center;
@@ -1860,6 +1849,24 @@
 
         const hasMinuet = quartet => quartet.mvmts.some(m => m.includes('Minuetto'));
 
+        // Movements a quartet has — or was meant to have, for the strip color.
+        // G249 is an opera grande Boccherini died before finishing
+        // (one movement written), so it takes the 3-movement color. Its bars
+        // still show the one movement that exists.
+        const PLANNED_MOVEMENTS = new Map([[249, 3]]);
+        const stripCount = quartet => PLANNED_MOVEMENTS.get(quartet.gerard) || quartet.mvmts.length;
+
+        // Bottom strip color: the opus type (purple piccola, green grande),
+        // darker when the quartet is longer than usual for its type.
+        const isGrande = quartet => quartet.category.includes('grande');
+        const STRIP_STATES = [
+            { cls: 'strip-piccola',      name: 'Piccola', test: q => !isGrande(q) && stripCount(q) <= 2 },
+            { cls: 'strip-piccola-long', name: 'Piccola', test: q => !isGrande(q) },
+            { cls: 'strip-grande',       name: 'Grande',  test: q => stripCount(q) <= 3 },
+            { cls: 'strip-grande-long',  name: 'Grande',  test: () => true },
+        ];
+        const stripState = quartet => STRIP_STATES.find(s => s.test(quartet));
+
         // === GUIDE CONTENT ===
         // The tour shows one step at a time on a real card; the closing summary
         // shows every step's parts at once on a copy of the most complete card,
@@ -1961,13 +1968,19 @@
                 prefer: ({ quartet }) => hasMinuet(quartet) && quartet.mvmts.length >= 4 && quartet.hasRecording,
                 parts: [
                     { sel: '.mvmt-lines-svg', label: 'Bars', text: 'one per movement; the pale one is a minuet. Click a bar to play that movement.' },
-                    { sel: '.movements-count', label: 'Bottom strip', text: 'its color counts the movements' },
+                    { sel: '.movements-count', label: 'Bottom strip', text: 'purple for piccola, green for grande; darker when longer than usual' },
                 ],
                 legend: quartets => ({
-                    title: 'Movements',
-                    items: [...new Set(quartets.map(q => q.mvmts.length))].sort((a, b) => a - b).map(n => ({
-                        cls: `movements-count mvmt-${n}`, text: n, label: n === 1 ? '1 movement' : `${n} movements`,
-                    })),
+                    title: 'Bottom strip',
+                    items: STRIP_STATES.map(state => {
+                        const counts = [...new Set(quartets.filter(q => stripState(q) === state).map(stripCount))]
+                            .sort((a, b) => a - b);
+                        return counts.length && {
+                            cls: `movements-count ${state.cls}`,
+                            text: counts.join('–'),
+                            label: `${state.name}, ${counts.join(' or ')} movements`,
+                        };
+                    }).filter(Boolean),
                 }),
             },
             {
@@ -2401,7 +2414,7 @@
                 // Movement count (appended to card, not content, so it's at the bottom)
                 const mvmtCount = quartet.mvmts.length;
                 const movementsDiv = card.append('div')
-                    .attr('class', `movements-count mvmt-${mvmtCount}`);
+                    .attr('class', `movements-count ${stripState(quartet).cls}`);
 
                 // Add repeat glyphs for quartets in parts.json
                 if (quartet.edition) {
