@@ -120,6 +120,13 @@ Use CSS custom properties for shared values to prevent inconsistencies:
 
 ## Common Tasks
 
+### Help Guide ("?" button)
+A small blue "?" in the top-right corner (bottom right on phones; web only, hidden in print; also opens with the `?` key) starts a tour of the table, ending in an annotated anatomy sheet with color legends.
+- **Content** lives in `GUIDE_STEPS` in `index.html`, next to the tables the cards are rendered from (`LINK_STATES`, `categoryOf`, `hasMinuet`). **When you change what a card shows, or a color rule, update `GUIDE_STEPS` (or the table) in the same change.**
+- Legends are drawn with the cards' real CSS classes, and every card the guide shows is a real one (or a copy of one), so color and layout changes need no guide edits.
+- Each step names parts by CSS selector. A part that a card doesn't have is skipped, so removing a card element can't break the guide. Removing it from `GUIDE_STEPS` is still needed to keep the text accurate.
+- The engine (`createGuide`) is generic. It picks example cards itself, preferring ones that show the most parts.
+
 ### Checking Alignment
 Always verify these alignments after CSS changes:
 - Row header year aligns with card mode bar (top)

@@ -15,6 +15,7 @@ An interactive visualization of Luigi Boccherini's complete string quartet outpu
 - Nickname (when applicable)
 
 Click any card to open the score on IMSLP. Hover for movement details.
+The "?" button (top right, or press `?`) gives a guided tour of what everything means.
 
 ## Data (opera.json)
 

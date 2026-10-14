@@ -846,6 +846,390 @@
             margin-left: 2px;
         }
 
+        /* === GUIDE: help button, tour, and anatomy summary ===
+           Web only (hidden in print). Everything here sits in fixed overlays
+           outside .container, so it never affects the table's layout. Content
+           comes from GUIDE_STEPS in the script; swatches reuse the cards' own
+           classes, so the legend can't drift from the real colors. */
+        :root {
+            --guide-dim: rgba(0, 0, 0, 0.62);
+            --guide-ring: #FF9800;   /* amber: a hue the cards never use */
+            --guide-line: var(--text-lighter);
+        }
+
+        /* Link blue: the page's color for anything clickable */
+        .guide-button {
+            position: fixed;
+            top: calc(10px + env(safe-area-inset-top));
+            right: calc(10px + env(safe-area-inset-right));
+            z-index: 900;
+            width: 26px;
+            height: 26px;
+            padding: 0;
+            border-radius: 50%;
+            border: 1.5px solid var(--text-link);
+            background: var(--bg-card);
+            color: var(--text-link);
+            font: 700 14px/1 'Helvetica Neue', Arial, sans-serif;
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .guide-button:hover,
+        .guide-button:focus-visible {
+            background: var(--text-link);
+            color: var(--bg-card);
+        }
+
+        .guide {
+            position: fixed;
+            inset: 0;
+            z-index: 2000;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        .guide[hidden] {
+            display: none;
+        }
+
+        .guide-shade {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .guide-shade .dim {
+            fill: var(--guide-dim);
+        }
+
+        .guide-shade .ring {
+            fill: none;
+            stroke: var(--guide-ring);
+            stroke-width: 2;
+            transition: opacity 0.15s;
+        }
+
+        .guide-shade .ring.part {
+            stroke-dasharray: 4 3;
+            opacity: 0;
+        }
+
+        .guide-shade .ring.part.hot {
+            opacity: 1;
+        }
+
+        .guide-pop {
+            position: absolute;
+            width: 330px;
+            max-width: calc(100vw - 24px);
+            max-height: calc(100vh - 24px);
+            overflow-y: auto;
+            box-sizing: border-box;
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            border-radius: 8px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+            padding: 16px 18px 12px;
+            font-size: 14px;
+            line-height: 1.45;
+        }
+
+        .guide-pop.docked {
+            left: 12px !important;
+            right: 12px;
+            top: auto !important;
+            bottom: calc(12px + env(safe-area-inset-bottom));
+            width: auto;
+            max-height: 45vh;
+        }
+
+        .guide-count {
+            font-size: 11px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-lighter);
+        }
+
+        .guide h2 {
+            margin: 2px 0 6px;
+            font-size: 17px;
+            color: var(--text-primary);
+        }
+
+        .guide p {
+            margin: 0 0 8px;
+        }
+
+        .guide-close {
+            position: absolute;
+            top: 8px;
+            right: 10px;
+            border: none;
+            background: none;
+            font-size: 20px;
+            line-height: 1;
+            color: var(--text-lighter);
+            cursor: pointer;
+        }
+
+        .guide-close:hover {
+            color: var(--text-primary);
+        }
+
+        .guide-parts {
+            margin: 0 0 8px;
+            padding: 0;
+            list-style: none;
+        }
+
+        .guide-parts li {
+            padding: 3px 6px;
+            margin: 0 -6px;
+            border-radius: 4px;
+            cursor: default;
+        }
+
+        .guide-parts li:hover,
+        .guide-parts li.hot {
+            background: var(--bg-body);
+        }
+
+        .guide-parts b,
+        .anatomy-note b {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .guide-legend {
+            margin: 6px 0 8px;
+        }
+
+        .guide-legend h3 {
+            margin: 0 0 4px;
+            font-size: 11px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-lighter);
+            font-weight: 600;
+        }
+
+        .guide-legend ul {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            display: grid;
+            gap: 3px;
+        }
+
+        .guide-legend li {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Swatches carry the cards' real classes (.card-links.peters,
+           .movements-count.mvmt-3, …); these rules only reset their layout. */
+        .guide .guide-swatch {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            width: 2.6em;
+            height: 1.35em;
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            border: 1px solid var(--border-card);
+            border-radius: 3px;
+            box-shadow: none;
+            font-size: 12px;
+            pointer-events: none;
+            transform: none;
+            overflow: hidden;
+        }
+
+        .guide-nav {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .guide-nav .spacer {
+            flex: 1;
+        }
+
+        .guide button.nav {
+            border: 1px solid var(--border-card);
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            border-radius: 5px;
+            padding: 5px 12px;
+            font: inherit;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .guide button.nav.primary {
+            background: var(--text-primary);
+            border-color: var(--text-primary);
+            color: var(--bg-card);
+        }
+
+        .guide button.nav.link {
+            border: none;
+            background: none;
+            padding: 5px 4px;
+            color: var(--text-link);
+        }
+
+        .guide button.nav:disabled {
+            visibility: hidden;
+        }
+
+        /* Final step: the whole system on one sheet */
+        .guide-sheet {
+            position: absolute;
+            inset: max(16px, 3vh) max(16px, 3vw);
+            overflow-y: auto;
+            box-sizing: border-box;
+            background: var(--bg-body);
+            color: var(--text-secondary);
+            border-radius: 10px;
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5);
+            padding: 22px 28px 18px;
+            font-size: 14px;
+            line-height: 1.45;
+        }
+
+        .guide-sheet > h2 {
+            font-size: 22px;
+            text-align: center;
+            margin: 0 0 4px;
+        }
+
+        .guide-sheet > p {
+            text-align: center;
+            color: var(--text-muted);
+            max-width: 620px;
+            margin: 0 auto 18px;
+        }
+
+        .anatomy {
+            position: relative;
+            margin: 0 auto 22px;
+        }
+
+        .anatomy-stage {
+            position: relative;
+            margin: 0 auto;
+            font-size: medium;      /* the copied card's em sizes, as on the page */
+            line-height: normal;
+        }
+
+        .anatomy-inner {
+            display: flex;
+            width: max-content;     /* measure the copy at its natural size */
+            align-items: flex-start;
+            gap: var(--card-gap);
+            transform-origin: 0 0;
+        }
+
+        .anatomy-inner,
+        .anatomy-inner * {
+            pointer-events: none;
+            transition: none !important;
+        }
+
+        .anatomy-lines {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+            pointer-events: none;
+        }
+
+        .anatomy-lines path {
+            fill: none;
+            stroke: var(--guide-line);
+            stroke-width: 1;
+        }
+
+        .anatomy-lines circle {
+            fill: var(--text-primary);
+        }
+
+        .anatomy-lines .badge circle {
+            fill: var(--text-primary);
+            stroke: var(--bg-body);
+            stroke-width: 1.5;
+        }
+
+        .anatomy-lines .badge text {
+            fill: var(--bg-body);
+            font-size: 10px;
+            font-weight: 700;
+            text-anchor: middle;
+            dominant-baseline: central;
+        }
+
+        .anatomy-note {
+            position: absolute;
+            font-size: 12.5px;
+            line-height: 1.3;
+            color: var(--text-muted);
+        }
+
+        .anatomy-note.left,
+        .anatomy-note.mid {
+            text-align: right;
+        }
+
+        .anatomy-note .n {
+            display: none;
+        }
+
+        /* Narrow sheets: numbered dots on the figure, notes as a list below */
+        .anatomy.compact .anatomy-note {
+            position: static;
+            width: auto;
+            text-align: left;
+            margin: 0 0 6px;
+        }
+
+        .anatomy.compact .anatomy-note .n {
+            display: inline-block;
+            min-width: 1.5em;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .anatomy.compact .anatomy-notes {
+            margin-top: 16px;
+        }
+
+        .guide-legends {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 14px 36px;
+            border-top: 1px solid var(--border-card);
+            padding-top: 16px;
+        }
+
+        .guide-sheet .guide-nav {
+            justify-content: center;
+            margin-top: 18px;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .guide-shade .ring {
+                transition: none;
+            }
+        }
+
         /* === PRINT STYLES === */
         /*
          * PRINTING INSTRUCTIONS:
@@ -918,7 +1302,9 @@
             }
 
             /* Hide interactive elements */
-            .tooltip {
+            .tooltip,
+            .guide-button,
+            .guide {
                 display: none !important;
             }
 
@@ -1018,6 +1404,12 @@
                 padding: 0px 2px;
             }
 
+            /* The title spans the whole top edge on phones; use the thumb corner */
+            .guide-button {
+                top: auto;
+                bottom: calc(12px + env(safe-area-inset-bottom));
+            }
+
         }
     </style>
 </head>
@@ -1030,6 +1422,403 @@
         <div id="visualization"></div>
     </div>
 
+    <script>
+        // === GUIDE ENGINE ===
+        // The "?" button, the step-by-step tour, and the closing anatomy sheet.
+        // Generic machinery only: WHAT it says comes from GUIDE_STEPS (below),
+        // and every card it shows is a real one from the table (or a copy of
+        // one), so a change to the cards shows up here with no extra work.
+        function createGuide(steps, quartets) {
+            const SVG_NS = 'http://www.w3.org/2000/svg';
+            const SCOPES = { row: '.opus-row', label: '.opus-label', card: '.quartet-card' };
+            const resolve = v => typeof v === 'function' ? v(quartets) : v;
+            const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+            const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            // A part only counts if it's actually showing (e.g. repeat signs
+            // switched off with --show-ownership: 0 are skipped).
+            function visible(el) {
+                if (!el) return false;
+                const cs = getComputedStyle(el);
+                return cs.display !== 'none' && cs.visibility !== 'hidden' && parseFloat(cs.opacity) > 0;
+            }
+            const partsIn = (step, root) => (step.parts || [])
+                .map(p => ({ ...p, el: root.querySelector(p.sel) }))
+                .filter(p => visible(p.el));
+
+            // Tight box around an element's text (falls back to the element box)
+            function boxOf(el) {
+                if (el instanceof SVGElement) return el.getBoundingClientRect();
+                const range = document.createRange();
+                range.selectNodeContents(el);
+                const r = range.getBoundingClientRect();
+                return r.width && r.height ? r : el.getBoundingClientRect();
+            }
+
+            // Best example for a step: most parts present, then `prefer`, and
+            // not one the tour has already shown (so it visits several cards).
+            function pick(step, used) {
+                let best = null, bestScore = -Infinity;
+                document.querySelectorAll(`#visualization ${SCOPES[step.scope]}`).forEach(el => {
+                    const d = el.__data__;
+                    let score = partsIn(step, el).length * 10;
+                    if (step.prefer && d && step.prefer(d)) score += 5;
+                    if (used.has(el)) score -= 3;
+                    if (score > bestScore) { best = el; bestScore = score; }
+                });
+                return best;
+            }
+
+            const partHTML = p => `<b>${esc(p.label)}</b>${p.text ? ` — ${esc(p.text)}` : ''}`;
+            const legendHTML = lg => `<div class="guide-legend"><h3>${esc(lg.title)}</h3><ul>${lg.items.map(it =>
+                `<li><span class="guide-swatch ${it.cls}">${it.text != null ? esc(it.text) : ''}</span>${esc(it.label)}</li>`
+            ).join('')}</ul></div>`;
+            const rectSVG = (r, pad, attrs) =>
+                `<rect x="${r.left - pad}" y="${r.top - pad}" width="${r.width + 2 * pad}" height="${r.height + 2 * pad}" rx="5" ${attrs}/>`;
+
+            // --- DOM ---
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'guide-button';
+            button.textContent = '?';
+            button.title = 'How to read this table';
+            button.setAttribute('aria-label', button.title);
+            document.body.appendChild(button);
+
+            const root = document.createElement('div');
+            root.className = 'guide';
+            root.hidden = true;
+            root.setAttribute('role', 'dialog');
+            root.setAttribute('aria-modal', 'true');
+            root.setAttribute('aria-labelledby', 'guide-title');
+            root.innerHTML = `
+                <svg class="guide-shade" aria-hidden="true">
+                    <defs><mask id="guide-mask">
+                        <rect width="100%" height="100%" fill="white"/><g class="holes"></g>
+                    </mask></defs>
+                    <rect class="dim" width="100%" height="100%" mask="url(#guide-mask)"/>
+                    <g class="rings"></g>
+                </svg>
+                <div class="guide-pop"></div>
+                <div class="guide-sheet" hidden></div>`;
+            document.body.appendChild(root);
+            const shade = root.querySelector('.guide-shade');
+            const holes = root.querySelector('.holes');
+            const rings = root.querySelector('.rings');
+            const pop = root.querySelector('.guide-pop');
+            const sheet = root.querySelector('.guide-sheet');
+
+            // --- State ---
+            let index = -1;        // current step; steps.length = the summary sheet
+            let current = null;    // { el, focus, parts, all } for the step on screen
+            let hot = -1;          // part highlighted from the popover list
+            let used = new Set();
+            let returnFocus = null;
+
+            function open(at = 0) {
+                returnFocus = document.activeElement;
+                used = new Set();
+                index = -1;
+                root.hidden = false;
+                d3.selectAll('.tooltip').style('opacity', 0);
+                go(at);
+            }
+
+            function close() {
+                root.hidden = true;
+                index = -1;
+                current = null;
+                (returnFocus && returnFocus.focus ? returnFocus : button).focus();
+            }
+
+            function go(k) {
+                const dir = k < index ? -1 : 1;
+                // Skip a step whose parts no card shows (e.g. ownership hidden)
+                while (k >= 0 && k < steps.length) {
+                    const el = pick(steps[k], used);
+                    if (el && (!steps[k].parts || partsIn(steps[k], el).length)) break;
+                    k += dir;
+                }
+                index = Math.max(0, Math.min(k, steps.length));
+                if (index === steps.length) showSummary(); else showStep(steps[index]);
+            }
+
+            // --- Tour step: spotlight a real element, explain it beside it ---
+            function showStep(step) {
+                sheet.hidden = true;
+                shade.style.display = '';
+                pop.hidden = false;
+                const el = pick(step, used);
+                used.add(el);
+                current = {
+                    el,
+                    focus: (step.focus && el.querySelector(step.focus)) || el,
+                    parts: partsIn(step, el),
+                    all: step.all ? [...document.querySelectorAll(`#visualization ${step.all}`)] : [],
+                };
+                hot = -1;
+
+                const text = resolve(step.text);
+                const legend = resolve(step.legend);
+                const last = index === steps.length - 1;
+                pop.innerHTML = `
+                    <button type="button" class="guide-close" aria-label="Close">×</button>
+                    <div class="guide-count">${index + 1} of ${steps.length}</div>
+                    <h2 id="guide-title">${esc(step.title)}</h2>
+                    ${text ? `<p>${esc(text)}</p>` : ''}
+                    ${current.parts.length ? `<ul class="guide-parts">${current.parts.map((p, i) =>
+                        `<li data-i="${i}">${partHTML(p)}</li>`).join('')}</ul>` : ''}
+                    ${legend ? legendHTML(legend) : ''}
+                    <div class="guide-nav">
+                        <button type="button" class="nav" data-go="${index - 1}" ${index === 0 ? 'disabled' : ''}>Back</button>
+                        <span class="spacer"></span>
+                        ${last ? '' : `<button type="button" class="nav link" data-go="${steps.length}">Summary</button>`}
+                        <button type="button" class="nav primary" data-go="${index + 1}">${last ? 'Summary' : 'Next'}</button>
+                    </div>`;
+                pop.scrollTop = 0;
+                scrollToTarget(el);
+                draw();
+                pop.querySelector('.primary').focus({ preventScroll: true });
+            }
+
+            const isDocked = () => window.innerWidth < 640;
+
+            function scrollToTarget(el) {
+                const r = el.getBoundingClientRect();
+                // On phones the popover docks to the bottom, so aim higher.
+                const room = isDocked() ? window.innerHeight * 0.5 : window.innerHeight;
+                let dx = 0, dy = 0;
+                if (r.top < 16 || r.bottom > room - 16) dy = r.top - Math.max(16, (room - r.height) / 2);
+                if (r.left < 0 || r.right > window.innerWidth) dx = r.left - Math.max(16, (window.innerWidth - r.width) / 2);
+                if (dx || dy) window.scrollBy({ left: dx, top: dy, behavior: reduceMotion ? 'auto' : 'smooth' });
+            }
+
+            // Redrawn on every scroll/resize frame: holes in the shade for the
+            // example (and any `all` matches on screen), rings, popover position.
+            function draw() {
+                if (!current) return;
+                const vw = window.innerWidth, vh = window.innerHeight;
+                const onScreen = r => r.bottom > -40 && r.top < vh + 40 && r.right > -40 && r.left < vw + 40;
+                holes.innerHTML = [current.el, ...current.all]
+                    .map((e, i) => [e.getBoundingClientRect(), i])
+                    .filter(([r]) => onScreen(r))
+                    .map(([r, i]) => rectSVG(r, i ? 0 : 6, 'fill="black"')).join('');
+                rings.innerHTML = rectSVG(current.focus.getBoundingClientRect(), 6, 'class="ring"') +
+                    current.parts.map((p, i) =>
+                        rectSVG(boxOf(p.el), 3, `class="ring part${i === hot ? ' hot' : ''}" data-i="${i}"`)).join('');
+                placePop();
+            }
+
+            function placePop() {
+                const docked = isDocked();
+                pop.classList.toggle('docked', docked);
+                if (docked) return;
+                const vw = window.innerWidth, vh = window.innerHeight, m = 12, gap = 18;
+                const r = current.el.getBoundingClientRect();
+                const w = pop.offsetWidth, h = pop.offsetHeight;
+                const clampX = x => Math.max(m, Math.min(vw - w - m, x));
+                const clampY = y => Math.max(m, Math.min(vh - h - m, y));
+                let x, y;
+                if (r.right + gap + w + m <= vw) {
+                    x = r.right + gap; y = clampY(r.top + r.height / 2 - h / 2);
+                } else if (r.left - gap - w >= m) {
+                    x = r.left - gap - w; y = clampY(r.top + r.height / 2 - h / 2);
+                } else if (r.bottom + gap + h + m <= vh) {
+                    x = clampX(r.left + r.width / 2 - w / 2); y = r.bottom + gap;
+                } else {
+                    x = clampX(r.left + r.width / 2 - w / 2); y = clampY(r.top - gap - h);
+                }
+                pop.style.left = `${x}px`;
+                pop.style.top = `${y}px`;
+            }
+
+            function setHot(i) {
+                hot = i;
+                pop.querySelectorAll('.guide-parts li').forEach(li => li.classList.toggle('hot', +li.dataset.i === i));
+                rings.querySelectorAll('.ring.part').forEach(r => r.classList.toggle('hot', +r.dataset.i === i));
+            }
+
+            // --- Summary: every part at once on a copy of the most complete card ---
+            function showSummary() {
+                current = null;
+                pop.hidden = true;
+                shade.style.display = 'none';
+                sheet.hidden = false;
+
+                const labelSteps = steps.filter(s => s.scope === 'label');
+                const cardSteps = steps.filter(s => s.scope === 'card');
+                const labelOf = card => card.parentNode.previousElementSibling;
+                const score = (ss, el) => ss.reduce((n, s) =>
+                    n + partsIn(s, el).length * 10 + (s.parts && s.prefer && s.prefer(el.__data__) ? 1 : 0), 0);
+                let card = null, best = -1;
+                document.querySelectorAll('#visualization .quartet-card').forEach(c => {
+                    const n = score(cardSteps, c) + score(labelSteps, labelOf(c));
+                    if (n > best) { best = n; card = c; }
+                });
+
+                const lede = resolve(steps[0].text);
+                sheet.innerHTML = `
+                    <button type="button" class="guide-close" aria-label="Close">×</button>
+                    <h2 id="guide-title">How to read the table</h2>
+                    ${lede ? `<p>${esc(lede)}</p>` : ''}
+                    <div class="anatomy"><div class="anatomy-stage"><div class="anatomy-inner"></div></div></div>
+                    <div class="guide-legends">${steps.filter(s => s.legend)
+                        .map(s => legendHTML(resolve(s.legend))).join('')}</div>
+                    <div class="guide-nav">
+                        <button type="button" class="nav" data-go="${steps.length - 1}">Back</button>
+                        <button type="button" class="nav" data-go="0">Replay tour</button>
+                        <button type="button" class="nav primary" data-close>Done</button>
+                    </div>`;
+                const labelCopy = labelOf(card).cloneNode(true);
+                const cardCopy = card.cloneNode(true);
+                cardCopy.removeAttribute('style');  // drop any hover/active border
+                sheet.querySelector('.anatomy-inner').append(labelCopy, cardCopy);
+                layoutAnatomy();
+                sheet.scrollTop = 0;
+                sheet.querySelector('.primary').focus({ preventScroll: true });
+            }
+
+            // Notes with leader lines, in columns: label parts on the far left;
+            // card parts on the right, or — when there's room — those on the
+            // card's left half in a middle column, so no line crosses the card.
+            // Too narrow for columns: numbered dots, notes listed below.
+            function layoutAnatomy() {
+                const fig = sheet.querySelector('.anatomy');
+                const stage = fig.querySelector('.anatomy-stage');
+                const inner = fig.querySelector('.anatomy-inner');
+                const [labelCopy, cardCopy] = inner.children;
+                fig.querySelectorAll('.anatomy-lines, .anatomy-notes').forEach(n => n.remove());
+                fig.style.height = inner.style.gap = inner.style.transform = '';
+                stage.style.width = stage.style.height = '';
+
+                const GUT = 28, MAX = 2.2, MIN = 1.3;
+                const w0 = labelCopy.offsetWidth + cardCopy.offsetWidth;
+                const nh = inner.offsetHeight;
+                const avail = fig.clientWidth;
+                const fit = (cols, col, extra) => Math.min(MAX, 330 / nh, (avail - cols * col - (cols + 1) * GUT) / (w0 + extra));
+                let mode = 'compact', COL = 0, scale = Math.min(1.6, avail / inner.offsetWidth);
+                for (const [m, cols, col] of [['three', 3, 190], ['three', 3, 150], ['two', 2, 190]]) {
+                    const s = fit(cols, col, m === 'two' ? inner.offsetWidth - w0 : 0);
+                    if (s >= MIN) { mode = m; COL = col; scale = s; break; }
+                }
+                fig.classList.toggle('compact', mode === 'compact');
+                if (mode === 'three') inner.style.gap = `${(COL + 2 * GUT) / scale}px`;
+                inner.style.transform = `scale(${scale})`;
+                stage.style.width = `${inner.offsetWidth * scale}px`;
+                stage.style.height = `${nh * scale}px`;
+
+                const fr = fig.getBoundingClientRect();
+                const rel = r => ({ l: r.left - fr.left, r: r.right - fr.left, t: r.top - fr.top, b: r.bottom - fr.top,
+                                    cx: (r.left + r.right) / 2 - fr.left, cy: (r.top + r.bottom) / 2 - fr.top });
+                const sr = rel(stage.getBoundingClientRect());
+                const lr = rel(labelCopy.getBoundingClientRect());
+                const cr = rel(cardCopy.getBoundingClientRect());
+                // Where each column's notes sit, where their lines bend, and
+                // which edge of the target the line ends on.
+                const COLS = {
+                    left:  { x: sr.l - GUT - COL, x0: sr.l - GUT + 4, x1: sr.l - 10, edge: 'l' },
+                    mid:   { x: lr.r + GUT, x0: lr.r + GUT + COL + 4, x1: cr.l - 10, edge: 'l' },
+                    right: { x: sr.r + GUT, x0: sr.r + GUT - 4, x1: sr.r + 10, edge: 'r' },
+                };
+
+                const notesBox = document.createElement('div');
+                notesBox.className = 'anatomy-notes';
+                const notes = [];
+                [[labelCopy, 'label'], [cardCopy, 'card']].forEach(([copy, scope]) =>
+                    steps.filter(s => s.scope === scope).forEach(s => partsIn(s, copy).forEach(part => {
+                        const p = rel(boxOf(part.el));
+                        const side = scope === 'label' ? 'left'
+                            : mode === 'three' && p.cx < cr.l + (cr.r - cr.l) * 0.4 ? 'mid' : 'right';
+                        const div = document.createElement('div');
+                        div.className = `anatomy-note ${side}`;
+                        div.innerHTML = `<span class="n">${notes.length + 1}</span>${partHTML(part)}`;
+                        notesBox.append(div);
+                        notes.push({ side, div, p, n: notes.length + 1 });
+                    })));
+                fig.append(notesBox);
+
+                let svg = '';
+                if (mode === 'compact') {
+                    const placed = [];
+                    notes.forEach(({ side, p, n }) => {
+                        let x = side === 'left' ? p.l - 8 : p.r + 8;
+                        while (placed.some(([px, py]) => Math.hypot(px - x, py - p.cy) < 16)) x += side === 'left' ? 16 : -16;
+                        placed.push([x, p.cy]);
+                        svg += `<g class="badge"><circle cx="${x}" cy="${p.cy}" r="7.5"/><text x="${x}" y="${p.cy}">${n}</text></g>`;
+                    });
+                } else {
+                    let bottom = sr.b;
+                    Object.entries(COLS).forEach(([side, c]) => {
+                        const col = notes.filter(o => o.side === side).sort((a, b) => a.p.cy - b.p.cy);
+                        if (!col.length) return;
+                        col.forEach(o => {
+                            o.div.style.left = `${c.x}px`;
+                            o.div.style.width = `${COL}px`;
+                            o.h = o.div.offsetHeight;
+                        });
+                        // Stack notes beside their targets without overlapping,
+                        // then lift the column if it runs past the figure.
+                        let cursor = sr.t;
+                        col.forEach(o => { o.top = Math.max(cursor, o.p.cy - 8); cursor = o.top + o.h + 8; });
+                        const lift = Math.min(cursor - 8 - sr.b, col[0].top - sr.t);
+                        col.forEach(o => {
+                            if (lift > 0) o.top -= lift;
+                            o.div.style.top = `${o.top}px`;
+                            bottom = Math.max(bottom, o.top + o.h);
+                            const tx = c.edge === 'l' ? o.p.l - 2 : o.p.r + 2;
+                            svg += `<path d="M${c.x0},${o.top + 8} H${c.x1} L${tx},${o.p.cy}"/>` +
+                                   `<circle cx="${tx}" cy="${o.p.cy}" r="2.5"/>`;
+                        });
+                    });
+                    fig.style.height = `${bottom}px`;
+                }
+                const lines = document.createElementNS(SVG_NS, 'svg');
+                lines.setAttribute('class', 'anatomy-lines');
+                lines.innerHTML = svg;
+                fig.append(lines);
+            }
+
+            // --- Events ---
+            button.addEventListener('click', () => open());
+            root.addEventListener('click', e => {
+                const b = e.target.closest('button');
+                if (!b) return;
+                if (b.classList.contains('guide-close') || b.hasAttribute('data-close')) close();
+                else if (b.dataset.go != null) {
+                    if (+b.dataset.go === 0) used = new Set();
+                    go(+b.dataset.go);
+                }
+            });
+            pop.addEventListener('pointerover', e => {
+                const li = e.target.closest('.guide-parts li');
+                setHot(li ? +li.dataset.i : -1);
+            });
+            pop.addEventListener('pointerleave', () => setHot(-1));
+
+            let frame = 0;
+            const redraw = () => {
+                cancelAnimationFrame(frame);
+                frame = requestAnimationFrame(() => {
+                    if (root.hidden) return;
+                    if (index === steps.length) layoutAnatomy(); else draw();
+                });
+            };
+            window.addEventListener('scroll', () => { if (current) redraw(); }, { passive: true });
+            window.addEventListener('resize', redraw);
+
+            document.addEventListener('keydown', e => {
+                if (root.hidden) {
+                    if (e.key === '?' && !e.metaKey && !e.ctrlKey && !e.altKey) { e.preventDefault(); open(); }
+                    return;
+                }
+                if (e.key === 'Escape') close();
+                else if (e.key === 'ArrowRight' && index < steps.length) go(index + 1);
+                else if (e.key === 'ArrowLeft' && index > 0) go(index - 1);
+                else return;
+                e.preventDefault();
+            });
+        }
+    </script>
     <script>
         // On phones the card table is scaled down (see the mobile @media rule). A
         // CSS-transformed element still reserves its full PRE-scale size for
@@ -1047,6 +1836,165 @@
         }
         window.addEventListener('resize', fitMobileHeight);
         window.addEventListener('orientationchange', () => setTimeout(fitMobileHeight, 200));
+
+        // === WHAT THE CARDS SHOW (single source for rendering AND the guide) ===
+        // Each table below is used by renderQuartetCard/renderOpusLabel to pick
+        // a class, and by the guide (GUIDE_STEPS) to explain it. Change a rule
+        // or a label here and both update; colors live only in the CSS classes.
+
+        // Links strip background: the FIRST matching state wins, so order matters.
+        const imslpOf = (quartet, opus) => quartet.imslp || opus.imslp;
+        const LINK_STATES = [
+            { cls: 'peters',   label: 'In the Peters edition',     test: (q) => q.edition === 'Peters' },
+            { cls: 'no-data',  label: 'No score or recording yet', test: (q, o) => !imslpOf(q, o) && !q.hasRecording },
+            { cls: 'no-imslp', label: 'No score on IMSLP',         test: (q, o) => !imslpOf(q, o) },
+            { cls: 'no-music', label: 'No recording',              test: (q) => !q.hasRecording },
+            { cls: '',         label: 'Score and recording',       test: () => true },
+        ];
+        const linkState = (quartet, opus) => LINK_STATES.find(s => s.test(quartet, opus));
+
+        // Opus category badge (and the row header's tint)
+        const categoryOf = category => category.includes('grande')
+            ? { cls: 'grande', name: 'Grande', label: 'Opera grande: full-length, mostly 3–4 movements' }
+            : { cls: 'piccola', name: 'Piccola', label: 'Opera piccola: short, mostly 2 movements' };
+
+        const hasMinuet = quartet => quartet.mvmts.some(m => m.includes('Minuetto'));
+
+        // === GUIDE CONTENT ===
+        // The tour shows one step at a time on a real card; the closing summary
+        // shows every step's parts at once on a copy of the most complete card,
+        // with each step's legend. Edit here when the card changes.
+        //   scope:  which element the step is about ('row', 'label' or 'card')
+        //   focus:  region of that element to ring (default: the whole element)
+        //   prefer: predicate on the element's data, to pick a good example
+        //   all:    selector lit up across the whole table, to show the pattern
+        //   parts:  [{sel, label, text}] — sel is relative to the scope element;
+        //           a part the example doesn't have is simply left out
+        //   legend: {title, items: [{cls, text?, label}]}, or (quartets) => that;
+        //           cls is the real class list a swatch is drawn with
+        const GUIDE_STEPS = [
+            {
+                title: 'The table',
+                scope: 'row',
+                text: quartets => `Every square is one of Boccherini’s ${quartets.length} string quartets, ` +
+                    `and every row is an opus, in order of composition (${d3.min(quartets, q => q.year)}–` +
+                    `${d3.max(quartets, q => q.year)}). Short opuses share a row. ` +
+                    `Hover over a quartet (or tap it) to see its full title and movements.`,
+            },
+            {
+                title: 'Each opus',
+                scope: 'label',
+                prefer: ({ opus }) => opus.dedication && opus.imslp,
+                parts: [
+                    { sel: '.year', label: 'Year', text: 'when the opus was composed' },
+                    { sel: '.age', label: 'Age', text: 'Boccherini’s age that year' },
+                    { sel: '.dedication', label: 'Dedication', text: 'to whom the opus is dedicated' },
+                    { sel: '.opus-number', label: 'Opus number', text: '' },
+                    { sel: '.imslp-link', label: 'imslp', text: 'score for the whole opus' },
+                    { sel: '.category-badge', label: 'Grande / Piccola', text: 'the kind of quartet (the row is tinted to match)' },
+                ],
+                legend: quartets => ({
+                    title: 'Opus type',
+                    items: [...new Set(quartets.map(q => q.category))].sort().map(c => categoryOf(c))
+                        .map(c => ({ cls: `category-badge ${c.cls}`, label: c.label })),
+                }),
+            },
+            {
+                title: 'Top bar',
+                scope: 'card',
+                focus: '.mode-bar',
+                prefer: ({ quartet }) => !quartet.major,
+                all: '.mode-bar.minor',
+                parts: [
+                    { sel: '.gerard-number', label: 'Gérard number', text: 'from Yves Gérard’s catalogue (G.159–249)' },
+                    { sel: '.quartet-number', label: '#', text: 'position within the opus' },
+                    { sel: '.mode-bar.minor', label: 'Pink bar', text: 'minor key (every one is lit up)' },
+                ],
+                legend: {
+                    title: 'Mode',
+                    items: [
+                        { cls: 'mode-bar major', label: 'Major key' },
+                        { cls: 'mode-bar minor', label: 'Minor key' },
+                    ],
+                },
+            },
+            {
+                title: 'Key',
+                scope: 'card',
+                prefer: ({ quartet }) => quartet.key_signature && quartet.key_signature.count >= 3,
+                parts: [
+                    { sel: '.key-section', label: 'Key', text: 'tonic and mode' },
+                    { sel: '.key-accidentals', label: 'Key signature', text: 'its sharps or flats' },
+                ],
+            },
+            {
+                title: 'Peters edition',
+                scope: 'card',
+                focus: '.nickname',
+                prefer: ({ quartet }) => quartet.nickname && quartet.nickname.startsWith('Peters '),
+                all: '.nickname',
+                parts: [
+                    { sel: '.nickname', label: 'Peters label', text: 'its number in the Peters edition, and the opus number Peters printed on it. “Peters: see …” means Peters printed this quartet’s number on a different one.' },
+                ],
+            },
+            {
+                title: 'Links',
+                scope: 'card',
+                focus: '.card-links',
+                prefer: ({ quartet, opus }) => linkState(quartet, opus).cls === 'no-music',
+                all: '.card-links',
+                parts: [
+                    { sel: '.card-links .imslp-link', label: 'imslp', text: 'score on IMSLP' },
+                    { sel: '.qr-link', label: 'QR', text: 'this quartet on Quartet Roulette' },
+                    { sel: '.recording-indicator', label: '♩', text: 'a recording on Spotify' },
+                    { sel: '.card-links', label: 'Links strip', text: 'its color says what’s available' },
+                ],
+                legend: {
+                    title: 'Links strip',
+                    items: LINK_STATES.map(s => ({ cls: `card-links ${s.cls}`, label: s.label })),
+                },
+            },
+            {
+                title: 'Movements',
+                scope: 'card',
+                focus: '.movements-count',
+                prefer: ({ quartet }) => hasMinuet(quartet) && quartet.mvmts.length >= 4 && quartet.hasRecording,
+                parts: [
+                    { sel: '.mvmt-lines-svg', label: 'Bars', text: 'one per movement; the pale one is a minuet. Click a bar to play that movement.' },
+                    { sel: '.movements-count', label: 'Bottom strip', text: 'its color counts the movements' },
+                ],
+                legend: quartets => ({
+                    title: 'Movements',
+                    items: [...new Set(quartets.map(q => q.mvmts.length))].sort((a, b) => a - b).map(n => ({
+                        cls: `movements-count mvmt-${n}`, text: n, label: n === 1 ? '1 movement' : `${n} movements`,
+                    })),
+                }),
+            },
+            {
+                title: 'No minuet',
+                scope: 'card',
+                prefer: ({ quartet }) => !hasMinuet(quartet),
+                all: '.quartet-card.no-minuet',
+                text: () => 'A faint gray card has no minuet. Every one is lit up.',
+                legend: {
+                    title: 'Card',
+                    items: [
+                        { cls: 'quartet-card', label: 'Has a minuet' },
+                        { cls: 'quartet-card no-minuet', label: 'No minuet' },
+                    ],
+                },
+            },
+            {
+                title: 'Parts',
+                scope: 'card',
+                focus: '.movements-count',
+                prefer: ({ quartet }) => quartet.edition,
+                all: '.quartet-card:has(.repeat-start)',
+                parts: [
+                    { sel: '.repeat-start', label: 'Repeat signs', text: 'I have the parts for this quartet' },
+                ],
+            },
+        ];
 
         // Load all JSON files: peters.json, parts.json, then opera.json
         Promise.all([
@@ -1101,6 +2049,7 @@
             operaData.forEach(opus => {
                 opus.quartets.forEach(quartet => {
                     quartet.opus = opus.opus;
+                    quartet.year = opus.year;
                     // Add nickname from peters.json if available
                     if (petersMap.has(quartet.gerard)) {
                         const peters = petersMap.get(quartet.gerard);
@@ -1203,6 +2152,7 @@
                     opus.quartets[0].category.includes('grande') ? 'grande-bg' : 'piccola-bg';
 
                 const opusLabel = parent.append('div')
+                    .datum({ opus })  // read by the guide to pick examples
                     .attr('class', `opus-label ${categoryClass}`);
 
                 // === TOP: Year + Age (aligns with mode bar) ===
@@ -1261,13 +2211,10 @@
 
                 // Category badge below dedication/link
                 if (opus.quartets.length > 0) {
-                    const category = opus.quartets[0].category;
-                    const catClass = category.includes('grande') ? 'grande' : 'piccola';
-                    const categoryText = category.includes('grande') ? 'Grande' : 'Piccola';
-
+                    const category = categoryOf(opus.quartets[0].category);
                     bottomSection.append('div')
-                        .attr('class', `category-badge ${catClass}`)
-                        .text(categoryText);
+                        .attr('class', `category-badge ${category.cls}`)
+                        .text(category.name);
                 }
 
                 return opusLabel;
@@ -1325,11 +2272,9 @@
                     activeCard = null;
                 };
 
-                // Check if quartet has any minuets
-                const hasMinuet = quartet.mvmts.some(m => m.includes('Minuetto'));
-
                 const card = parent.append('div')
-                    .attr('class', hasMinuet ? 'quartet-card' : 'quartet-card no-minuet');
+                    .datum({ opus, quartet })  // read by the guide to pick examples
+                    .attr('class', hasMinuet(quartet) ? 'quartet-card' : 'quartet-card no-minuet');
 
                 if (isTouchDevice) {
                     // Touch device: use click to toggle, ignore mouse events
@@ -1400,23 +2345,11 @@
                 }
 
                 // Links container (IMSLP, QR, and Recording) - appended to card, positioned above movement bar
-                const imslpLink = quartet.imslp || opus.imslp;
-                const hasMusic = quartet.hasRecording;
+                const imslpLink = imslpOf(quartet, opus);
 
-                // Determine missing data class (or Peters edition indicator)
-                let linksClass = 'card-links';
-                if (quartet.edition === 'Peters') {
-                    linksClass += ' peters';
-                } else if (!imslpLink && !hasMusic) {
-                    linksClass += ' no-data';
-                } else if (!imslpLink) {
-                    linksClass += ' no-imslp';
-                } else if (!hasMusic) {
-                    linksClass += ' no-music';
-                }
-
+                // Background shows what's missing (or the Peters edition) — see LINK_STATES
                 const linksContainer = card.append('div')
-                    .attr('class', linksClass);
+                    .attr('class', `card-links ${linkState(quartet, opus).cls}`.trim());
 
                 // IMSLP link (left-aligned in grid column 1)
                 if (imslpLink) {
@@ -1633,6 +2566,9 @@
             if (currentRowOpuses.length > 0) {
                 renderCombinedRow(container, ...currentRowOpuses);
             }
+
+            // The "?" guide explains the table using the cards just rendered
+            createGuide(GUIDE_STEPS, quartets);
 
             // Content is now laid out — size the mobile viewport to it (and again
             // after a beat, in case web-font/reflow nudges the height).
