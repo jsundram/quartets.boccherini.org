@@ -2417,7 +2417,7 @@
                 const lineSpacing = parseFloat(styles.getPropertyValue('--mvmt-line-spacing')) || 4;
                 const lineGap = lineWidth + lineSpacing;
 
-                // Find all minuet positions (handles multiple minuets like G.202)
+                // Find all minuet positions (a quartet could have more than one)
                 const minuetIndices = new Set(
                     quartet.mvmts.map((m, i) => m.includes('Minuetto') ? i : -1)
                         .filter(i => i >= 0)
