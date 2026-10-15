@@ -352,7 +352,7 @@
             margin: 0 0 5px 0;          /* Small gap below */
             text-align: center;
             color: var(--text-secondary);
-            font-size: 4.3cqw;          /* Scale to span container width */
+            font-size: 4.25cqw;         /* Scale to span container width (room for the footnote mark) */
             white-space: nowrap;        /* Keep on one line */
         }
 
@@ -364,13 +364,28 @@
             font-style: italic;
         }
 
-        .subtitle a {
-            color: var(--text-link);
-            text-decoration: none;
+        .footnote-mark {
+            font-size: 0.5em;
+            line-height: 0;             /* Don't make the title taller */
         }
 
-        .subtitle a:hover {
-            text-decoration: underline;
+        /* Footnote counts, in the category badge colors */
+        .subtitle .count {
+            font-style: normal;
+            font-weight: 500;
+            padding: 0 0.3em;
+            border-radius: 3px;
+            line-height: 1;
+        }
+
+        .subtitle .count.grande {
+            background-color: var(--badge-grande-bg);
+            color: var(--badge-grande-text);
+        }
+
+        .subtitle .count.piccola {
+            background-color: var(--badge-piccola-bg);
+            color: var(--badge-piccola-text);
         }
 
         .opus-row {
@@ -1405,8 +1420,8 @@
 <body>
     <div class="container">
         <div class="header-group">
-            <h1>Luigi Boccherini (1743–1805) – 91 String Quartets</h1>
-            <p class="subtitle">see also <a href="https://quartetroulette.com/Boccherini/" target="_blank">Quartet Roulette</a></p>
+            <h1>Luigi Boccherini (1743–1805) – 91<sup class="footnote-mark">*</sup> String Quartets</h1>
+            <p class="subtitle">&nbsp;</p>
         </div>
         <div id="visualization"></div>
     </div>
@@ -2051,6 +2066,14 @@
                 "C-flat major": {count: 7, sign: "♭"},
             }));
             window.data = operaData;
+
+            // Title footnote: how the quartets split by opus type
+            const allQuartets = operaData.flatMap(opus => opus.quartets);
+            const countOf = cls => allQuartets.filter(q => categoryOf(q.category).cls === cls).length;
+            d3.select('.subtitle').html(
+                `* <span class="count grande">${countOf('grande')}</span> Quartets ` +
+                `(${PLANNED_MOVEMENTS.size} unfinished) and ` +
+                `<span class="count piccola">${countOf('piccola')}</span> Quartettini`);
             console.log(operaData);
             // Create lookup maps keyed by Gerard number
             const petersMap = new Map(petersData.map(p => [p.Gerard, { number: p.number, label: p.label }]));
