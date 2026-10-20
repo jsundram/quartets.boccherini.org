@@ -52,6 +52,11 @@ PROJECT_ROOT = SCRIPT_DIR.parent
 BASELINES_DIR = PROJECT_ROOT / 'baselines'
 DIFFS_DIR = PROJECT_ROOT / 'diffs'
 
+# Claude Code's macOS sandbox forbids the Mach service Chrome's helper processes need.
+# WebKit needs macOS services it blocks too, with no workaround: there it hangs at launch.
+SANDBOXED = os.environ.get('SANDBOX_RUNTIME') == '1' and sys.platform == 'darwin'
+CHROMIUM_ARGS = ['--single-process'] if SANDBOXED else []
+
 # Default threshold (1%)
 DEFAULT_THRESHOLD = 0.01
 
@@ -121,15 +126,21 @@ def capture_all_formats(html_file, output_dir, formats=None, dark_mode=False):
             formats_by_browser[browser_type] = []
         formats_by_browser[browser_type].append(format_name)
 
+    if SANDBOXED and 'webkit' in formats_by_browser:
+        webkit_formats = ', '.join(formats_by_browser['webkit'])
+        print(f"ERROR: WebKit ({webkit_formats}) can't run in Claude Code's macOS sandbox. Rerun outside it.")
+        sys.exit(1)
+
     with sync_playwright() as p:
         for browser_type, browser_formats in formats_by_browser.items():
-            # Launch the appropriate browser
-            if browser_type == 'webkit':
-                browser = p.webkit.launch()
-            else:
-                browser = p.chromium.launch()
-
             for format_name in browser_formats:
+                # A fresh browser per format: sandboxed single-process Chrome holds only one
+                # context, and each format needs its own (scale factor, touch).
+                if browser_type == 'webkit':
+                    browser = p.webkit.launch()
+                else:
+                    browser = p.chromium.launch(args=CHROMIUM_ARGS)
+
                 config = FORMATS[format_name]
                 output_path = output_dir / f'{format_name}{suffix}.png'
 
@@ -153,9 +164,7 @@ def capture_all_formats(html_file, output_dir, formats=None, dark_mode=False):
                 print(f"  Captured {format_name}{suffix}: {config['width']}x{config['height']}" +
                       (" (print)" if config.get('print') else "") + browser_label + scale_label + dark_label)
 
-                page.close()
-
-            browser.close()
+                browser.close()
 
     return results
 

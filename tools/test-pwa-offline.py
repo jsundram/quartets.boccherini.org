@@ -36,6 +36,8 @@ from playwright.sync_api import sync_playwright
 
 URL = "http://localhost:8000/"
 SW = Path(__file__).resolve().parent.parent / "sw.js"
+# Claude Code's macOS sandbox forbids the Mach service Chrome's helper processes need.
+CHROMIUM_ARGS = ["--single-process"] if os.environ.get("SANDBOX_RUNTIME") == "1" and sys.platform == "darwin" else []
 
 
 # Highest-numbered versioned cache, not the first key. caches.keys() is in CREATION order, so a
@@ -81,7 +83,7 @@ def main():
     failures = []
     shell_n = shell_size()
     with sync_playwright() as p:
-        browser = p.chromium.launch()
+        browser = p.chromium.launch(args=CHROMIUM_ARGS)
         ctx = browser.new_context()
         page = ctx.new_page()
 
@@ -161,13 +163,18 @@ def main():
             hits["n"] += 1
             route.fulfill(status=500, content_type="text/plain", body="boom")
 
-        # Seed a good cached copy first — there is nothing to poison otherwise.
+        # Seed a good cached copy first — there is nothing to poison otherwise. cachePut() doesn't
+        # await its put, so the entry can land after fetch() resolves (single-process Chrome in the
+        # sandbox loses that race every time): poll briefly instead of checking once.
         seeded = page.evaluate(
             "async (u) => {" + CURRENT_CACHE_JS +
             "  try { await (await fetch(u)).json(); } catch (e) { return 'throw'; }"
             "  const c = await caches.open(await currentCache());"
-            "  const r = await c.match(u);"
-            "  return r ? (await r.json()).length : null; }", probe)
+            "  for (let i = 0; i < 20; i++) {"
+            "    const r = await c.match(u);"
+            "    if (r) return (await r.json()).length;"
+            "    await new Promise(res => setTimeout(res, 100)); }"
+            "  return null; }", probe)
         if not isinstance(seeded, int) or seeded <= 0:
             failures.append(
                 f"poison probe could not seed a cached copy of {probe} (got {seeded!r}) — "

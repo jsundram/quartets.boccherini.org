@@ -37,6 +37,7 @@ paths), so it takes no setup:
     uv run tools/test-sw-update-offline.py
 """
 import json
+import os
 import re
 import shutil
 import socket
@@ -141,6 +142,11 @@ def serve(root, mode=""):
 
 
 def main():
+    # WebKit needs macOS services Claude Code's sandbox blocks; there it hangs for minutes at launch.
+    if os.environ.get("SANDBOX_RUNTIME") == "1" and sys.platform == "darwin":
+        print("ERROR: WebKit can't run in Claude Code's macOS sandbox. Rerun outside it.")
+        return 2
+
     root = Path(tempfile.mkdtemp(prefix="sw-update-"))
     for f in APP_FILES:
         shutil.copy(ROOT / f, root / f)

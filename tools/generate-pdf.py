@@ -17,7 +17,7 @@ Usage:
     uv run generate-pdf.py
 
 First-time setup (install Playwright browsers):
-    uvx playwright install chromium
+    uvx playwright install chromium-headless-shell
 
 Requirements:
     - uv installed (https://docs.astral.sh/uv/)
@@ -29,6 +29,13 @@ import sys
 import subprocess
 import os
 from playwright.sync_api import sync_playwright
+
+# Claude Code's macOS sandbox forbids the Mach service Chrome's helper processes need,
+# and the system temp folder Chrome streams PDFs through (it ignores $TMPDIR).
+SANDBOXED = os.environ.get('SANDBOX_RUNTIME') == '1' and sys.platform == 'darwin'
+CHROMIUM_ARGS = ['--single-process'] if SANDBOXED else []
+if SANDBOXED:
+    os.environ.setdefault('MAC_CHROMIUM_TMPDIR', os.environ.get('TMPDIR', '/tmp'))
 
 
 def linearize_pdf(temp_path, final_path):
@@ -63,7 +70,7 @@ def generate_pdf():
     print("   Loading http://localhost:8000/index.html")
 
     with sync_playwright() as p:
-        browser = p.chromium.launch()
+        browser = p.chromium.launch(args=CHROMIUM_ARGS)
         page = browser.new_page()
 
         # Set viewport size for proper layout (desktop view)
@@ -110,10 +117,10 @@ if __name__ == "__main__":
     try:
         generate_pdf()
     except Exception as e:
-        if "Executable doesn't exist" in str(e) or "browserType.launch" in str(e):
+        if "Executable doesn't exist" in str(e):
             print("\n⚠️  Playwright browsers not installed.")
             print("\nPlease run this command first:")
-            print("  uvx playwright install chromium")
+            print("  uvx playwright install chromium-headless-shell")
             sys.exit(1)
         else:
             raise
